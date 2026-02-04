@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>INTUITY - Modal Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0d0d0d;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    /* MODAL */
+    .game-modal {
+      background: rgba(28, 28, 30, 0.98);
+      backdrop-filter: blur(60px) saturate(180%);
+      -webkit-backdrop-filter: blur(60px) saturate(180%);
+      border: 1px solid rgba(84, 84, 88, 0.4);
+      border-radius: 1.5rem;
+      padding: 1.75rem 1.5rem 2rem;
+      max-width: 500px;
+      width: 92%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(84, 84, 88, 0.3);
+      position: relative;
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #C9A961;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      background: linear-gradient(135deg, #C9A961 0%, rgba(201, 169, 97, 0.8) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: -0.5rem;
+      right: -0.5rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: rgba(28, 28, 30, 0.9);
+      border: 1px solid rgba(84, 84, 88, 0.3);
+      color: #8e8e93;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .close-modal:hover {
+      background: rgba(28, 28, 30, 1);
+      border-color: rgba(201, 169, 97, 0.5);
+      color: #C9A961;
+      transform: scale(1.1);
+    }
+
+    /* GAME BUTTONS - EXACT MATCH */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 1.15rem;
+      row-gap: 2.2rem;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 0.5rem 0;
+    }
+
+    .game-btn {
+      aspect-ratio: 1.1;
+      background: #000000;
+      backdrop-filter: blur(40px) saturate(150%);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
+      border-radius: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(84, 84, 88, 0.25);
+      width: 85%;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      padding: 1rem;
+    }
+
+    .game-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201, 169, 97, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .game-btn:hover::before {
+      left: 100%;
+    }
+
+    .game-btn:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(201, 169, 97, 0.2),
+                  0 0 0 1px rgba(201, 169, 97, 0.3),
+                  0 4px 16px rgba(0, 0, 0, 0.3);
+      border-color: rgba(201, 169, 97, 0.4);
+    }
+
+    .game-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .game-name {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .games-grid {
+        column-gap: 1.25rem;
+        row-gap: 1.75rem;
+      }
+
+      .game-btn {
+        width: 77%;
+        border-radius: 1.125rem;
+      }
+
+      .game-icon {
+        font-size: 2rem;
+      }
+
+      .game-name {
+        font-size: 0.65rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .games-grid {
+        column-gap: 1rem;
+        row-gap: 1.5rem;
+      }
+
+      .game-btn {
+        width: 71%;
+        border-radius: 1rem;
+      }
+
+      .game-icon {
+        font-size: 1.75rem;
+      }
+
+      .game-name {
+        font-size: 0.5625rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MODAL PREVIEW -->
+  <div class="game-modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Essay Games</h2>
+      <button class="close-modal">×</button>
+    </div>
+    <div class="games-grid">
+      <div class="game-btn">
+        <div class="game-icon">🔢</div>
+        <div class="game-name">Sentence<br>Sequencing</div>
+      </div>
+      <div class="game-btn">
+        <div class="game-icon">🎯</div>
+        <div class="game-name">Storyboard<br>Challenge</div>
+      </div>
+      <div class="game-btn">
+        <div class="game-icon">🧩</div>
+        <div class="game-name">Paragraph<br>Puzzle</div>
+      </div>
+      <div class="game-btn">
+        <div class="game-icon">📝</div>
+        <div class="game-name">Gap Fill<br>Challenge</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
