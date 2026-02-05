@@ -607,6 +607,22 @@
       transform: translateY(-2px);
     }
 
+    .btn-read {
+      background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
+      color: #1c1c1e;
+      box-shadow: 0 4px 16px rgba(201, 169, 97, 0.4);
+    }
+
+    .btn-read:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.5);
+    }
+
+    .btn-read:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     /* READING MODAL - SEPARATE OVERLAY */
     .reading-modal-overlay {
       position: fixed;
@@ -849,21 +865,7 @@
         </div>
       </div>
 
-      <!-- READING AREA - Now just shows button -->
-      <div class="reading-area" id="readingArea">
-        <button class="read-btn" id="readBtn" onclick="openReadingModal()">Read Paragraph</button>
-      </div>
-
-      <!-- READING MODAL - SEPARATE OVERLAY -->
-      <div class="reading-modal-overlay" id="readingModalOverlay">
-        <div class="reading-modal">
-          <button class="reading-modal-close" onclick="closeReadingModal()">×</button>
-          <div class="reading-modal-text" id="readingModalText"></div>
-          <div class="reading-modal-timer" id="readingModalTimer">20</div>
-        </div>
-      </div>
-
-      <!-- WORD BLANKS -->
+      <!-- WORD BLANKS (main content area) -->
       <div class="blanks-area" id="blanksArea">
         <div class="word-grid" id="wordGrid"></div>
       </div>
@@ -899,10 +901,20 @@
 
       <!-- ACTIONS -->
       <div class="game-actions">
+        <button class="game-btn btn-read" id="readBtn" onclick="openReadingModal()">Read Paragraph</button>
         <button class="game-btn btn-show-answers" onclick="showAllAnswers()">Show Answers</button>
         <button class="game-btn btn-primary" onclick="nextParagraph()">Next Paragraph</button>
         <button class="game-btn btn-secondary" onclick="resetParagraph()">Retry This One</button>
       </div>
+    </div>
+  </div>
+
+  <!-- READING MODAL - SEPARATE OVERLAY -->
+  <div class="reading-modal-overlay" id="readingModalOverlay">
+    <div class="reading-modal">
+      <button class="reading-modal-close" onclick="closeReadingModal()">×</button>
+      <div class="reading-modal-text" id="readingModalText"></div>
+      <div class="reading-modal-timer" id="readingModalTimer">20</div>
     </div>
   </div>
 
@@ -1021,6 +1033,13 @@
       } else {
         document.getElementById('blanksArea').classList.remove('show');
         document.getElementById('inputArea').classList.remove('show');
+      }
+      
+      // Reset input field state
+      const input = document.getElementById('wordInput');
+      if (input) {
+        input.disabled = false;
+        input.placeholder = 'Type a word you remember...';
       }
       
       document.getElementById('resultsDisplay').classList.remove('show');
@@ -1185,10 +1204,19 @@
           input.style.background = 'rgba(255, 255, 255, 0.05)';
         }, 800);
         
-        // Check if max attempts reached
-        if (incorrectAttempts >= maxIncorrectAttempts) {
-          document.getElementById('inputArea').style.display = 'none';
-          showResults();
+        // Show warning if approaching limit
+        if (incorrectAttempts === 4) {
+          // 1 attempt left warning
+          const inputArea = document.getElementById('inputArea');
+          const warning = document.createElement('div');
+          warning.style.cssText = 'color: #f59e0b; font-size: 0.75rem; text-align: center; margin-top: 0.5rem;';
+          warning.textContent = '⚠️ 1 incorrect attempt remaining';
+          inputArea.appendChild(warning);
+          setTimeout(() => warning.remove(), 3000);
+        } else if (incorrectAttempts >= maxIncorrectAttempts) {
+          // Max attempts reached - disable input but don't force results
+          input.disabled = true;
+          input.placeholder = 'Maximum attempts reached. Use "Show Answers" to continue.';
         }
       }
       
