@@ -1,1 +1,1230 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>INTUITY - Gap Fill Challenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: #0d0d0d;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .background {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 30% 20%, rgba(201, 169, 97, 0.18) 0%, transparent 40%),
+                  radial-gradient(circle at 70% 80%, rgba(201, 169, 97, 0.16) 0%, transparent 38%),
+                  radial-gradient(circle at 20% 70%, rgba(201, 169, 97, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 15%, rgba(201, 169, 97, 0.14) 0%, transparent 35%),
+                  #0d0d0d;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .elegant-curves {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    .curve-elegant {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+
+    .curve-elegant-1 {
+      width: 500px;
+      height: 900px;
+      top: -300px;
+      right: -150px;
+      border: 3px solid rgba(201, 169, 97, 0.35);
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.15) 0%, rgba(201, 169, 97, 0.08) 50%, transparent 100%);
+      transform: rotate(25deg);
+      animation: floatElegant 12s ease-in-out infinite;
+      box-shadow: inset 0 0 60px rgba(201, 169, 97, 0.1), 0 0 80px rgba(201, 169, 97, 0.15);
+    }
+
+    .curve-elegant-2 {
+      width: 600px;
+      height: 1100px;
+      bottom: -400px;
+      left: -200px;
+      border: 2.5px solid rgba(201, 169, 97, 0.32);
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.12) 0%, rgba(201, 169, 97, 0.06) 40%, transparent 80%);
+      transform: rotate(-20deg);
+      animation: floatElegant 15s ease-in-out infinite reverse;
+      box-shadow: inset 0 0 50px rgba(201, 169, 97, 0.08), 0 0 70px rgba(201, 169, 97, 0.12);
+    }
+
+    @keyframes floatElegant {
+      0%, 100% { transform: translateY(0) rotate(var(--base-rotation, 0deg)); opacity: 1; }
+      50% { transform: translateY(-30px) rotate(calc(var(--base-rotation, 0deg) + 3deg)); opacity: 0.85; }
+    }
+
+    .curve-elegant-1 { --base-rotation: 25deg; }
+    .curve-elegant-2 { --base-rotation: -20deg; }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.01'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container { 
+      max-width: 950px; 
+      margin: 0 auto; 
+      position: relative;
+      z-index: 2;
+      padding: 0 1rem;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      padding: 0.625rem 1.25rem;
+      background: rgba(28, 28, 30, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(84, 84, 88, 0.3);
+      border-radius: 999px;
+      color: #C9A961;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+      background: rgba(28, 28, 30, 1);
+      border-color: rgba(201, 169, 97, 0.5);
+      transform: translateX(-3px);
+    }
+
+    /* HEADER */
+    .header { 
+      text-align: center; 
+      margin-bottom: 2rem;
+      padding: 1.5rem 0 1rem;
+    }
+
+    .header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.25rem; 
+      font-weight: 700; 
+      color: #C9A961;
+      margin-bottom: 0.5rem; 
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #C9A961 0%, rgba(201, 169, 97, 0.8) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header .subtitle { 
+      font-size: 0.8125rem; 
+      color: #8e8e93; 
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* GAME CONTAINER */
+    .game-container {
+      background: rgba(28, 28, 30, 0.98);
+      backdrop-filter: blur(60px) saturate(180%);
+      border: 1px solid rgba(84, 84, 88, 0.4);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+      margin-bottom: 2rem;
+    }
+
+    /* PARAGRAPH NAVIGATION */
+    .paragraph-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-circle {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(84, 84, 88, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .nav-circle-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #8e8e93;
+    }
+
+    .nav-circle-label {
+      font-size: 0.5rem;
+      color: #636366;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: absolute;
+      bottom: -1.25rem;
+      white-space: nowrap;
+    }
+
+    .nav-circle.active {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(201, 169, 97, 0.2) 100%);
+      border-color: #C9A961;
+    }
+
+    .nav-circle.active .nav-circle-number {
+      color: #C9A961;
+    }
+
+    .nav-circle:hover:not(.active) {
+      background: rgba(0, 0, 0, 0.6);
+      border-color: rgba(201, 169, 97, 0.5);
+      transform: scale(1.05);
+    }
+
+    .nav-circle.completed {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0.2) 100%);
+      border-color: #10b981;
+    }
+
+    .nav-circle.completed .nav-circle-number {
+      color: #10b981;
+    }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(84, 84, 88, 0.2);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #C9A961;
+    }
+
+    /* TEXT DISPLAY AREA */
+    .text-area {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      min-height: 300px;
+      border: 1px solid rgba(201, 169, 97, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-content {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.125rem;
+      line-height: 2;
+      color: #4a4a4a;
+      text-align: left;
+    }
+
+    /* GAP (blank space where word is missing) */
+    .gap {
+      display: inline-block;
+      min-width: 120px;
+      padding: 0.25rem 0.5rem;
+      margin: 0 0.25rem;
+      background: rgba(201, 169, 97, 0.1);
+      border: none;
+      border-bottom: 2px solid rgba(201, 169, 97, 0.5);
+      font-family: 'Crimson Text', serif;
+      font-size: 1.125rem;
+      color: #4a4a4a;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .gap:hover {
+      background: rgba(201, 169, 97, 0.15);
+      border-bottom-color: rgba(201, 169, 97, 0.8);
+    }
+
+    .gap.selected {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.25), rgba(201, 169, 97, 0.15));
+      border-bottom: 3px solid #C9A961;
+      box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.2);
+    }
+
+    .gap.filled {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.2), rgba(201, 169, 97, 0.15));
+      border-bottom: 2px solid #C9A961;
+      cursor: pointer;
+    }
+
+    .gap.correct {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+      border-bottom: 2px solid #10b981;
+      animation: correctPulse 0.4s ease-out;
+    }
+
+    .gap.incorrect {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+      border-bottom: 2px solid #ef4444;
+      animation: incorrectShake 0.4s ease-out;
+    }
+
+    @keyframes correctPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes incorrectShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    .gap-number {
+      position: absolute;
+      top: -1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #C9A961;
+      background: rgba(201, 169, 97, 0.15);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      white-space: nowrap;
+    }
+
+    /* WORD BANK */
+    .word-bank-container {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(84, 84, 88, 0.3);
+    }
+
+    .word-bank-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #C9A961;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .word-option {
+      font-family: 'Crimson Text', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.5rem 1.25rem;
+      background: linear-gradient(135deg, #F5F1E8 0%, #EBE6DC 100%);
+      border: 2px solid transparent;
+      border-radius: 0.625rem;
+      color: #1c1c1e;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+      user-select: none;
+    }
+
+    .word-option:hover:not(.used):not(.disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.25), 0 3px 8px rgba(0, 0, 0, 0.12);
+      border-color: rgba(201, 169, 97, 0.3);
+      background: linear-gradient(135deg, #FEFCF8 0%, #F5F1E8 100%);
+    }
+
+    .word-option.selected {
+      background: linear-gradient(135deg, #D1B982 0%, #E8D9B5 100%);
+      border-color: #C9A961;
+      box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .word-option.used {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: linear-gradient(135deg, #e5e5e7 0%, #d1d1d6 100%);
+    }
+
+    .word-option.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* HINT SYSTEM */
+    .hint-container {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.08) 100%);
+      border-left: 4px solid #3b82f6;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0.625rem;
+      display: none;
+    }
+
+    .hint-container.show {
+      display: block;
+      animation: slideIn 0.4s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hint-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #3b82f6;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hint-text {
+      font-size: 0.875rem;
+      color: #e5e5e7;
+      line-height: 1.6;
+    }
+
+    /* RESULTS */
+    .results-display {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.15) 0%, rgba(201, 169, 97, 0.1) 100%);
+      border: 2px solid rgba(201, 169, 97, 0.5);
+      border-radius: 1.125rem;
+      padding: 2rem;
+      text-align: center;
+      display: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .results-display.show {
+      display: block;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    .results-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #C9A961;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+
+    .results-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-stat {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+
+    .result-stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #C9A961;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-stat-value.perfect {
+      color: #10b981;
+    }
+
+    .result-stat-label {
+      font-size: 0.75rem;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ACTION BUTTONS */
+    .game-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .game-btn {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
+      color: #1c1c1e;
+      box-shadow: 0 4px 16px rgba(201, 169, 97, 0.4);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.5);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-hint {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%);
+      border: 2px solid rgba(59, 130, 246, 0.5);
+      color: #3b82f6;
+    }
+
+    .btn-hint:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: rgba(59, 130, 246, 0.7);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.2) 100%);
+    }
+
+    .btn-hint:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #F5F1E8 0%, #EBE6DC 100%);
+      border: 2px solid #C9A961;
+      color: #1c1c1e;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.3);
+    }
+
+    .btn-show-answers {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.1) 100%);
+      border: 2px solid rgba(201, 169, 97, 0.5);
+      color: #C9A961;
+      display: none;
+    }
+
+    .btn-show-answers:hover {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(201, 169, 97, 0.2) 100%);
+      transform: translateY(-2px);
+    }
+
+    /* SCROLLBAR */
+    .text-area::-webkit-scrollbar { width: 8px; }
+    .text-area::-webkit-scrollbar-track { 
+      background: rgba(0, 0, 0, 0.05); 
+      border-radius: 4px;
+    }
+    .text-area::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #C9A961 0%, #B89650 50%);
+      border-radius: 4px;
+    }
+    .text-area::-webkit-scrollbar-thumb:hover { 
+      background: linear-gradient(180deg, #D4A574 0%, #C9A961 50%);
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .back-btn {
+        top: 1rem;
+        left: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.65rem;
+      }
+
+      .header h1 {
+        font-size: 1.75rem;
+      }
+
+      .nav-circle {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      .nav-circle-number {
+        font-size: 0.75rem;
+      }
+
+      .text-area {
+        padding: 1.5rem;
+        min-height: 250px;
+      }
+
+      .text-content {
+        font-size: 1rem;
+        line-height: 1.9;
+      }
+
+      .gap {
+        min-width: 100px;
+        font-size: 1rem;
+      }
+
+      .word-option {
+        font-size: 0.9375rem;
+        padding: 0.4rem 1rem;
+      }
+
+      .game-btn {
+        padding: 0.625rem 1.125rem;
+        font-size: 0.6875rem;
+      }
+
+      .stats-bar {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+      }
+
+      .stat-item {
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .text-content {
+        font-size: 0.9375rem;
+      }
+
+      .gap {
+        min-width: 90px;
+        font-size: 0.9375rem;
+      }
+
+      .word-bank {
+        gap: 0.5rem;
+      }
+
+      .word-option {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.875rem;
+      }
+
+      .game-actions {
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background">
+    <div class="elegant-curves">
+      <div class="curve-elegant curve-elegant-1"></div>
+      <div class="curve-elegant curve-elegant-2"></div>
+    </div>
+  </div>
+
+  <!-- BACK BUTTON -->
+  <button class="back-btn" onclick="window.location.href='/index.html?openModal=writing&submenu=sentence-structure'">
+    <span>←</span>
+    <span>Back</span>
+  </button>
+
+  <div class="container">
+    <!-- HEADER -->
+    <header class="header">
+      <h1>INTUITY</h1>
+      <p class="subtitle">Gap Fill Challenge</p>
+    </header>
+
+    <!-- GAME CONTAINER -->
+    <div class="game-container">
+      <!-- PARAGRAPH NAVIGATION -->
+      <div class="paragraph-nav" id="paragraphNav">
+        <!-- Navigation circles will be inserted here -->
+      </div>
+
+      <!-- STATS BAR -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-label">Gaps Filled:</span>
+          <span class="stat-value" id="gapsProgress">0/0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Correct:</span>
+          <span class="stat-value" id="correctCount">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Hints Used:</span>
+          <span class="stat-value" id="hintsUsed">0/3</span>
+        </div>
+      </div>
+
+      <!-- TEXT DISPLAY AREA -->
+      <div class="text-area">
+        <div class="text-content" id="textContent">
+          <!-- Paragraph with gaps will be inserted here -->
+        </div>
+      </div>
+
+      <!-- HINT DISPLAY -->
+      <div class="hint-container" id="hintContainer">
+        <div class="hint-title">💡 Hint</div>
+        <div class="hint-text" id="hintText"></div>
+      </div>
+
+      <!-- WORD BANK -->
+      <div class="word-bank-container">
+        <div class="word-bank-title">Available Words</div>
+        <div class="word-bank" id="wordBank">
+          <!-- Word options will be inserted here -->
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="results-display" id="resultsDisplay">
+        <div class="results-title" id="resultsTitle">Challenge Complete!</div>
+        <div class="results-stats">
+          <div class="result-stat">
+            <div class="result-stat-value" id="finalScore">0%</div>
+            <div class="result-stat-label">Score</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-value" id="finalCorrect">0/0</div>
+            <div class="result-stat-label">Correct</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-value" id="finalHints">0</div>
+            <div class="result-stat-label">Hints Used</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="game-actions">
+        <button class="game-btn btn-hint" id="hintBtn" onclick="showHint()">Get Hint</button>
+        <button class="game-btn btn-submit" onclick="checkAnswers()">Check Answers</button>
+        <button class="game-btn btn-show-answers" id="showAnswersBtn" onclick="showAllAnswers()">Show Answers</button>
+        <button class="game-btn btn-secondary" onclick="nextParagraph()">Next Paragraph</button>
+        <button class="game-btn btn-secondary" onclick="resetParagraph()">Retry This One</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get content type from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const contentType = urlParams.get('type') || 'essays';
+
+    // Detect if we're in the correct folder structure or at root
+    const isInSubfolder = window.location.pathname.includes('/skills/writing/');
+    const dataPrefix = isInSubfolder ? '../../../' : '';
+    
+    const DATA_PATHS = {
+      essays: `${dataPrefix}data/essays-models.json`,
+      reports: `${dataPrefix}data/reports-models.json`,
+      reviews: `${dataPrefix}data/reviews-models.json`,
+      emails: `${dataPrefix}data/emails-models.json`
+    };
+
+    // Common linking words and discourse markers for gap-fill
+    const LINKING_WORDS = [
+      'however', 'therefore', 'moreover', 'furthermore', 'additionally',
+      'consequently', 'meanwhile', 'nevertheless', 'nonetheless', 'thus',
+      'hence', 'accordingly', 'besides', 'likewise', 'similarly',
+      'conversely', 'alternatively', 'specifically', 'indeed', 'subsequently',
+      'finally', 'firstly', 'secondly', 'although', 'despite',
+      'whereas', 'while', 'unless', 'provided', 'since',
+      'because', 'as', 'if', 'unless', 'whether'
+    ];
+
+    // Categories for hints
+    const WORD_CATEGORIES = {
+      'however': 'contrast',
+      'therefore': 'result',
+      'moreover': 'addition',
+      'furthermore': 'addition',
+      'additionally': 'addition',
+      'consequently': 'result',
+      'meanwhile': 'time',
+      'nevertheless': 'contrast',
+      'nonetheless': 'contrast',
+      'thus': 'result',
+      'hence': 'result',
+      'accordingly': 'result',
+      'besides': 'addition',
+      'likewise': 'similarity',
+      'similarly': 'similarity',
+      'conversely': 'contrast',
+      'alternatively': 'choice',
+      'specifically': 'specification',
+      'indeed': 'emphasis',
+      'subsequently': 'time',
+      'finally': 'conclusion',
+      'firstly': 'sequence',
+      'secondly': 'sequence',
+      'although': 'contrast',
+      'despite': 'contrast',
+      'whereas': 'contrast',
+      'while': 'contrast',
+      'unless': 'condition',
+      'provided': 'condition',
+      'since': 'reason',
+      'because': 'reason',
+      'as': 'reason',
+      'if': 'condition',
+      'whether': 'choice'
+    };
+
+    const HINT_MESSAGES = {
+      'contrast': 'This word shows a contrast or opposite idea',
+      'result': 'This word introduces a result or consequence',
+      'addition': 'This word adds information to support the point',
+      'time': 'This word indicates timing or sequence',
+      'similarity': 'This word shows similarity or comparison',
+      'choice': 'This word presents an alternative or choice',
+      'specification': 'This word narrows down or specifies information',
+      'emphasis': 'This word emphasizes or reinforces a point',
+      'conclusion': 'This word signals a final point or conclusion',
+      'sequence': 'This word shows order in a sequence',
+      'condition': 'This word introduces a condition or requirement',
+      'reason': 'This word explains a reason or cause'
+    };
+
+    let currentData = null;
+    let currentSample = null;
+    let currentParagraphIndex = 0;
+    let currentParagraph = null;
+    let gaps = [];
+    let userAnswers = {};
+    let selectedGapId = null;
+    let hintsRemaining = 3;
+    let hintsUsedCount = 0;
+    let hasSubmitted = false;
+    let completedParagraphs = new Set();
+
+    // Load data
+    async function loadData() {
+      try {
+        const response = await fetch(DATA_PATHS[contentType]);
+        if (!response.ok) throw new Error('Failed to load data');
+        currentData = await response.json();
+        
+        // Pick random sample
+        const randomIndex = Math.floor(Math.random() * currentData.samples.length);
+        currentSample = currentData.samples[randomIndex];
+        
+        // Render paragraph navigation
+        renderParagraphNav();
+        
+        // Load first paragraph
+        loadParagraph(0);
+        
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.querySelector('.game-container').innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: #ef4444;">
+            <p style="font-size: 1.25rem; margin-bottom: 1rem;">Error loading challenge data</p>
+            <p style="color: #8e8e93; font-size: 0.875rem;">${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderParagraphNav() {
+      const nav = document.getElementById('paragraphNav');
+      nav.innerHTML = '';
+      
+      currentSample.paragraphs.forEach((para, index) => {
+        const circle = document.createElement('div');
+        circle.className = 'nav-circle';
+        if (index === currentParagraphIndex) circle.classList.add('active');
+        if (completedParagraphs.has(index)) circle.classList.add('completed');
+        circle.onclick = () => loadParagraph(index);
+        
+        const shortLabel = para.label
+          .replace('Paragraph', '')
+          .replace('Body', 'B')
+          .replace('Introduction', 'Intro')
+          .replace('Conclusion', 'Concl')
+          .trim();
+        
+        circle.innerHTML = `
+          <div class="nav-circle-number">${index + 1}</div>
+          <div class="nav-circle-label">${shortLabel}</div>
+        `;
+        
+        nav.appendChild(circle);
+      });
+    }
+
+    function loadParagraph(index) {
+      currentParagraphIndex = index;
+      currentParagraph = currentSample.paragraphs[index];
+      
+      // Reset state
+      gaps = [];
+      userAnswers = {};
+      selectedGapId = null;
+      hintsRemaining = 3;
+      hintsUsedCount = 0;
+      hasSubmitted = false;
+      
+      // Create gaps
+      createGaps();
+      
+      // Render UI
+      renderParagraphNav();
+      renderText();
+      renderWordBank();
+      updateStats();
+      
+      // Reset UI elements
+      document.getElementById('resultsDisplay').classList.remove('show');
+      document.getElementById('hintContainer').classList.remove('show');
+      document.getElementById('showAnswersBtn').style.display = 'none';
+      document.getElementById('hintBtn').disabled = false;
+    }
+
+    function createGaps() {
+      const text = currentParagraph.text;
+      const words = text.split(/\s+/);
+      
+      // Find linking words in the text
+      const linkingWordsInText = [];
+      words.forEach((word, index) => {
+        const cleanWord = word.toLowerCase().replace(/[.,!?;:"'()]/g, '');
+        if (LINKING_WORDS.includes(cleanWord)) {
+          linkingWordsInText.push({
+            word: cleanWord,
+            originalWord: word,
+            index: index,
+            position: text.split(/\s+/).slice(0, index).join(' ').length
+          });
+        }
+      });
+      
+      // Select 4-6 gaps randomly from available linking words
+      const numGaps = Math.min(Math.max(4, Math.floor(linkingWordsInText.length * 0.6)), 6);
+      const selectedIndices = [];
+      
+      while (selectedIndices.length < Math.min(numGaps, linkingWordsInText.length)) {
+        const randomIndex = Math.floor(Math.random() * linkingWordsInText.length);
+        if (!selectedIndices.includes(randomIndex)) {
+          selectedIndices.push(randomIndex);
+        }
+      }
+      
+      selectedIndices.sort((a, b) => a - b);
+      
+      // Create gap objects
+      selectedIndices.forEach((idx, gapNum) => {
+        const linkingWord = linkingWordsInText[idx];
+        gaps.push({
+          id: gapNum,
+          correctWord: linkingWord.word,
+          originalWord: linkingWord.originalWord,
+          wordIndex: linkingWord.index,
+          category: WORD_CATEGORIES[linkingWord.word] || 'general'
+        });
+      });
+      
+      // Sort gaps by word index
+      gaps.sort((a, b) => a.wordIndex - b.wordIndex);
+    }
+
+    function renderText() {
+      const container = document.getElementById('textContent');
+      const text = currentParagraph.text;
+      const words = text.split(/\s+/);
+      
+      let html = '';
+      let currentGapIndex = 0;
+      
+      words.forEach((word, index) => {
+        const gap = gaps.find(g => g.wordIndex === index);
+        
+        if (gap) {
+          const fillText = userAnswers[gap.id] || '';
+          const classes = ['gap'];
+          if (selectedGapId === gap.id) classes.push('selected');
+          if (fillText) classes.push('filled');
+          if (hasSubmitted) {
+            if (userAnswers[gap.id] === gap.correctWord) {
+              classes.push('correct');
+            } else if (userAnswers[gap.id]) {
+              classes.push('incorrect');
+            }
+          }
+          
+          html += `<span class="${classes.join(' ')}" data-gap-id="${gap.id}" onclick="selectGap(${gap.id})">
+            <span class="gap-number">Gap ${gap.id + 1}</span>
+            ${fillText}
+          </span> `;
+        } else {
+          html += word + ' ';
+        }
+      });
+      
+      container.innerHTML = html;
+    }
+
+    function renderWordBank() {
+      const bank = document.getElementById('wordBank');
+      
+      // Create word bank with correct answers + distractors
+      const correctWords = gaps.map(g => g.correctWord);
+      const distractors = LINKING_WORDS
+        .filter(w => !correctWords.includes(w))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.max(3, Math.floor(gaps.length * 0.5)));
+      
+      const allWords = [...correctWords, ...distractors].sort(() => Math.random() - 0.5);
+      
+      bank.innerHTML = '';
+      allWords.forEach(word => {
+        const btn = document.createElement('div');
+        btn.className = 'word-option';
+        btn.textContent = word;
+        btn.onclick = () => selectWord(word);
+        
+        // Check if word is already used
+        const isUsed = Object.values(userAnswers).includes(word);
+        if (isUsed) btn.classList.add('used');
+        
+        // Disable all words after submission
+        if (hasSubmitted) btn.classList.add('disabled');
+        
+        bank.appendChild(btn);
+      });
+    }
+
+    function selectGap(gapId) {
+      if (hasSubmitted) return;
+      selectedGapId = gapId;
+      renderText();
+    }
+
+    function selectWord(word) {
+      if (hasSubmitted) return;
+      if (selectedGapId === null) {
+        // Select first empty gap
+        const emptyGap = gaps.find(g => !userAnswers[g.id]);
+        if (emptyGap) {
+          selectedGapId = emptyGap.id;
+        } else {
+          return;
+        }
+      }
+      
+      // Check if word is already used
+      if (Object.values(userAnswers).includes(word)) return;
+      
+      // Fill gap
+      userAnswers[selectedGapId] = word;
+      
+      // Move to next empty gap
+      const nextEmptyGap = gaps.find(g => !userAnswers[g.id] && g.id > selectedGapId);
+      selectedGapId = nextEmptyGap ? nextEmptyGap.id : null;
+      
+      renderText();
+      renderWordBank();
+      updateStats();
+      
+      // Hide hint when user makes progress
+      document.getElementById('hintContainer').classList.remove('show');
+    }
+
+    function updateStats() {
+      const filled = Object.keys(userAnswers).length;
+      const total = gaps.length;
+      document.getElementById('gapsProgress').textContent = `${filled}/${total}`;
+      
+      if (hasSubmitted) {
+        const correct = gaps.filter(g => userAnswers[g.id] === g.correctWord).length;
+        document.getElementById('correctCount').textContent = correct;
+      } else {
+        document.getElementById('correctCount').textContent = '—';
+      }
+      
+      document.getElementById('hintsUsed').textContent = `${hintsUsedCount}/3`;
+    }
+
+    function showHint() {
+      if (hintsRemaining <= 0) return;
+      if (selectedGapId === null) {
+        // Select first empty gap
+        const emptyGap = gaps.find(g => !userAnswers[g.id]);
+        if (!emptyGap) return;
+        selectedGapId = emptyGap.id;
+        renderText();
+      }
+      
+      const gap = gaps.find(g => g.id === selectedGapId);
+      if (!gap) return;
+      
+      const category = gap.category;
+      const hintMessage = HINT_MESSAGES[category] || 'Think about how this word connects the ideas';
+      
+      document.getElementById('hintText').textContent = hintMessage;
+      document.getElementById('hintContainer').classList.add('show');
+      
+      hintsRemaining--;
+      hintsUsedCount++;
+      updateStats();
+      
+      if (hintsRemaining === 0) {
+        document.getElementById('hintBtn').disabled = true;
+      }
+    }
+
+    function checkAnswers() {
+      if (Object.keys(userAnswers).length < gaps.length) {
+        alert('Please fill in all gaps before checking your answers.');
+        return;
+      }
+      
+      hasSubmitted = true;
+      
+      // Calculate score
+      const correct = gaps.filter(g => userAnswers[g.id] === g.correctWord).length;
+      const total = gaps.length;
+      const percentage = Math.round((correct / total) * 100);
+      
+      // Mark paragraph as completed
+      if (percentage >= 80) {
+        completedParagraphs.add(currentParagraphIndex);
+      }
+      
+      // Update UI
+      renderText();
+      renderWordBank();
+      updateStats();
+      renderParagraphNav();
+      
+      // Show results
+      const resultsTitle = document.getElementById('resultsTitle');
+      if (percentage === 100) {
+        resultsTitle.textContent = '🎉 Perfect Score!';
+      } else if (percentage >= 80) {
+        resultsTitle.textContent = '✨ Excellent Work!';
+      } else if (percentage >= 60) {
+        resultsTitle.textContent = 'Good Effort!';
+      } else {
+        resultsTitle.textContent = 'Keep Practicing!';
+      }
+      
+      document.getElementById('finalScore').textContent = `${percentage}%`;
+      document.getElementById('finalScore').className = percentage === 100 ? 'result-stat-value perfect' : 'result-stat-value';
+      document.getElementById('finalCorrect').textContent = `${correct}/${total}`;
+      document.getElementById('finalHints').textContent = hintsUsedCount;
+      document.getElementById('resultsDisplay').classList.add('show');
+      
+      // Show "Show Answers" button if not perfect
+      if (percentage < 100) {
+        document.getElementById('showAnswersBtn').style.display = 'inline-block';
+      }
+    }
+
+    function showAllAnswers() {
+      gaps.forEach(gap => {
+        userAnswers[gap.id] = gap.correctWord;
+      });
+      renderText();
+      renderWordBank();
+      updateStats();
+      document.getElementById('showAnswersBtn').style.display = 'none';
+    }
+
+    function resetParagraph() {
+      loadParagraph(currentParagraphIndex);
+    }
+
+    function nextParagraph() {
+      const nextIndex = (currentParagraphIndex + 1) % currentSample.paragraphs.length;
+      loadParagraph(nextIndex);
+    }
+
+    // Initialize
+    loadData();
+  </script>
+</body>
+</html>
