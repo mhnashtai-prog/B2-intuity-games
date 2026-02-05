@@ -807,15 +807,16 @@
         if (!response.ok) throw new Error('Failed to load data');
         const data = await response.json();
         
-        // Validate data
-        if (!Array.isArray(data) || data.length === 0) {
-          throw new Error('Invalid data format');
+        // Validate data structure
+        if (!data || !data.samples || !Array.isArray(data.samples) || data.samples.length === 0) {
+          throw new Error('Invalid data format - expected samples array');
         }
         
         currentData = data;
         
         // Pick random sample
-        currentSample = currentData[Math.floor(Math.random() * currentData.length)];
+        const randomIndex = Math.floor(Math.random() * currentData.samples.length);
+        currentSample = currentData.samples[randomIndex];
         
         // Validate sample has paragraphs
         if (!currentSample || !currentSample.paragraphs || currentSample.paragraphs.length === 0) {
@@ -829,7 +830,7 @@
         document.querySelector('.game-container').innerHTML = `
           <div style="text-align: center; padding: 3rem; color: #ef4444;">
             <p style="font-size: 1.25rem; margin-bottom: 1rem;">Error loading puzzle data</p>
-            <p style="color: #8e8e93; font-size: 0.875rem;">Please check that the data files are in the correct location.</p>
+            <p style="color: #8e8e93; font-size: 0.875rem;">${error.message}</p>
             <p style="color: #8e8e93; font-size: 0.75rem; margin-top: 0.5rem;">Looking for: ${DATA_PATHS[contentType]}</p>
           </div>
         `;
@@ -837,11 +838,22 @@
     }
 
     function loadParagraph(index) {
+      // Safety check
+      if (!currentSample || !currentSample.paragraphs || !currentSample.paragraphs[index]) {
+        console.error('Invalid paragraph data');
+        return;
+      }
+      
       currentParagraphIndex = index;
       currentParagraph = currentSample.paragraphs[index];
       
       // Extract words
       const text = currentParagraph.text;
+      if (!text) {
+        console.error('Paragraph has no text');
+        return;
+      }
+      
       correctWords = text
         .replace(/[.,!?;:"'()]/g, '')
         .split(/\s+/)
