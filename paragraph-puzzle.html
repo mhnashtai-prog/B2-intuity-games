@@ -1,1 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>INTUITY - Paragraph Puzzle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: #0d0d0d;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
 
+    .background {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 30% 20%, rgba(201, 169, 97, 0.18) 0%, transparent 40%),
+                  radial-gradient(circle at 70% 80%, rgba(201, 169, 97, 0.16) 0%, transparent 38%),
+                  radial-gradient(circle at 20% 70%, rgba(201, 169, 97, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 15%, rgba(201, 169, 97, 0.14) 0%, transparent 35%),
+                  #0d0d0d;
+      z-index: 0;
+    }
+
+    .container { 
+      max-width: 1000px; 
+      margin: 0 auto; 
+      position: relative;
+      z-index: 2;
+      padding: 0 1rem;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      padding: 0.625rem 1.25rem;
+      background: rgba(28, 28, 30, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(84, 84, 88, 0.3);
+      border-radius: 0.75rem;
+      color: #C9A961;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: rgba(28, 28, 30, 1);
+      border-color: rgba(201, 169, 97, 0.5);
+      transform: translateX(-4px);
+    }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      padding: 2rem 0 1.5rem;
+    }
+
+    .title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #C9A961 0%, rgba(255,255,255,0.85) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: #8e8e93;
+      font-weight: 500;
+    }
+
+    /* GAME CONTAINER */
+    .game-container {
+      background: rgba(28, 28, 30, 0.98);
+      backdrop-filter: blur(60px) saturate(180%);
+      border: 1px solid rgba(84, 84, 88, 0.4);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+      margin-bottom: 2rem;
+    }
+
+    /* PARAGRAPH NAV */
+    .paragraph-nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-circle {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(84, 84, 88, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .nav-circle:hover {
+      border-color: rgba(201, 169, 97, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .nav-circle.active {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.3), rgba(201, 169, 97, 0.1));
+      border-color: #C9A961;
+      box-shadow: 0 0 20px rgba(201, 169, 97, 0.3);
+    }
+
+    .nav-circle-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #C9A961;
+    }
+
+    .nav-circle-label {
+      font-size: 0.5rem;
+      color: #636366;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: absolute;
+      bottom: -1.25rem;
+      white-space: nowrap;
+    }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(84, 84, 88, 0.2);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #C9A961;
+    }
+
+    /* BUILDING AREA */
+    .building-area {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      min-height: 200px;
+      border: 1px solid rgba(201, 169, 97, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .building-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #636366;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .built-sentence {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      line-height: 2;
+      color: #4a4a4a;
+      text-align: left;
+      min-height: 120px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: flex-start;
+      align-content: flex-start;
+    }
+
+    .built-word {
+      padding: 0.25rem 0.75rem;
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.15), rgba(201, 169, 97, 0.08));
+      border: 1px solid rgba(201, 169, 97, 0.3);
+      border-radius: 0.5rem;
+      color: #4a4a4a;
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .built-word:hover {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+      border-color: rgba(239, 68, 68, 0.4);
+      transform: translateY(-2px);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* WORD POOL */
+    .word-pool-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .pool-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .word-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 0.75rem;
+      min-height: 150px;
+      border: 1px solid rgba(84, 84, 88, 0.2);
+    }
+
+    .pool-word {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(201, 169, 97, 0.3);
+      border-radius: 0.5rem;
+      color: #e5e5e7;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pool-word:hover {
+      background: rgba(201, 169, 97, 0.2);
+      border-color: rgba(201, 169, 97, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
+    }
+
+    .pool-word.used {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* ACTION BUTTONS */
+    .game-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .game-btn {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
+      color: #1c1c1e;
+      box-shadow: 0 4px 16px rgba(201, 169, 97, 0.4);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.5);
+    }
+
+    .btn-clear {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.1) 100%);
+      border: 2px solid rgba(201, 169, 97, 0.5);
+      color: #C9A961;
+    }
+
+    .btn-clear:hover {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(201, 169, 97, 0.2) 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn-show-answer {
+      background: linear-gradient(135deg, #F5F1E8 0%, #EBE6DC 100%);
+      border: 2px solid #C9A961;
+      color: #1c1c1e;
+      display: none;
+    }
+
+    .btn-show-answer:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.3);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #F5F1E8 0%, #EBE6DC 100%);
+      border: 2px solid #C9A961;
+      color: #1c1c1e;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.3);
+    }
+
+    /* RESULTS */
+    .results-display {
+      display: none;
+      background: linear-gradient(135deg, rgba(28, 28, 30, 0.95), rgba(20, 20, 22, 0.98));
+      border: 1px solid rgba(201, 169, 97, 0.3);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .results-display.show {
+      display: block;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #C9A961;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(84, 84, 88, 0.3);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+
+    .result-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #C9A961;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-label {
+      font-size: 0.75rem;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* FLOATING READ BUTTON - NEUMORPHIC */
+    .floating-read-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #e0e5ec, #ffffff);
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 
+        4px 4px 8px rgba(163, 177, 198, 0.4),
+        -4px -4px 8px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .floating-read-btn:hover {
+      box-shadow: 
+        6px 6px 12px rgba(163, 177, 198, 0.45),
+        -6px -6px 12px rgba(255, 255, 255, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .floating-read-btn:active {
+      box-shadow: 
+        2px 2px 4px rgba(163, 177, 198, 0.4) inset,
+        -2px -2px 4px rgba(255, 255, 255, 0.3) inset;
+      transform: translateY(0);
+    }
+
+    .floating-read-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: 
+        3px 3px 6px rgba(163, 177, 198, 0.3),
+        -3px -3px 6px rgba(255, 255, 255, 0.3);
+    }
+
+    .read-text {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #3b82f6;
+      text-transform: uppercase;
+      text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+    }
+
+    .reads-remaining {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ef4444, #dc2626);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        2px 2px 4px rgba(163, 177, 198, 0.4),
+        -1px -1px 2px rgba(255, 255, 255, 0.2);
+    }
+
+    .reads-remaining.zero {
+      background: linear-gradient(145deg, #9ca3af, #6b7280);
+      box-shadow: 
+        2px 2px 4px rgba(163, 177, 198, 0.3),
+        -1px -1px 2px rgba(255, 255, 255, 0.2);
+    }
+
+    /* READING MODAL */
+    .reading-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .reading-modal-overlay.show {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .reading-modal {
+      background: rgba(28, 28, 30, 0.98);
+      backdrop-filter: blur(60px) saturate(180%);
+      border: 1px solid rgba(84, 84, 88, 0.4);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      max-width: 800px;
+      width: 95%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+      position: relative;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reading-modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: rgba(28, 28, 30, 0.9);
+      border: 1px solid rgba(84, 84, 88, 0.3);
+      color: #8e8e93;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 10;
+    }
+
+    .reading-modal-close:hover {
+      background: rgba(28, 28, 30, 1);
+      border-color: rgba(201, 169, 97, 0.5);
+      color: #C9A961;
+      transform: scale(1.1);
+    }
+
+    .reading-modal-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      line-height: 2;
+      color: #e5e5e7;
+      text-align: center;
+      max-width: 700px;
+      margin-bottom: 2rem;
+    }
+
+    .reading-modal-timer {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 5rem;
+      font-weight: 800;
+      color: #C9A961;
+      text-shadow: 0 0 30px rgba(201, 169, 97, 0.6);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .reading-modal-timer.warning {
+      color: #f59e0b;
+      animation: pulseWarning 0.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes pulseWarning {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.05); }
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .title { font-size: 1.5rem; }
+      .subtitle { font-size: 0.75rem; }
+      
+      .nav-circle {
+        width: 3rem;
+        height: 3rem;
+      }
+
+      .building-area {
+        padding: 1.5rem;
+        min-height: 150px;
+      }
+
+      .built-sentence {
+        font-size: 1.125rem;
+      }
+
+      .built-word {
+        font-size: 1rem;
+        padding: 0.25rem 0.625rem;
+      }
+
+      .pool-word {
+        font-size: 1rem;
+        padding: 0.375rem 0.875rem;
+      }
+
+      .floating-read-btn {
+        width: 56px;
+        height: 56px;
+        bottom: 1.5rem;
+        right: 1.5rem;
+      }
+
+      .read-text {
+        font-size: 0.625rem;
+      }
+
+      .reads-remaining {
+        width: 22px;
+        height: 22px;
+        font-size: 0.6875rem;
+        top: -5px;
+        right: -5px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .floating-read-btn {
+        width: 52px;
+        height: 52px;
+        bottom: 1rem;
+        right: 1rem;
+      }
+
+      .read-text {
+        font-size: 0.5625rem;
+      }
+
+      .reads-remaining {
+        width: 20px;
+        height: 20px;
+        font-size: 0.625rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+  
+  <div class="container">
+    <!-- BACK BUTTON -->
+    <button class="back-btn" onclick="window.location.href='/index.html?openModal=writing&submenu=sentence-structure'">
+      <span>←</span>
+      <span>Back</span>
+    </button>
+
+    <!-- HEADER -->
+    <div class="header">
+      <h1 class="title">INTUITY</h1>
+      <p class="subtitle">PARAGRAPH PUZZLE</p>
+    </div>
+
+    <!-- GAME CONTAINER -->
+    <div class="game-container">
+      <!-- PARAGRAPH NAVIGATION -->
+      <div class="paragraph-nav">
+        <div class="nav-circle active" onclick="loadParagraph(0)">
+          <span class="nav-circle-number">1</span>
+          <span class="nav-circle-label">Introduction</span>
+        </div>
+        <div class="nav-circle" onclick="loadParagraph(1)">
+          <span class="nav-circle-number">2</span>
+          <span class="nav-circle-label">Body 1</span>
+        </div>
+        <div class="nav-circle" onclick="loadParagraph(2)">
+          <span class="nav-circle-number">3</span>
+          <span class="nav-circle-label">Body 2</span>
+        </div>
+        <div class="nav-circle" onclick="loadParagraph(3)">
+          <span class="nav-circle-number">4</span>
+          <span class="nav-circle-label">Conclusion</span>
+        </div>
+      </div>
+
+      <!-- STATS BAR -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-label">Words Used:</span>
+          <span class="stat-value" id="wordsUsed">0/0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Accuracy:</span>
+          <span class="stat-value" id="accuracyDisplay">0%</span>
+        </div>
+      </div>
+
+      <!-- BUILDING AREA -->
+      <div class="building-area">
+        <div class="building-title">Your Paragraph</div>
+        <div class="built-sentence" id="builtSentence">
+          <span style="color: #8e8e93; font-size: 0.875rem; font-style: italic;">Click words below to build your paragraph...</span>
+        </div>
+      </div>
+
+      <!-- WORD POOL -->
+      <div class="word-pool-section">
+        <div class="pool-title">Word Pool (Click to Add)</div>
+        <div class="word-pool" id="wordPool"></div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="results-display" id="resultsDisplay">
+        <div class="results-title">Puzzle Complete!</div>
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-value" id="finalAccuracy">0%</div>
+            <div class="result-label">Accuracy</div>
+          </div>
+          <div class="result-card">
+            <div class="result-value" id="correctWords">0/0</div>
+            <div class="result-label">Correct Order</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="game-actions">
+        <button class="game-btn btn-submit" onclick="submitAnswer()">Submit</button>
+        <button class="game-btn btn-clear" onclick="clearBuilding()">Clear</button>
+        <button class="game-btn btn-show-answer" id="showAnswerBtn" onclick="showAnswer()">Show Answer</button>
+        <button class="game-btn btn-secondary" onclick="nextParagraph()">Next Paragraph</button>
+        <button class="game-btn btn-secondary" onclick="resetPuzzle()">Retry This One</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING READ BUTTON -->
+  <button class="floating-read-btn" id="readBtn" onclick="openReadingModal()" title="Read Paragraph">
+    <span class="read-text">READ</span>
+    <span class="reads-remaining" id="readsRemaining">3</span>
+  </button>
+
+  <!-- READING MODAL -->
+  <div class="reading-modal-overlay" id="readingModalOverlay">
+    <div class="reading-modal">
+      <button class="reading-modal-close" onclick="closeReadingModal()">×</button>
+      <div class="reading-modal-text" id="readingModalText"></div>
+      <div class="reading-modal-timer" id="readingModalTimer">20</div>
+    </div>
+  </div>
+
+  <script>
+    // Detect if we're in the correct folder structure or at root
+    const isInSubfolder = window.location.pathname.includes('/skills/writing/');
+    const dataPrefix = isInSubfolder ? '../../../' : '';
+    
+    const DATA_PATHS = {
+      essays: `${dataPrefix}data/essays-models.json`,
+      reports: `${dataPrefix}data/reports-models.json`,
+      reviews: `${dataPrefix}data/reviews-models.json`,
+      emails: `${dataPrefix}data/emails-models.json`
+    };
+
+    // Get content type from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const contentType = urlParams.get('type') || 'essays';
+
+    // Game state
+    let currentData = null;
+    let currentSample = null;
+    let currentParagraphIndex = 0;
+    let currentParagraph = null;
+    let correctWords = [];
+    let builtWords = [];
+    let readsUsed = 0;
+    let maxReads = 3;
+    let isReading = false;
+    let timerInterval = null;
+
+    // Load data
+    async function loadData() {
+      try {
+        const response = await fetch(DATA_PATHS[contentType]);
+        if (!response.ok) throw new Error('Failed to load data');
+        currentData = await response.json();
+        
+        // Pick random sample
+        currentSample = currentData[Math.floor(Math.random() * currentData.length)];
+        
+        // Load first paragraph
+        loadParagraph(0);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        alert('Error loading puzzle data. Please check file paths.');
+      }
+    }
+
+    function loadParagraph(index) {
+      currentParagraphIndex = index;
+      currentParagraph = currentSample.paragraphs[index];
+      
+      // Extract words
+      const text = currentParagraph.text;
+      correctWords = text
+        .replace(/[.,!?;:"'()]/g, '')
+        .split(/\s+/)
+        .filter(w => w.length > 0);
+      
+      // Reset state
+      builtWords = [];
+      readsUsed = 0;
+      
+      // Update UI
+      renderParagraphNav();
+      resetReadButton();
+      clearBuilding();
+      renderWordPool();
+      updateStats();
+      
+      document.getElementById('resultsDisplay').classList.remove('show');
+      document.getElementById('showAnswerBtn').style.display = 'none';
+    }
+
+    function renderParagraphNav() {
+      const circles = document.querySelectorAll('.nav-circle');
+      circles.forEach((circle, index) => {
+        circle.classList.toggle('active', index === currentParagraphIndex);
+      });
+    }
+
+    function renderWordPool() {
+      const pool = document.getElementById('wordPool');
+      
+      // Scramble words
+      const scrambled = [...correctWords].sort(() => Math.random() - 0.5);
+      
+      pool.innerHTML = scrambled.map((word, index) => `
+        <div class="pool-word" data-index="${index}" data-word="${word}" onclick="addWord(this)">
+          ${word}
+        </div>
+      `).join('');
+    }
+
+    function addWord(element) {
+      const word = element.dataset.word;
+      builtWords.push(word);
+      element.classList.add('used');
+      renderBuiltSentence();
+      updateStats();
+    }
+
+    function renderBuiltSentence() {
+      const container = document.getElementById('builtSentence');
+      
+      if (builtWords.length === 0) {
+        container.innerHTML = '<span style="color: #8e8e93; font-size: 0.875rem; font-style: italic;">Click words below to build your paragraph...</span>';
+        return;
+      }
+      
+      container.innerHTML = builtWords.map((word, index) => `
+        <span class="built-word" onclick="removeWord(${index})">${word}</span>
+      `).join('');
+    }
+
+    function removeWord(index) {
+      const word = builtWords[index];
+      builtWords.splice(index, 1);
+      
+      // Unmark word in pool
+      const poolWords = document.querySelectorAll('.pool-word');
+      poolWords.forEach(el => {
+        if (el.dataset.word === word && el.classList.contains('used')) {
+          el.classList.remove('used');
+          return;
+        }
+      });
+      
+      renderBuiltSentence();
+      updateStats();
+    }
+
+    function clearBuilding() {
+      builtWords = [];
+      
+      // Reset all pool words
+      const poolWords = document.querySelectorAll('.pool-word');
+      poolWords.forEach(el => el.classList.remove('used'));
+      
+      renderBuiltSentence();
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById('wordsUsed').textContent = `${builtWords.length}/${correctWords.length}`;
+    }
+
+    function submitAnswer() {
+      if (builtWords.length === 0) {
+        alert('Please build your paragraph first!');
+        return;
+      }
+      
+      // Calculate accuracy
+      let correct = 0;
+      const maxLength = Math.max(builtWords.length, correctWords.length);
+      
+      for (let i = 0; i < maxLength; i++) {
+        if (builtWords[i] === correctWords[i]) {
+          correct++;
+        }
+      }
+      
+      const accuracy = Math.round((correct / correctWords.length) * 100);
+      
+      // Display results
+      document.getElementById('finalAccuracy').textContent = accuracy + '%';
+      document.getElementById('correctWords').textContent = `${correct}/${correctWords.length}`;
+      document.getElementById('accuracyDisplay').textContent = accuracy + '%';
+      document.getElementById('resultsDisplay').classList.add('show');
+      
+      // Show "Show Answer" button
+      document.getElementById('showAnswerBtn').style.display = 'block';
+    }
+
+    function showAnswer() {
+      builtWords = [...correctWords];
+      renderBuiltSentence();
+      updateStats();
+      
+      // Mark all pool words as used
+      const poolWords = document.querySelectorAll('.pool-word');
+      poolWords.forEach(el => el.classList.add('used'));
+    }
+
+    function nextParagraph() {
+      const nextIndex = (currentParagraphIndex + 1) % 4;
+      loadParagraph(nextIndex);
+    }
+
+    function resetPuzzle() {
+      loadParagraph(currentParagraphIndex);
+    }
+
+    // READING MODAL
+    function openReadingModal() {
+      if (readsUsed >= maxReads || isReading) return;
+      
+      isReading = true;
+      readsUsed++;
+      
+      // Update floating button counter
+      const readsRemaining = maxReads - readsUsed;
+      const counterEl = document.getElementById('readsRemaining');
+      counterEl.textContent = readsRemaining;
+      if (readsRemaining === 0) {
+        counterEl.classList.add('zero');
+        document.getElementById('readBtn').disabled = true;
+      }
+      
+      // Show modal with text
+      const modalOverlay = document.getElementById('readingModalOverlay');
+      const modalText = document.getElementById('readingModalText');
+      const modalTimer = document.getElementById('readingModalTimer');
+      
+      modalText.textContent = currentParagraph.text;
+      modalTimer.textContent = '20';
+      modalTimer.classList.remove('warning');
+      
+      modalOverlay.classList.add('show');
+      
+      // Start 20-second countdown
+      let timeLeft = 20;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        modalTimer.textContent = timeLeft;
+        
+        if (timeLeft === 5) {
+          modalTimer.classList.add('warning');
+        }
+        
+        if (timeLeft === 0) {
+          clearInterval(timerInterval);
+          closeReadingModal();
+        }
+      }, 1000);
+    }
+
+    function closeReadingModal() {
+      isReading = false;
+      
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
+      document.getElementById('readingModalOverlay').classList.remove('show');
+    }
+
+    function resetReadButton() {
+      const readBtn = document.getElementById('readBtn');
+      readBtn.disabled = false;
+      
+      const counterEl = document.getElementById('readsRemaining');
+      counterEl.textContent = '3';
+      counterEl.classList.remove('zero');
+    }
+
+    // Initialize
+    loadData();
+  </script>
+</body>
+</html>
