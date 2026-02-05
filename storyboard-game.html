@@ -586,6 +586,92 @@
       box-shadow: 0 8px 24px rgba(201, 169, 97, 0.3);
     }
 
+    /* READING MODAL - SEPARATE OVERLAY */
+    .reading-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .reading-modal-overlay.show {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .reading-modal {
+      background: rgba(28, 28, 30, 0.98);
+      backdrop-filter: blur(60px) saturate(180%);
+      border: 1px solid rgba(84, 84, 88, 0.4);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      max-width: 800px;
+      width: 95%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+      position: relative;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reading-modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: rgba(28, 28, 30, 0.9);
+      border: 1px solid rgba(84, 84, 88, 0.3);
+      color: #8e8e93;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 10;
+    }
+
+    .reading-modal-close:hover {
+      background: rgba(28, 28, 30, 1);
+      border-color: rgba(201, 169, 97, 0.5);
+      color: #C9A961;
+      transform: scale(1.1);
+    }
+
+    .reading-modal-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      line-height: 2;
+      color: #e5e5e7;
+      text-align: center;
+      max-width: 700px;
+      margin-bottom: 2rem;
+    }
+
+    .reading-modal-timer {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 5rem;
+      font-weight: 800;
+      color: #C9A961;
+      text-shadow: 0 0 30px rgba(201, 169, 97, 0.6);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .reading-modal-timer.warning {
+      color: #f59e0b;
+      animation: pulseWarning 0.5s ease-in-out infinite;
+    }
+
     /* MOBILE */
     @media (max-width: 768px) {
       .back-btn {
@@ -640,6 +726,20 @@
         padding: 0.875rem 1.75rem;
         font-size: 0.75rem;
       }
+
+      .reading-modal {
+        padding: 2rem 1.5rem;
+        min-height: 350px;
+      }
+
+      .reading-modal-text {
+        font-size: 1.125rem;
+        line-height: 1.8;
+      }
+
+      .reading-modal-timer {
+        font-size: 4rem;
+      }
     }
   </style>
 </head>
@@ -652,7 +752,7 @@
   </div>
 
   <!-- BACK BUTTON -->
-  <button class="back-btn" onclick="goBack()">
+  <button class="back-btn" onclick="window.location.href='/index.html?openModal=writing&submenu=sentence-structure'">
     <span>←</span>
     <span>Back</span>
   </button>
@@ -693,11 +793,18 @@
         </div>
       </div>
 
-      <!-- READING AREA -->
+      <!-- READING AREA - Now just shows button -->
       <div class="reading-area" id="readingArea">
-        <button class="read-btn" id="readBtn" onclick="startReading()">Read Paragraph</button>
-        <div class="reading-text" id="readingText"></div>
-        <div class="timer-display" id="timerDisplay">5</div>
+        <button class="read-btn" id="readBtn" onclick="openReadingModal()">Read Paragraph</button>
+      </div>
+
+      <!-- READING MODAL - SEPARATE OVERLAY -->
+      <div class="reading-modal-overlay" id="readingModalOverlay">
+        <div class="reading-modal">
+          <button class="reading-modal-close" onclick="closeReadingModal()">×</button>
+          <div class="reading-modal-text" id="readingModalText"></div>
+          <div class="reading-modal-timer" id="readingModalTimer">15</div>
+        </div>
       </div>
 
       <!-- WORD BLANKS -->
@@ -819,10 +926,14 @@
       currentParagraphIndex = index;
       currentParagraph = currentSample.paragraphs[index];
       
-      // Reset state
-      revealedWords = new Set();
+      // DON'T reset revealed words - preserve progress!
+      // Only reset if this is a brand new paragraph
+      if (!words.length || index !== currentParagraphIndex) {
+        revealedWords = new Set();
+        attemptedWords = [];
+      }
+      
       readsUsed = 0;
-      attemptedWords = [];
       
       // Extract words from paragraph
       const text = currentParagraph.text;
@@ -839,16 +950,21 @@
       
       // Show read button
       document.getElementById('readBtn').style.display = 'block';
-      document.getElementById('readingText').classList.remove('show');
-      document.getElementById('timerDisplay').classList.remove('show');
       
-      // Hide blanks and input initially
-      document.getElementById('blanksArea').classList.remove('show');
-      document.getElementById('inputArea').classList.remove('show');
+      // Show blanks and input if we have progress
+      if (revealedWords.size > 0) {
+        renderWordBlanks();
+        document.getElementById('blanksArea').classList.add('show');
+        document.getElementById('inputArea').classList.add('show');
+      } else {
+        document.getElementById('blanksArea').classList.remove('show');
+        document.getElementById('inputArea').classList.remove('show');
+      }
+      
       document.getElementById('resultsDisplay').classList.remove('show');
     }
 
-    function startReading() {
+    function openReadingModal() {
       if (readsUsed >= maxReads || isReading) return;
       
       isReading = true;
@@ -858,58 +974,67 @@
       const dots = document.querySelectorAll('.read-dot');
       dots[readsUsed - 1].classList.add('used');
       
-      // Hide button, show text
-      document.getElementById('readBtn').style.display = 'none';
-      const textEl = document.getElementById('readingText');
-      textEl.textContent = currentParagraph.text;
-      textEl.classList.add('show');
+      // Show modal with text
+      const modalOverlay = document.getElementById('readingModalOverlay');
+      const modalText = document.getElementById('readingModalText');
+      const modalTimer = document.getElementById('readingModalTimer');
       
-      // Start 5-second countdown
-      let timeLeft = 5;
-      const timerEl = document.getElementById('timerDisplay');
-      timerEl.textContent = timeLeft;
-      timerEl.classList.remove('warning');
-      timerEl.classList.remove('show');
+      modalText.textContent = currentParagraph.text;
+      modalTimer.textContent = '15';
+      modalTimer.classList.remove('warning');
       
+      modalOverlay.classList.add('show');
+      
+      // Start 15-second countdown
+      let timeLeft = 15;
       timerInterval = setInterval(() => {
         timeLeft--;
-        timerEl.textContent = timeLeft;
+        modalTimer.textContent = timeLeft;
         
-        if (timeLeft === 2) {
-          timerEl.classList.add('warning');
+        if (timeLeft === 5) {
+          modalTimer.classList.add('warning');
         }
         
         if (timeLeft === 0) {
           clearInterval(timerInterval);
-          endReading();
+          closeReadingModal();
         }
-      }, 1000);
-      
-      // Show timer after 1 second
-      setTimeout(() => {
-        timerEl.classList.add('show');
       }, 1000);
     }
 
-    function endReading() {
+    function closeReadingModal() {
       isReading = false;
       
-      // Hide text and timer
-      document.getElementById('readingText').classList.remove('show');
-      document.getElementById('timerDisplay').classList.remove('show');
-      
-      // Show read button again if reads left
-      if (readsUsed < maxReads) {
-        document.getElementById('readBtn').style.display = 'block';
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
       }
       
-      // Show blanks and input area
+      // Hide modal
+      document.getElementById('readingModalOverlay').classList.remove('show');
+      
+      // Show blanks and input area (preserve existing progress!)
       renderWordBlanks();
       document.getElementById('blanksArea').classList.add('show');
       document.getElementById('inputArea').classList.add('show');
       
+      // Update read button state
+      if (readsUsed >= maxReads) {
+        document.getElementById('readBtn').style.display = 'none';
+      }
+      
       // Focus input
       document.getElementById('wordInput').focus();
+    }
+
+    function startReading() {
+      // This function is now replaced by openReadingModal()
+      openReadingModal();
+    }
+
+    function endReading() {
+      // This function is now replaced by closeReadingModal()
+      closeReadingModal();
     }
 
     function renderWordBlanks() {
@@ -1004,10 +1129,6 @@
         clearInterval(timerInterval);
         timerInterval = null;
       }
-    }
-
-    function goBack() {
-      window.location.href = `index.html`;
     }
 
     // Initialize
