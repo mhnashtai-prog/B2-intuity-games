@@ -191,7 +191,7 @@
       border-radius: 1rem;
       padding: 2rem;
       margin-bottom: 1.5rem;
-      min-height: 200px;
+      min-height: 300px;
       border: 1px solid rgba(201, 169, 97, 0.3);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
     }
@@ -213,7 +213,7 @@
       line-height: 2;
       color: #4a4a4a;
       text-align: left;
-      min-height: 120px;
+      min-height: 200px;
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
@@ -222,78 +222,42 @@
     }
 
     .built-word {
-      padding: 0.25rem 0.75rem;
+      padding: 0.375rem 0.875rem;
       background: linear-gradient(135deg, rgba(201, 169, 97, 0.15), rgba(201, 169, 97, 0.08));
-      border: 1px solid rgba(201, 169, 97, 0.3);
+      border: 2px solid rgba(201, 169, 97, 0.3);
       border-radius: 0.5rem;
       color: #4a4a4a;
       font-size: 1.125rem;
-      cursor: pointer;
+      cursor: grab;
       transition: all 0.2s;
-      animation: slideIn 0.3s ease-out;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .built-word:active {
+      cursor: grabbing;
     }
 
     .built-word:hover {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.25), rgba(201, 169, 97, 0.15));
+      border-color: rgba(201, 169, 97, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .built-word.dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+    }
+
+    .built-word.correct {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .built-word.incorrect {
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
-      border-color: rgba(239, 68, 68, 0.4);
-      transform: translateY(-2px);
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* WORD POOL */
-    .word-pool-section {
-      margin-bottom: 1.5rem;
-    }
-
-    .pool-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: #8e8e93;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    .word-pool {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-      padding: 1.5rem;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 0.75rem;
-      min-height: 150px;
-      border: 1px solid rgba(84, 84, 88, 0.2);
-    }
-
-    .pool-word {
-      padding: 0.5rem 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(201, 169, 97, 0.3);
-      border-radius: 0.5rem;
-      color: #e5e5e7;
-      font-family: 'Crimson Text', serif;
-      font-size: 1.125rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .pool-word:hover {
-      background: rgba(201, 169, 97, 0.2);
-      border-color: rgba(201, 169, 97, 0.6);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
-    }
-
-    .pool-word.used {
-      opacity: 0.3;
-      pointer-events: none;
+      border-color: rgba(239, 68, 68, 0.5);
     }
 
     /* ACTION BUTTONS */
@@ -717,18 +681,10 @@
         </div>
       </div>
 
-      <!-- BUILDING AREA -->
+      <!-- BUILDING AREA - All words here, drag to reorder -->
       <div class="building-area">
-        <div class="building-title">Your Paragraph</div>
-        <div class="built-sentence" id="builtSentence">
-          <span style="color: #8e8e93; font-size: 0.875rem; font-style: italic;">Click words below to build your paragraph...</span>
-        </div>
-      </div>
-
-      <!-- WORD POOL -->
-      <div class="word-pool-section">
-        <div class="pool-title">Word Pool (Click to Add)</div>
-        <div class="word-pool" id="wordPool"></div>
+        <div class="building-title">Drag Words to Reorder</div>
+        <div class="built-sentence" id="builtSentence"></div>
       </div>
 
       <!-- RESULTS -->
@@ -749,7 +705,7 @@
       <!-- ACTIONS -->
       <div class="game-actions">
         <button class="game-btn btn-submit" onclick="submitAnswer()">Submit</button>
-        <button class="game-btn btn-clear" onclick="clearBuilding()">Clear</button>
+        <button class="game-btn btn-clear" onclick="shuffle Words()">Shuffle Again</button>
         <button class="game-btn btn-show-answer" id="showAnswerBtn" onclick="showAnswer()">Show Answer</button>
         <button class="game-btn btn-secondary" onclick="nextParagraph()">Next Paragraph</button>
         <button class="game-btn btn-secondary" onclick="resetPuzzle()">Retry This One</button>
@@ -799,6 +755,279 @@
     let maxReads = 3;
     let isReading = false;
     let timerInterval = null;
+    let draggedElement = null;
+    let draggedIndex = null;
+
+    // Load data
+    async function loadData() {
+      try {
+        const response = await fetch(DATA_PATHS[contentType]);
+        if (!response.ok) throw new Error('Failed to load data');
+        const data = await response.json();
+        
+        if (!data || !data.samples || !Array.isArray(data.samples) || data.samples.length === 0) {
+          throw new Error('Invalid data format');
+        }
+        
+        currentData = data;
+        const randomIndex = Math.floor(Math.random() * currentData.samples.length);
+        currentSample = currentData.samples[randomIndex];
+        
+        if (!currentSample || !currentSample.paragraphs || currentSample.paragraphs.length === 0) {
+          throw new Error('Sample missing paragraphs');
+        }
+        
+        loadParagraph(0);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.querySelector('.game-container').innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: #ef4444;">
+            <p style="font-size: 1.25rem; margin-bottom: 1rem;">Error loading puzzle data</p>
+            <p style="color: #8e8e93; font-size: 0.875rem;">${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    function loadParagraph(index) {
+      if (!currentSample || !currentSample.paragraphs || !currentSample.paragraphs[index]) {
+        console.error('Invalid paragraph data');
+        return;
+      }
+      
+      currentParagraphIndex = index;
+      currentParagraph = currentSample.paragraphs[index];
+      
+      const text = currentParagraph.text;
+      if (!text) return;
+      
+      // Extract words
+      correctWords = text
+        .replace(/[.,!?;:"'()]/g, '')
+        .split(/\s+/)
+        .filter(w => w.length > 0);
+      
+      // Start with scrambled words
+      builtWords = [...correctWords].sort(() => Math.random() - 0.5);
+      
+      // Reset state
+      readsUsed = 0;
+      
+      // Update UI
+      renderParagraphNav();
+      resetReadButton();
+      renderBuiltSentence();
+      updateStats();
+      
+      document.getElementById('resultsDisplay').classList.remove('show');
+      document.getElementById('showAnswerBtn').style.display = 'none';
+    }
+
+    function renderParagraphNav() {
+      const circles = document.querySelectorAll('.nav-circle');
+      circles.forEach((circle, index) => {
+        circle.classList.toggle('active', index === currentParagraphIndex);
+      });
+    }
+
+    function renderBuiltSentence() {
+      const container = document.getElementById('builtSentence');
+      
+      container.innerHTML = builtWords.map((word, index) => `
+        <span class="built-word" 
+              draggable="true" 
+              data-index="${index}"
+              ondragstart="handleDragStart(event)"
+              ondragover="handleDragOver(event)"
+              ondrop="handleDrop(event)"
+              ondragend="handleDragEnd(event)">
+          ${word}
+        </span>
+      `).join('');
+    }
+
+    // SIMPLE DRAG AND DROP
+    function handleDragStart(e) {
+      draggedElement = e.target;
+      draggedIndex = parseInt(e.target.dataset.index);
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const dropTarget = e.target.closest('.built-word');
+      if (!dropTarget || dropTarget === draggedElement) return;
+      
+      const dropIndex = parseInt(dropTarget.dataset.index);
+      
+      // Swap words
+      const temp = builtWords[draggedIndex];
+      builtWords[draggedIndex] = builtWords[dropIndex];
+      builtWords[dropIndex] = temp;
+      
+      renderBuiltSentence();
+    }
+
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+      draggedElement = null;
+      draggedIndex = null;
+    }
+
+    function shuffleWords() {
+      builtWords = [...builtWords].sort(() => Math.random() - 0.5);
+      renderBuiltSentence();
+    }
+
+    function updateStats() {
+      document.getElementById('wordsUsed').textContent = `${builtWords.length}/${correctWords.length}`;
+    }
+
+    function submitAnswer() {
+      // Calculate accuracy
+      let correct = 0;
+      for (let i = 0; i < correctWords.length; i++) {
+        if (builtWords[i] === correctWords[i]) {
+          correct++;
+        }
+      }
+      
+      const accuracy = Math.round((correct / correctWords.length) * 100);
+      
+      // Show which words are correct/incorrect
+      const words = document.querySelectorAll('.built-word');
+      words.forEach((word, index) => {
+        word.classList.remove('correct', 'incorrect');
+        if (builtWords[index] === correctWords[index]) {
+          word.classList.add('correct');
+        } else {
+          word.classList.add('incorrect');
+        }
+      });
+      
+      // Display results
+      document.getElementById('finalAccuracy').textContent = accuracy + '%';
+      document.getElementById('correctWords').textContent = `${correct}/${correctWords.length}`;
+      document.getElementById('accuracyDisplay').textContent = accuracy + '%';
+      document.getElementById('resultsDisplay').classList.add('show');
+      document.getElementById('showAnswerBtn').style.display = 'block';
+    }
+
+    function showAnswer() {
+      builtWords = [...correctWords];
+      renderBuiltSentence();
+      updateStats();
+    }
+
+    function nextParagraph() {
+      const nextIndex = (currentParagraphIndex + 1) % 4;
+      loadParagraph(nextIndex);
+    }
+
+    function resetPuzzle() {
+      loadParagraph(currentParagraphIndex);
+    }
+
+    // READING MODAL
+    function openReadingModal() {
+      if (readsUsed >= maxReads || isReading) return;
+      
+      isReading = true;
+      readsUsed++;
+      
+      const readsRemaining = maxReads - readsUsed;
+      const counterEl = document.getElementById('readsRemaining');
+      counterEl.textContent = readsRemaining;
+      if (readsRemaining === 0) {
+        counterEl.classList.add('zero');
+        document.getElementById('readBtn').disabled = true;
+      }
+      
+      const modalOverlay = document.getElementById('readingModalOverlay');
+      const modalText = document.getElementById('readingModalText');
+      const modalTimer = document.getElementById('readingModalTimer');
+      
+      modalText.textContent = currentParagraph.text;
+      modalTimer.textContent = '20';
+      modalTimer.classList.remove('warning');
+      
+      modalOverlay.classList.add('show');
+      
+      let timeLeft = 20;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        modalTimer.textContent = timeLeft;
+        
+        if (timeLeft === 5) {
+          modalTimer.classList.add('warning');
+        }
+        
+        if (timeLeft === 0) {
+          clearInterval(timerInterval);
+          closeReadingModal();
+        }
+      }, 1000);
+    }
+
+    function closeReadingModal() {
+      isReading = false;
+      
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
+      document.getElementById('readingModalOverlay').classList.remove('show');
+    }
+
+    function resetReadButton() {
+      const readBtn = document.getElementById('readBtn');
+      readBtn.disabled = false;
+      
+      const counterEl = document.getElementById('readsRemaining');
+      counterEl.textContent = '3';
+      counterEl.classList.remove('zero');
+    }
+
+    // Initialize
+    loadData();
+  </script>
+    // Detect if we're in the correct folder structure or at root
+    const isInSubfolder = window.location.pathname.includes('/skills/writing/');
+    const dataPrefix = isInSubfolder ? '../../../' : '';
+    
+    const DATA_PATHS = {
+      essays: `${dataPrefix}data/essays-models.json`,
+      reports: `${dataPrefix}data/reports-models.json`,
+      reviews: `${dataPrefix}data/reviews-models.json`,
+      emails: `${dataPrefix}data/emails-models.json`
+    };
+
+    // Get content type from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const contentType = urlParams.get('type') || 'essays';
+
+    // Game state
+    let currentData = null;
+    let currentSample = null;
+    let currentParagraphIndex = 0;
+    let currentParagraph = null;
+    let correctWords = [];
+    let builtWords = [];
+    let readsUsed = 0;
+    let maxReads = 3;
+    let isReading = false;
+    let timerInterval = null;
+    let insertMode = false;
+    let selectedInsertPosition = null;
 
     // Load data
     async function loadData() {
@@ -896,10 +1125,47 @@
 
     function addWord(element) {
       const word = element.dataset.word;
-      builtWords.push(word);
+      
+      if (selectedInsertPosition !== null) {
+        // Insert at selected position
+        builtWords.splice(selectedInsertPosition, 0, word);
+        selectedInsertPosition = null;
+        insertMode = false;
+      } else {
+        // Add to end
+        builtWords.push(word);
+      }
+      
       element.classList.add('used');
       renderBuiltSentence();
       updateStats();
+    }
+
+    function selectInsertPosition(position) {
+      if (insertMode) {
+        selectedInsertPosition = position;
+        renderBuiltSentence();
+      }
+    }
+
+    function toggleInsertMode() {
+      insertMode = !insertMode;
+      selectedInsertPosition = insertMode ? 0 : null;
+      
+      // Update button
+      const btn = document.getElementById('insertModeBtn');
+      const text = document.getElementById('insertModeText');
+      if (insertMode) {
+        text.textContent = '📍 Insert Mode: ON';
+        btn.style.background = 'linear-gradient(135deg, rgba(201, 169, 97, 0.3), rgba(201, 169, 97, 0.2))';
+        btn.style.borderColor = 'rgba(201, 169, 97, 0.7)';
+      } else {
+        text.textContent = '📍 Insert Mode: OFF';
+        btn.style.background = 'linear-gradient(135deg, rgba(201, 169, 97, 0.2), rgba(201, 169, 97, 0.1))';
+        btn.style.borderColor = 'rgba(201, 169, 97, 0.5)';
+      }
+      
+      renderBuiltSentence();
     }
 
     function renderBuiltSentence() {
@@ -907,12 +1173,41 @@
       
       if (builtWords.length === 0) {
         container.innerHTML = '<span style="color: #8e8e93; font-size: 0.875rem; font-style: italic;">Click words below to build your paragraph...</span>';
+        container.classList.remove('inserting');
         return;
       }
       
-      container.innerHTML = builtWords.map((word, index) => `
-        <span class="built-word" onclick="removeWord(${index})">${word}</span>
-      `).join('');
+      // Toggle insert mode class
+      if (insertMode) {
+        container.classList.add('inserting');
+      } else {
+        container.classList.remove('inserting');
+      }
+      
+      let html = '';
+      
+      // Insert marker at start
+      html += `<span class="insert-position ${selectedInsertPosition === 0 ? 'active' : ''}" onclick="selectInsertPosition(0)"></span>`;
+      
+      builtWords.forEach((word, index) => {
+        html += `
+          <span class="built-word" 
+                draggable="true" 
+                data-index="${index}"
+                ondragstart="dragStart(event, ${index})"
+                ondragover="dragOver(event)"
+                ondrop="drop(event, ${index})"
+                ondragend="dragEnd(event)">
+            ${word}
+            <span class="remove-word-btn" onclick="removeWord(${index}); event.stopPropagation();">×</span>
+          </span>
+        `;
+        
+        // Insert marker after each word
+        html += `<span class="insert-position ${selectedInsertPosition === index + 1 ? 'active' : ''}" onclick="selectInsertPosition(${index + 1})"></span>`;
+      });
+      
+      container.innerHTML = html;
     }
 
     function removeWord(index) {
@@ -930,6 +1225,57 @@
       
       renderBuiltSentence();
       updateStats();
+    }
+
+    // DRAG AND DROP HANDLERS
+    let draggedIndex = null;
+
+    function dragStart(event, index) {
+      draggedIndex = index;
+      event.target.classList.add('dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/html', event.target.innerHTML);
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      
+      const target = event.target.closest('.built-word');
+      if (target && !target.classList.contains('dragging')) {
+        target.classList.add('drag-over');
+      }
+    }
+
+    function drop(event, dropIndex) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const target = event.target.closest('.built-word');
+      if (target) {
+        target.classList.remove('drag-over');
+      }
+      
+      if (draggedIndex === null || draggedIndex === dropIndex) return;
+      
+      // Reorder words
+      const draggedWord = builtWords[draggedIndex];
+      builtWords.splice(draggedIndex, 1);
+      builtWords.splice(dropIndex, 0, draggedWord);
+      
+      renderBuiltSentence();
+      draggedIndex = null;
+    }
+
+    function dragEnd(event) {
+      event.target.classList.remove('dragging');
+      
+      // Remove all drag-over classes
+      document.querySelectorAll('.built-word').forEach(el => {
+        el.classList.remove('drag-over');
+      });
+      
+      draggedIndex = null;
     }
 
     function clearBuilding() {
