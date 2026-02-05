@@ -805,16 +805,34 @@
       try {
         const response = await fetch(DATA_PATHS[contentType]);
         if (!response.ok) throw new Error('Failed to load data');
-        currentData = await response.json();
+        const data = await response.json();
+        
+        // Validate data
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error('Invalid data format');
+        }
+        
+        currentData = data;
         
         // Pick random sample
         currentSample = currentData[Math.floor(Math.random() * currentData.length)];
+        
+        // Validate sample has paragraphs
+        if (!currentSample || !currentSample.paragraphs || currentSample.paragraphs.length === 0) {
+          throw new Error('Sample missing paragraphs');
+        }
         
         // Load first paragraph
         loadParagraph(0);
       } catch (error) {
         console.error('Error loading data:', error);
-        alert('Error loading puzzle data. Please check file paths.');
+        document.querySelector('.game-container').innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: #ef4444;">
+            <p style="font-size: 1.25rem; margin-bottom: 1rem;">Error loading puzzle data</p>
+            <p style="color: #8e8e93; font-size: 0.875rem;">Please check that the data files are in the correct location.</p>
+            <p style="color: #8e8e93; font-size: 0.75rem; margin-top: 0.5rem;">Looking for: ${DATA_PATHS[contentType]}</p>
+          </div>
+        `;
       }
     }
 
