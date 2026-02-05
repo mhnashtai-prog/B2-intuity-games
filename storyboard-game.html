@@ -623,6 +623,86 @@
       cursor: not-allowed;
     }
 
+    /* FLOATING READ BUTTON - NEUMORPHIC */
+    .floating-read-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #e0e5ec, #ffffff);
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 
+        4px 4px 8px rgba(163, 177, 198, 0.4),
+        -4px -4px 8px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .floating-read-btn:hover {
+      box-shadow: 
+        6px 6px 12px rgba(163, 177, 198, 0.45),
+        -6px -6px 12px rgba(255, 255, 255, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .floating-read-btn:active {
+      box-shadow: 
+        2px 2px 4px rgba(163, 177, 198, 0.4) inset,
+        -2px -2px 4px rgba(255, 255, 255, 0.3) inset;
+      transform: translateY(0);
+    }
+
+    .floating-read-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: 
+        3px 3px 6px rgba(163, 177, 198, 0.3),
+        -3px -3px 6px rgba(255, 255, 255, 0.3);
+    }
+
+    .read-text {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #3b82f6;
+      text-transform: uppercase;
+      text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+    }
+
+    .reads-remaining {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ef4444, #dc2626);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        2px 2px 4px rgba(163, 177, 198, 0.4),
+        -1px -1px 2px rgba(255, 255, 255, 0.2);
+    }
+
+    .reads-remaining.zero {
+      background: linear-gradient(145deg, #9ca3af, #6b7280);
+      box-shadow: 
+        2px 2px 4px rgba(163, 177, 198, 0.3),
+        -1px -1px 2px rgba(255, 255, 255, 0.2);
+    }
+
     /* READING MODAL - SEPARATE OVERLAY */
     .reading-modal-overlay {
       position: fixed;
@@ -746,6 +826,25 @@
         padding: 0.625rem 1.25rem;
       }
 
+      .floating-read-btn {
+        width: 56px;
+        height: 56px;
+        bottom: 1.5rem;
+        right: 1.5rem;
+      }
+
+      .read-text {
+        font-size: 0.625rem;
+      }
+
+      .reads-remaining {
+        width: 22px;
+        height: 22px;
+        font-size: 0.6875rem;
+        top: -5px;
+        right: -5px;
+      }
+
       .blanks-area {
         padding: 1.5rem;
         min-height: 250px;
@@ -790,6 +889,23 @@
     }
 
     @media (max-width: 480px) {
+      .floating-read-btn {
+        width: 52px;
+        height: 52px;
+        bottom: 1rem;
+        right: 1rem;
+      }
+
+      .read-text {
+        font-size: 0.5625rem;
+      }
+
+      .reads-remaining {
+        width: 20px;
+        height: 20px;
+        font-size: 0.625rem;
+      }
+
       .blanks-area {
         padding: 1.25rem;
       }
@@ -901,11 +1017,16 @@
 
       <!-- ACTIONS -->
       <div class="game-actions">
-        <button class="game-btn btn-read" id="readBtn" onclick="openReadingModal()">Read Paragraph</button>
-        <button class="game-btn btn-show-answers" onclick="showAllAnswers()">Show Answers</button>
+        <button class="game-btn btn-show-answers" id="showAnswersBtn" onclick="showAllAnswers()" style="display: none;">Show Answers</button>
         <button class="game-btn btn-primary" onclick="nextParagraph()">Next Paragraph</button>
         <button class="game-btn btn-secondary" onclick="resetParagraph()">Retry This One</button>
       </div>
+
+      <!-- FLOATING READ BUTTON - NEUMORPHIC -->
+      <button class="floating-read-btn" id="readBtn" onclick="openReadingModal()" title="Read Paragraph Again">
+        <span class="read-text">READ</span>
+        <span class="reads-remaining" id="readsRemaining">5</span>
+      </button>
     </div>
   </div>
 
@@ -1023,7 +1144,13 @@
       resetUI();
       
       // Show read button
-      document.getElementById('readBtn').style.display = 'block';
+      document.getElementById('readBtn').style.display = 'flex';
+      document.getElementById('readBtn').disabled = false;
+      document.getElementById('readsRemaining').textContent = '5';
+      document.getElementById('readsRemaining').classList.remove('zero');
+      
+      // Hide Show Answers button (only appears after first submission)
+      document.getElementById('showAnswersBtn').style.display = 'none';
       
       // Show blanks and input if we have progress
       if (revealedWords.size > 0) {
@@ -1054,6 +1181,15 @@
       // Update reads dots
       const dots = document.querySelectorAll('.read-dot');
       dots[readsUsed - 1].classList.add('used');
+      
+      // Update floating button counter
+      const readsRemaining = maxReads - readsUsed;
+      const counterEl = document.getElementById('readsRemaining');
+      counterEl.textContent = readsRemaining;
+      if (readsRemaining === 0) {
+        counterEl.classList.add('zero');
+        document.getElementById('readBtn').disabled = true;
+      }
       
       // Show modal with text
       const modalOverlay = document.getElementById('readingModalOverlay');
@@ -1214,9 +1350,10 @@
           inputArea.appendChild(warning);
           setTimeout(() => warning.remove(), 3000);
         } else if (incorrectAttempts >= maxIncorrectAttempts) {
-          // Max attempts reached - disable input but don't force results
+          // Max attempts reached - show "Show Answers" button
+          document.getElementById('showAnswersBtn').style.display = 'block';
           input.disabled = true;
-          input.placeholder = 'Maximum attempts reached. Use "Show Answers" to continue.';
+          input.placeholder = 'Maximum attempts reached. Click "Show Answers" to continue.';
         }
       }
       
