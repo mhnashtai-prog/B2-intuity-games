@@ -338,23 +338,23 @@
 
     .read-btn {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 700;
+      font-size: 0.75rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      padding: 1.25rem 3rem;
+      padding: 0.75rem 1.5rem;
       background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
       color: #1c1c1e;
       border: none;
-      border-radius: 0.875rem;
+      border-radius: 0.625rem;
       cursor: pointer;
       transition: all 0.3s;
-      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.4);
+      box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
     }
 
     .read-btn:hover:not(:disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(201, 169, 97, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(201, 169, 97, 0.4);
     }
 
     .read-btn:disabled {
@@ -364,12 +364,12 @@
 
     /* WORD BLANKS AREA */
     .blanks-area {
-      background: linear-gradient(135deg, rgba(15, 15, 17, 0.8) 0%, rgba(20, 20, 22, 0.6) 100%);
+      background: linear-gradient(135deg, rgba(245, 241, 232, 0.95) 0%, rgba(235, 230, 220, 0.95) 100%);
       border-radius: 1rem;
-      padding: 1.5rem;
+      padding: 2rem;
       margin-bottom: 1.5rem;
       min-height: 300px;
-      border: 1px solid rgba(84, 84, 88, 0.25);
+      border: 1px solid rgba(201, 169, 97, 0.3);
       display: none;
     }
 
@@ -378,50 +378,46 @@
     }
 
     .word-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-      align-items: center;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      line-height: 2.2;
+      color: #1c1c1e;
+      text-align: left;
+      max-width: 700px;
+      margin: 0 auto;
     }
 
     .word-blank {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 80px;
-      height: 2.5rem;
-      padding: 0 0.75rem;
-      background: rgba(0, 0, 0, 0.3);
-      border: 2px solid rgba(201, 169, 97, 0.3);
-      border-radius: 0.5rem;
+      display: inline;
+      padding: 0.125rem 0.25rem;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid rgba(201, 169, 97, 0.4);
       font-family: 'Crimson Text', serif;
-      font-size: 0.9375rem;
+      font-size: inherit;
       color: transparent;
-      position: relative;
+      cursor: pointer;
       transition: all 0.3s;
+      position: relative;
+      margin: 0 0.125rem;
     }
 
-    .word-blank::before {
-      content: '';
-      position: absolute;
-      bottom: 0.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60%;
-      height: 2px;
-      background: rgba(201, 169, 97, 0.5);
+    .word-blank:hover {
+      border-bottom-color: rgba(201, 169, 97, 0.7);
+      background: rgba(201, 169, 97, 0.1);
     }
 
     .word-blank.revealed {
       color: #10b981;
-      border-color: rgba(16, 185, 129, 0.5);
+      border-bottom: 2px solid rgba(16, 185, 129, 0.5);
       background: rgba(16, 185, 129, 0.1);
       animation: reveal 0.4s ease-out;
+      cursor: default;
     }
 
-    .word-blank.revealed::before {
-      display: none;
+    .word-blank.revealed:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-bottom-color: rgba(16, 185, 129, 0.5);
     }
 
     @keyframes reveal {
@@ -462,6 +458,10 @@
       border-color: #C9A961;
       background: rgba(255, 255, 255, 0.08);
       box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.2);
+    }
+
+    .word-input::placeholder {
+      color: #8e8e93;
     }
 
     .submit-word-btn {
@@ -545,20 +545,20 @@
     /* ACTION BUTTONS */
     .game-actions {
       display: flex;
-      gap: 0.875rem;
+      gap: 0.75rem;
       justify-content: center;
       flex-wrap: wrap;
     }
 
     .game-btn {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      padding: 1rem 2.25rem;
+      padding: 0.75rem 1.5rem;
       border: none;
-      border-radius: 0.875rem;
+      border-radius: 0.75rem;
       cursor: pointer;
       transition: all 0.3s;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -571,8 +571,8 @@
     }
 
     .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(201, 169, 97, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.5);
     }
 
     .btn-secondary {
@@ -582,8 +582,19 @@
     }
 
     .btn-secondary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(201, 169, 97, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.3);
+    }
+
+    .btn-show-answers {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.1) 100%);
+      border: 2px solid rgba(201, 169, 97, 0.5);
+      color: #C9A961;
+    }
+
+    .btn-show-answers:hover {
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(201, 169, 97, 0.2) 100%);
+      transform: translateY(-2px);
     }
 
     /* READING MODAL - SEPARATE OVERLAY */
@@ -701,30 +712,40 @@
 
       .reading-area {
         padding: 1.5rem;
-        min-height: 200px;
+        min-height: 180px;
       }
 
-      .reading-text {
-        font-size: 1rem;
+      .read-btn {
+        font-size: 0.6875rem;
+        padding: 0.625rem 1.25rem;
       }
 
-      .timer-display {
-        font-size: 3rem;
+      .blanks-area {
+        padding: 1.5rem;
+        min-height: 250px;
+      }
+
+      .word-grid {
+        font-size: 1.125rem;
+        line-height: 2;
       }
 
       .word-blank {
-        min-width: 60px;
-        height: 2rem;
-        font-size: 0.8125rem;
+        font-size: 1.125rem;
       }
 
       .input-area {
         flex-direction: column;
+        padding: 1rem;
       }
 
       .game-btn {
-        padding: 0.875rem 1.75rem;
-        font-size: 0.75rem;
+        padding: 0.625rem 1.125rem;
+        font-size: 0.6875rem;
+      }
+
+      .game-actions {
+        gap: 0.5rem;
       }
 
       .reading-modal {
@@ -739,6 +760,31 @@
 
       .reading-modal-timer {
         font-size: 4rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .blanks-area {
+        padding: 1.25rem;
+      }
+
+      .word-grid {
+        font-size: 1rem;
+        line-height: 1.9;
+      }
+
+      .word-blank {
+        font-size: 1rem;
+      }
+
+      .game-btn {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.625rem;
+      }
+
+      .read-btn {
+        font-size: 0.625rem;
+        padding: 0.5rem 1rem;
       }
     }
   </style>
@@ -803,7 +849,7 @@
         <div class="reading-modal">
           <button class="reading-modal-close" onclick="closeReadingModal()">×</button>
           <div class="reading-modal-text" id="readingModalText"></div>
-          <div class="reading-modal-timer" id="readingModalTimer">15</div>
+          <div class="reading-modal-timer" id="readingModalTimer">20</div>
         </div>
       </div>
 
@@ -843,6 +889,7 @@
 
       <!-- ACTIONS -->
       <div class="game-actions">
+        <button class="game-btn btn-show-answers" onclick="showAllAnswers()">Show Answers</button>
         <button class="game-btn btn-primary" onclick="nextParagraph()">Next Paragraph</button>
         <button class="game-btn btn-secondary" onclick="resetParagraph()">Retry This One</button>
       </div>
@@ -854,11 +901,15 @@
     const urlParams = new URLSearchParams(window.location.search);
     const contentType = urlParams.get('type') || 'essays';
 
+    // Detect if we're in the correct folder structure or at root
+    const isInSubfolder = window.location.pathname.includes('/skills/writing/');
+    const dataPrefix = isInSubfolder ? '../../../' : '';
+    
     const DATA_PATHS = {
-      essays: '../data/essays-models.json',
-      reports: '../data/reports-models.json',
-      reviews: '../data/reviews-models.json',
-      emails: '../data/emails-models.json'
+      essays: `${dataPrefix}data/essays-models.json`,
+      reports: `${dataPrefix}data/reports-models.json`,
+      reviews: `${dataPrefix}data/reviews-models.json`,
+      emails: `${dataPrefix}data/emails-models.json`
     };
 
     let currentData = null;
@@ -934,6 +985,7 @@
       }
       
       readsUsed = 0;
+      incorrectAttempts = 0;
       
       // Extract words from paragraph
       const text = currentParagraph.text;
@@ -980,13 +1032,13 @@
       const modalTimer = document.getElementById('readingModalTimer');
       
       modalText.textContent = currentParagraph.text;
-      modalTimer.textContent = '15';
+      modalTimer.textContent = '20';
       modalTimer.classList.remove('warning');
       
       modalOverlay.classList.add('show');
       
-      // Start 15-second countdown
-      let timeLeft = 15;
+      // Start 20-second countdown
+      let timeLeft = 20;
       timerInterval = setInterval(() => {
         timeLeft--;
         modalTimer.textContent = timeLeft;
@@ -1037,12 +1089,16 @@
       closeReadingModal();
     }
 
+    let incorrectAttempts = 0;
+    let maxIncorrectAttempts = 5;
+
     function renderWordBlanks() {
       const grid = document.getElementById('wordGrid');
       grid.innerHTML = '';
       
+      // Create continuous text with clickable blanks
       words.forEach((word, index) => {
-        const blank = document.createElement('div');
+        const blank = document.createElement('span');
         blank.className = 'word-blank';
         blank.dataset.word = word;
         blank.dataset.index = index;
@@ -1050,9 +1106,28 @@
         
         if (revealedWords.has(word)) {
           blank.classList.add('revealed');
+        } else {
+          // Add double-click handler to reveal word
+          blank.addEventListener('dblclick', () => {
+            if (!revealedWords.has(word)) {
+              revealedWords.add(word);
+              renderWordBlanks();
+              updateStats();
+              
+              // Check if complete
+              if (revealedWords.size === words.length) {
+                showResults();
+              }
+            }
+          });
         }
         
         grid.appendChild(blank);
+        
+        // Add space after word (except last word)
+        if (index < words.length - 1) {
+          grid.appendChild(document.createTextNode(' '));
+        }
       });
     }
 
@@ -1075,11 +1150,43 @@
         if (revealedWords.size === words.length) {
           showResults();
         }
+      } else {
+        // Incorrect attempt
+        incorrectAttempts++;
+        
+        // Show feedback
+        input.style.borderColor = '#ef4444';
+        input.style.background = 'rgba(239, 68, 68, 0.1)';
+        
+        setTimeout(() => {
+          input.style.borderColor = 'rgba(201, 169, 97, 0.3)';
+          input.style.background = 'rgba(255, 255, 255, 0.05)';
+        }, 800);
+        
+        // Check if max attempts reached
+        if (incorrectAttempts >= maxIncorrectAttempts) {
+          document.getElementById('inputArea').style.display = 'none';
+          showResults();
+        }
       }
       
       // Clear input
       input.value = '';
       input.focus();
+    }
+
+    function showAllAnswers() {
+      // Reveal all remaining words
+      words.forEach(word => {
+        revealedWords.add(word);
+      });
+      
+      renderWordBlanks();
+      updateStats();
+      
+      // Hide input area and show results
+      document.getElementById('inputArea').style.display = 'none';
+      showResults();
     }
 
     function updateStats() {
