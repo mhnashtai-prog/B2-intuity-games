@@ -879,7 +879,7 @@
     </header>
 
     <!-- GAME SELECTION SCREEN -->
-    <div class="game-select-screen active" id="selectScreen">
+ <div class="game-select-screen" id="selectScreen">
       <div class="content-types">
         <div class="content-type-card" onclick="startGame('essays')">
           <div class="type-icon">📝</div>
@@ -978,7 +978,21 @@
       'it was generally felt', 'one positive aspect', 'one major concern', 'this is because',
       'this is mainly due to', 'as a consequence', 'what makes', 'what made'
     ];
-
+    
+// Check if type parameter exists in URL - if so, skip selection screen
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const type = urlParams.get('type');
+  
+  if (type && DATA_PATHS[type]) {
+    // Launch directly with this type
+    startGame(type);
+  } else {
+    // Show selection screen only if no type parameter
+    document.getElementById('selectScreen').classList.add('active');
+  }
+});
+    
     // Start game with selected type
     async function startGame(type) {
       currentType = type;
