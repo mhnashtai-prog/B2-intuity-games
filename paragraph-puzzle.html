@@ -774,31 +774,43 @@
       const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
       
       // Extract first word of each sentence
-      sentenceFirstWords = sentences.map(sentence => {
+      sentenceFirstWords = [];
+      
+      // Build correct word order
+      correctWords = [];
+      
+      sentences.forEach(sentence => {
         const trimmed = sentence.trim();
-        const firstWord = trimmed.split(/\s+/)[0].replace(/[.,!?;:"'()]/g, '');
-        return firstWord;
+        const words = trimmed
+          .replace(/[.,!?;:"'()]/g, '')
+          .split(/\s+/)
+          .filter(w => w.length > 0);
+        
+        if (words.length > 0) {
+          sentenceFirstWords.push(words[0]);
+          correctWords.push(...words);
+        }
       });
       
-      // Extract all words
-      correctWords = text
-        .replace(/[.,!?;:"'()]/g, '')
-        .split(/\s+/)
-        .filter(w => w.length > 0);
-      
-      // Scramble only non-sentence-first words
-      const nonFirstWords = correctWords.filter(w => !sentenceFirstWords.includes(w));
-      const scrambledNonFirst = [...nonFirstWords].sort(() => Math.random() - 0.5);
-      
-      // Build array: place sentence-first words in their correct positions, scramble the rest
+      // Build scrambled word order - jumble within each sentence only
       builtWords = [];
-      let nonFirstIndex = 0;
       
-      correctWords.forEach(word => {
-        if (sentenceFirstWords.includes(word)) {
-          builtWords.push(word);
-        } else {
-          builtWords.push(scrambledNonFirst[nonFirstIndex++]);
+      sentences.forEach((sentence, sentenceIndex) => {
+        const trimmed = sentence.trim();
+        const words = trimmed
+          .replace(/[.,!?;:"'()]/g, '')
+          .split(/\s+/)
+          .filter(w => w.length > 0);
+        
+        if (words.length > 0) {
+          // First word stays in place
+          builtWords.push(words[0]);
+          
+          // Scramble the rest of the words in this sentence
+          const restOfWords = words.slice(1);
+          const scrambledRest = [...restOfWords].sort(() => Math.random() - 0.5);
+          
+          builtWords.push(...scrambledRest);
         }
       });
       
@@ -877,6 +889,11 @@
       
       const dropIndex = parseInt(dropTarget.dataset.index);
       
+      // Check if both words are in the same sentence
+      if (!areInSameSentence(draggedIndex, dropIndex)) {
+        return; // Cannot swap words across sentence boundaries
+      }
+      
       // Swap words (only if neither is a sentence-first word)
       const dragWord = builtWords[draggedIndex];
       const dropWord = builtWords[dropIndex];
@@ -931,6 +948,11 @@
         if (dropTarget && dropTarget !== draggedElement) {
           const dropIndex = parseInt(dropTarget.dataset.index);
           
+          // Check if both words are in the same sentence
+          if (!areInSameSentence(draggedIndex, dropIndex)) {
+            return; // Cannot swap words across sentence boundaries
+          }
+          
           // Check neither word is sentence-first
           const dragWord = builtWords[draggedIndex];
           const dropWord = builtWords[dropIndex];
@@ -967,18 +989,64 @@
       e.preventDefault();
     }
 
-    function shuffleWords() {
-      // Only shuffle non-sentence-first words
-      const nonFirstWords = builtWords.filter(w => !sentenceFirstWords.includes(w));
-      const scrambledNonFirst = [...nonFirstWords].sort(() => Math.random() - 0.5);
+    // Helper function to check if two word indices are in the same sentence
+    function areInSameSentence(index1, index2) {
+      // Find which sentence each index belongs to
+      let currentIndex = 0;
+      const text = currentParagraph.text;
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
       
-      // Rebuild array
-      let nonFirstIndex = 0;
-      builtWords = correctWords.map(word => {
-        if (sentenceFirstWords.includes(word)) {
-          return word;
-        } else {
-          return scrambledNonFirst[nonFirstIndex++];
+      for (let i = 0; i < sentences.length; i++) {
+        const sentence = sentences[i];
+        const words = sentence.trim()
+          .replace(/[.,!?;:"'()]/g, '')
+          .split(/\s+/)
+          .filter(w => w.length > 0);
+        
+        const sentenceStartIndex = currentIndex;
+        const sentenceEndIndex = currentIndex + words.length - 1;
+        
+        const index1InThisSentence = index1 >= sentenceStartIndex && index1 <= sentenceEndIndex;
+        const index2InThisSentence = index2 >= sentenceStartIndex && index2 <= sentenceEndIndex;
+        
+        if (index1InThisSentence && index2InThisSentence) {
+          return true; // Both in same sentence
+        }
+        
+        if (index1InThisSentence || index2InThisSentence) {
+          return false; // One is in this sentence, other is not
+        }
+        
+        currentIndex += words.length;
+      }
+      
+      return false;
+    }
+
+    function shuffleWords() {
+      // Get sentences again
+      const text = currentParagraph.text;
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      
+      // Rebuild with scrambling within each sentence
+      builtWords = [];
+      
+      sentences.forEach((sentence, sentenceIndex) => {
+        const trimmed = sentence.trim();
+        const words = trimmed
+          .replace(/[.,!?;:"'()]/g, '')
+          .split(/\s+/)
+          .filter(w => w.length > 0);
+        
+        if (words.length > 0) {
+          // First word stays in place
+          builtWords.push(words[0]);
+          
+          // Scramble the rest of the words in this sentence
+          const restOfWords = words.slice(1);
+          const scrambledRest = [...restOfWords].sort(() => Math.random() - 0.5);
+          
+          builtWords.push(...scrambledRest);
         }
       });
       
