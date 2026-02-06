@@ -878,11 +878,15 @@
     const urlParams = new URLSearchParams(window.location.search);
     const contentType = urlParams.get('type') || 'essays';
 
+    // Detect folder structure - same as sister files
+    const isInSubfolder = window.location.pathname.includes('/skills/writing/');
+    const dataPrefix = isInSubfolder ? '../../../' : '';
+    
     const DATA_PATHS = {
-      essays: 'data/essays-models.json',
-      reports: 'data/reports-models.json',
-      reviews: 'data/reviews-models.json',
-      emails: 'data/emails-models.json'
+      essays: `${dataPrefix}data/essays-models.json`,
+      reports: `${dataPrefix}data/reports-models.json`,
+      reviews: `${dataPrefix}data/reviews-models.json`,
+      emails: `${dataPrefix}data/emails-models.json`
     };
 
     // Common linking words to highlight
