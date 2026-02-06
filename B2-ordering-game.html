@@ -930,9 +930,7 @@
         // Extract and split sentences
         extractSentences();
         
-        // Show game screen
-        document.getElementById('selectScreen').classList.remove('active');
-        document.getElementById('gameScreen').classList.add('active');
+        // Game screen is already active (no selection screen anymore)
         
         // Update title
         document.getElementById('gameTitle').textContent = currentSample.topic || 'Sentence Sequencing Challenge';
