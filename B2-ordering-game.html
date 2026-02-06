@@ -152,15 +152,21 @@
 
     /* FIXED SENTENCE - TEXT STYLE */
     .fixed-sentence {
-      background: transparent;
+      background: rgba(250, 248, 245, 0.6);
       border: none;
-      padding: 0.5rem 0;
-      margin-bottom: 0.35rem;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.5rem;
       display: flex;
       gap: 0.75rem;
       align-items: flex-start;
       position: relative;
       cursor: default;
+      border-radius: 0.375rem;
+      transition: background 0.2s ease;
+    }
+
+    .fixed-sentence:hover {
+      background: rgba(245, 243, 240, 0.7);
     }
 
     .fixed-sentence::before {
@@ -220,7 +226,7 @@
     .drop-slots {
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0;
     }
 
     .drop-slot {
@@ -232,12 +238,21 @@
       align-items: flex-start;
       transition: all 0.2s ease;
       position: relative;
+      margin-bottom: 0.5rem;
+    }
+
+    .drop-slot:last-child {
+      margin-bottom: 0;
     }
 
     .drop-slot.drag-over {
       background: rgba(201, 169, 97, 0.08);
-      border-radius: 0.25rem;
+      border-radius: 0.375rem;
       padding: 0.25rem 0;
+    }
+
+    .drop-slot .sentence-card {
+      margin-bottom: 0;
     }
 
     .drop-slot-label {
@@ -249,10 +264,11 @@
 
     /* SENTENCE LINE - TEXT STYLE */
     .sentence-card {
-      background: transparent;
+      background: rgba(250, 248, 245, 0.5);
       border: none;
-      border-radius: 0;
-      padding: 0.5rem 0;
+      border-radius: 0.375rem;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.5rem;
       transition: all 0.2s ease;
       display: flex;
       gap: 0.75rem;
@@ -263,13 +279,25 @@
       box-shadow: none;
     }
 
+    /* Supporting sentence (will be indented when not first in paragraph) */
+    .sentence-card.supporting {
+      margin-left: 2rem;
+      position: relative;
+    }
+
+    .sentence-card.supporting::before {
+      content: '•';
+      position: absolute;
+      left: -1.25rem;
+      top: 0.65rem;
+      font-size: 1rem;
+      color: #C9A961;
+      font-weight: bold;
+    }
+
     .sentence-card:hover {
-      background: rgba(201, 169, 97, 0.06);
-      border-radius: 0.25rem;
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-      margin-left: -0.5rem;
-      margin-right: -0.5rem;
+      background: rgba(245, 240, 230, 0.7);
+      box-shadow: 0 2px 8px rgba(201, 169, 97, 0.12);
     }
 
     .sentence-card:active {
@@ -279,10 +307,6 @@
     .sentence-card.dragging {
       opacity: 0.4;
       transform: none;
-    }
-
-    .sentence-card::before {
-      display: none;
     }
 
     .sentence-card .sentence-label {
@@ -329,27 +353,32 @@
 
     /* CORRECT/INCORRECT STATES - SUBTLE */
     .sentence-card.correct {
-      background: rgba(16, 185, 129, 0.08) !important;
+      background: rgba(16, 185, 129, 0.1) !important;
       border-left: 3px solid #10b981;
-      padding-left: 0.5rem !important;
-      margin-left: -0.5rem;
-      border-radius: 0.25rem;
+      padding-left: 0.75rem !important;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+    }
+
+    .sentence-card.supporting.correct {
+      margin-left: 2rem;
     }
 
     .sentence-card.incorrect {
-      background: rgba(239, 68, 68, 0.08) !important;
+      background: rgba(239, 68, 68, 0.1) !important;
       border-left: 3px solid #ef4444;
-      padding-left: 0.5rem !important;
-      margin-left: -0.5rem;
-      border-radius: 0.25rem;
+      padding-left: 0.75rem !important;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+    }
+
+    .sentence-card.supporting.incorrect {
+      margin-left: 2rem;
     }
 
     .fixed-sentence.correct {
       border-left: 3px solid #10b981;
-      padding-left: 0.5rem;
-      margin-left: -0.5rem;
-      background: rgba(16, 185, 129, 0.05);
-      border-radius: 0.25rem;
+      padding-left: 0.75rem;
+      background: rgba(16, 185, 129, 0.08);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
     }
 
     /* AVAILABLE SENTENCES POOL */
@@ -702,9 +731,22 @@
         font-size: 0.65rem;
       }
 
+      .paragraphs-container {
+        padding: 1.5rem 1.25rem;
+      }
+
       .sentence-card,
       .fixed-sentence {
-        padding: 0.75rem 0.875rem;
+        padding: 0.6rem 0.65rem;
+        font-size: 0.95rem;
+      }
+
+      .sentence-card.supporting {
+        margin-left: 1.5rem;
+      }
+
+      .sentence-card.supporting::before {
+        left: -1rem;
       }
 
       .game-btn {
@@ -833,7 +875,8 @@
             globalIndex,
             paraIdx,
             paraLabel: para.label,
-            localIndex: sentIdx
+            localIndex: sentIdx,
+            isFirstInPara: sentIdx === 0  // Track if it's first in its paragraph
           });
           globalIndex++;
         });
@@ -945,9 +988,16 @@
     function createSentenceCard(sentenceObj) {
       const card = document.createElement('div');
       card.className = 'sentence-card';
+      
+      // Add supporting class if not first in its paragraph
+      if (!sentenceObj.isFirstInPara) {
+        card.classList.add('supporting');
+      }
+      
       card.draggable = true;
       card.dataset.globalIndex = sentenceObj.globalIndex;
       card.dataset.correctPosition = sentenceObj.correctPosition;
+      card.dataset.isFirstInPara = sentenceObj.isFirstInPara;
 
       card.innerHTML = `
         <div class="drag-handle">⋮⋮</div>
