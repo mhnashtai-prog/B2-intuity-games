@@ -268,14 +268,19 @@
 
     .drop-slot {
       min-height: 60px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-      border: 2px dashed rgba(201, 169, 97, 0.3);
+      background: transparent;
+      border: 2px dashed transparent;
       border-radius: 0.75rem;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
       position: relative;
+    }
+
+    .drop-slot.empty {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+      border-color: rgba(201, 169, 97, 0.3);
     }
 
     .drop-slot.drag-over {
@@ -774,12 +779,7 @@
     <div class="game-screen active" id="gameScreen">
       <div class="game-container">
         <h2 class="game-title" id="gameTitle"></h2>
-        <p class="game-hint">Drag sentences into the correct order within each paragraph</p>
-
-        <div class="available-sentences">
-          <div class="available-header">📦 Available Sentences</div>
-          <div class="available-pool" id="availablePool"></div>
-        </div>
+        <p class="game-hint">Drag sentences to reorder them within each paragraph. First sentences are fixed.</p>
 
         <div class="paragraphs-container" id="paragraphsContainer"></div>
 
@@ -915,7 +915,6 @@
       showingAnswers = false;
 
       renderParagraphs();
-      renderAvailablePool();
     }
 
     function renderParagraphs() {
@@ -948,16 +947,23 @@
         `;
         section.appendChild(fixedDiv);
 
-        // Drop slots
+        // Drop slots with shuffled sentences already in them
         const slotsDiv = document.createElement('div');
         slotsDiv.className = 'drop-slots';
         
-        para.sentences.forEach((_, slotIdx) => {
+        // Shuffle the sentences for this paragraph
+        const shuffledSentences = [...para.sentences];
+        shuffleArray(shuffledSentences);
+        
+        shuffledSentences.forEach((sent, slotIdx) => {
           const slot = document.createElement('div');
           slot.className = 'drop-slot';
           slot.dataset.paraIndex = paraIdx;
           slot.dataset.slotIndex = slotIdx;
-          slot.innerHTML = `<div class="drop-slot-label">Drop sentence here</div>`;
+          
+          // Create and add the sentence card directly in the slot
+          const card = createSentenceCard(sent);
+          slot.appendChild(card);
           
           slot.addEventListener('dragover', handleDragOver);
           slot.addEventListener('dragleave', handleDragLeave);
@@ -968,35 +974,6 @@
 
         section.appendChild(slotsDiv);
         container.appendChild(section);
-      });
-    }
-
-    function renderAvailablePool() {
-      const pool = document.getElementById('availablePool');
-      pool.innerHTML = '';
-
-      // Collect all movable sentences
-      const allMovable = [];
-      paragraphsData.forEach((para, paraIdx) => {
-        para.sentences.forEach((sent) => {
-          allMovable.push({ ...sent, paraIdx });
-        });
-      });
-
-      // Shuffle
-      shuffleArray(allMovable);
-
-      if (allMovable.length === 0) {
-        pool.classList.add('empty');
-        pool.innerHTML = '<div class="empty-message">All sentences placed!</div>';
-        return;
-      }
-
-      pool.classList.remove('empty');
-
-      allMovable.forEach((sent) => {
-        const card = createSentenceCard(sent);
-        pool.appendChild(card);
       });
     }
 
@@ -1036,7 +1013,7 @@
       e.dataTransfer.dropEffect = 'move';
       
       const slot = e.currentTarget;
-      if (slot.classList.contains('drop-slot') && !slot.querySelector('.sentence-card')) {
+      if (slot.classList.contains('drop-slot')) {
         slot.classList.add('drag-over');
       }
       
@@ -1051,65 +1028,24 @@
       if (e.stopPropagation) e.stopPropagation();
       e.preventDefault();
 
-      const slot = e.currentTarget;
-      slot.classList.remove('drag-over');
+      const targetSlot = e.currentTarget;
+      targetSlot.classList.remove('drag-over');
 
-      if (!draggedElement) return;
+      if (!draggedElement) return false;
 
-      // Check if slot is empty
-      if (slot.querySelector('.sentence-card')) {
-        return false;
+      const existingCard = targetSlot.querySelector('.sentence-card');
+      const sourceSlot = draggedElement.parentElement;
+
+      if (existingCard && existingCard !== draggedElement) {
+        // Swap the cards
+        sourceSlot.appendChild(existingCard);
       }
 
-      // Move card to slot
-      const label = slot.querySelector('.drop-slot-label');
-      if (label) label.remove();
-      
-      slot.appendChild(draggedElement);
+      targetSlot.appendChild(draggedElement);
       draggedElement = null;
-
-      // Check if pool is empty
-      updateAvailablePool();
 
       return false;
     }
-
-    function updateAvailablePool() {
-      const pool = document.getElementById('availablePool');
-      const cards = pool.querySelectorAll('.sentence-card');
-      
-      if (cards.length === 0) {
-        pool.classList.add('empty');
-        pool.innerHTML = '<div class="empty-message">✓ All sentences placed!</div>';
-      }
-    }
-
-    // Allow cards to be dragged back to pool
-    document.getElementById('availablePool').addEventListener('dragover', handleDragOver);
-    document.getElementById('availablePool').addEventListener('drop', function(e) {
-      if (e.stopPropagation) e.stopPropagation();
-      e.preventDefault();
-
-      if (!draggedElement) return;
-
-      const pool = document.getElementById('availablePool');
-      
-      // Remove empty message if exists
-      const emptyMsg = pool.querySelector('.empty-message');
-      if (emptyMsg) {
-        emptyMsg.remove();
-        pool.classList.remove('empty');
-      }
-
-      // If card came from a slot, restore the drop zone
-      const oldParent = draggedElement.parentElement;
-      if (oldParent && oldParent.classList.contains('drop-slot')) {
-        oldParent.innerHTML = '<div class="drop-slot-label">Drop sentence here</div>';
-      }
-
-      pool.appendChild(draggedElement);
-      draggedElement = null;
-    });
 
     function checkAnswer() {
       if (hasSubmitted) return;
