@@ -137,8 +137,8 @@
       font-weight: 500;
     }
 
-    /* SENTENCES */
-    .sentences-display {
+    /* PARAGRAPH SECTIONS */
+    .paragraphs-container {
       background: linear-gradient(180deg, rgba(15, 15, 17, 0.6) 0%, rgba(20, 20, 22, 0.5) 100%);
       border-radius: 1rem;
       border: 1px solid rgba(84, 84, 88, 0.25);
@@ -148,230 +148,608 @@
       overflow-y: auto;
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
     }
-    .sentences-grid { display: flex; flex-direction: column; gap: 0.35rem; }
 
-    /* ── BASE CARD: light beige (unpositioned) ── */
+    .paragraph-section {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(84, 84, 88, 0.2);
+      border-radius: 0.875rem;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .paragraph-section:last-child { margin-bottom: 0; }
+
+    .paragraph-header {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      margin-bottom: 0.625rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+    }
+
+    .paragraph-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #C9A961;
+      background: rgba(201, 169, 97, 0.15);
+      padding: 0.25rem 0.625rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .paragraph-count {
+      font-size: 0.7rem;
+      color: #8e8e93;
+      font-weight: 500;
+    }
+
+    /* FIXED ANCHOR SENTENCE */
+    .fixed-sentence {
+      background: linear-gradient(135deg, #D1B982 0%, #C4AB72 100%);
+      border: 2px solid rgba(201, 169, 97, 0.4);
+      border-radius: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      gap: 0.625rem;
+      align-items: center;
+      box-shadow: 0 3px 12px rgba(201, 169, 97, 0.2), 0 1px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fixed-sentence::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: #B89650;
+    }
+
+    .fixed-sentence .sentence-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #7a6530;
+      background: rgba(201, 169, 97, 0.2);
+      padding: 0.2rem 0.45rem;
+      border-radius: 999px;
+      text-align: center;
+      min-width: 32px;
+      flex-shrink: 0;
+    }
+
+    .fixed-sentence .sentence-text {
+      flex: 1;
+      font-family: 'Crimson Text', serif;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      color: #1c1c1e;
+      font-weight: 700;
+    }
+
+    .fixed-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.5625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #7a6530;
+      background: rgba(201, 169, 97, 0.2);
+      border: 1px solid rgba(201, 169, 97, 0.3);
+      border-radius: 999px;
+      padding: 0.175rem 0.5rem;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .fixed-badge svg {
+      width: 10px;
+      height: 10px;
+      fill: #7a6530;
+    }
+
+    /* DROP SLOTS */
+    .drop-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      min-height: 40px;
+    }
+
+    .drop-slot {
+      min-height: 60px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+      border: 2px dashed rgba(201, 169, 97, 0.3);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .drop-slot.drag-over {
+      background: rgba(201, 169, 97, 0.15);
+      border-color: rgba(201, 169, 97, 0.6);
+      border-style: solid;
+      transform: scale(1.02);
+    }
+
+    .drop-slot-label {
+      font-size: 0.7rem;
+      color: #6b7280;
+      font-weight: 500;
+      pointer-events: none;
+    }
+
+    /* SENTENCE CARD IN SLOT */
     .sentence-card {
       background: linear-gradient(135deg, #F5F1E8 0%, #EBE6DC 100%);
       border: 2px solid transparent;
       border-radius: 0.75rem;
-      padding: 0.375rem 0.75rem;
+      padding: 0.5rem 0.75rem;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex; gap: 0.625rem; align-items: center;
-      cursor: pointer; position: relative; overflow: hidden;
+      display: flex;
+      gap: 0.625rem;
+      align-items: center;
+      cursor: grab;
+      position: relative;
+      overflow: hidden;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+      width: 100%;
     }
+
+    .sentence-card:active {
+      cursor: grabbing;
+    }
+
+    .sentence-card.dragging {
+      opacity: 0.5;
+      transform: rotate(2deg);
+    }
+
     .sentence-card::before {
-      content: ''; position: absolute; left: 0; top: 0;
-      width: 4px; height: 100%;
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
       background: linear-gradient(180deg, #D4A574 0%, #C9A961 100%);
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .sentence-card:hover {
-      transform: translateX(4px);
-      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.2), 0 3px 8px rgba(0, 0, 0, 0.1);
-      border-color: rgba(201, 169, 97, 0.25);
-    }
-    .sentence-card:hover::before { opacity: 0.6; }
-    .sentence-card:active { transform: translateX(2px) scale(0.995); }
-
-    /* ── STATE: Fixed anchor — darker beige ── */
-    .sentence-card.fixed-sentence {
-      background: linear-gradient(135deg, #D1B982 0%, #C4AB72 100%);
-      border: 2px solid rgba(201, 169, 97, 0.4);
-      cursor: default;
-      box-shadow: 0 3px 12px rgba(201, 169, 97, 0.2), 0 1px 4px rgba(0, 0, 0, 0.1);
-    }
-    .sentence-card.fixed-sentence::before { opacity: 1; background: #B89650; }
-    .sentence-card.fixed-sentence:hover {
-      transform: none;
-      box-shadow: 0 3px 12px rgba(201, 169, 97, 0.2), 0 1px 4px rgba(0, 0, 0, 0.1);
-      border-color: rgba(201, 169, 97, 0.4);
-    }
-    .sentence-card.fixed-sentence .sentence-text-display { color: #1c1c1e; font-weight: 700; }
-
-    /* ── STATE: Positioned (has number) — mid beige ── */
-    .sentence-card.has-number {
-      background: linear-gradient(135deg, #E8DFC8 0%, #DDD4BC 100%);
-      border-color: rgba(201, 169, 97, 0.35);
-      box-shadow: 0 3px 12px rgba(201, 169, 97, 0.15), 0 1px 4px rgba(0, 0, 0, 0.08);
-    }
-    .sentence-card.has-number::before { opacity: 0.7; }
-
-    /* ── STATE: Duplicate ── */
-    .sentence-card.duplicate-number {
-      background: linear-gradient(135deg, #FEF3E8 0%, #FDECD4 100%) !important;
-      border-color: rgba(239, 68, 68, 0.5) !important;
-      animation: pulseWarning 1.5s ease-in-out infinite;
-    }
-    .sentence-card.duplicate-number::before { background: #f59e0b; opacity: 1; }
-    @keyframes pulseWarning {
-      0%, 100% { border-color: rgba(239, 68, 68, 0.5); }
-      50% { border-color: rgba(239, 68, 68, 0.7); }
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
-    /* ── STATE: Correct ── */
+    .sentence-card:hover::before {
+      opacity: 0.6;
+    }
+
+    .sentence-card .sentence-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #7a6530;
+      background: rgba(201, 169, 97, 0.2);
+      padding: 0.2rem 0.45rem;
+      border-radius: 999px;
+      text-align: center;
+      min-width: 32px;
+      flex-shrink: 0;
+    }
+
+    .sentence-card .sentence-text {
+      flex: 1;
+      font-family: 'Crimson Text', serif;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      color: #1c1c1e;
+      font-weight: 600;
+    }
+
+    .drag-handle {
+      font-size: 1rem;
+      color: #8e8e93;
+      cursor: grab;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    /* CORRECT/INCORRECT STATES */
     .sentence-card.correct {
       border-color: #10b981 !important;
       background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
       box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
     }
-    .sentence-card.correct::before { background: #10b981; opacity: 1; }
 
-    /* ── STATE: Incorrect ── */
+    .sentence-card.correct::before {
+      background: #10b981;
+      opacity: 1;
+    }
+
     .sentence-card.incorrect {
       border-color: #ef4444 !important;
       background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
       box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
     }
-    .sentence-card.incorrect::before { background: #ef4444; opacity: 1; }
 
-    .sentence-card.multi-line { padding: 0.5rem 0.75rem; }
-
-    /* CARD PARTS */
-    .sentence-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.6rem; font-weight: 700; color: #7a6530;
-      background: rgba(201, 169, 97, 0.2);
-      padding: 0.2rem 0.45rem; border-radius: 999px;
-      text-align: center; min-width: 32px; flex-shrink: 0;
-    }
-    .sentence-content { flex: 1; display: flex; gap: 1rem; align-items: center; }
-    .sentence-text-display {
-      flex: 1; font-family: 'Crimson Text', serif;
-      font-size: 0.9rem; line-height: 1.35; color: #1c1c1e; font-weight: 600;
-    }
-    .linking-word { color: #dc2626; font-weight: 700; padding: 0 0.125rem; }
-
-    .sentence-input { flex-shrink: 0; }
-    .sentence-input input {
-      width: 42px; padding: 0.35rem; text-align: center;
-      font-size: 0.85rem; font-weight: 700;
-      border: 1.5px solid rgba(201, 169, 97, 0.4);
-      border-radius: 0.5rem; background: #fff; color: #1c1c1e;
-      transition: all 0.25s;
-    }
-    .sentence-input input:focus {
-      outline: none; border-color: #C9A961;
-      box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15);
-      background: #fffef8; transform: scale(1.06);
-    }
-    .sentence-input label {
-      display: block; font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.625rem; font-weight: 700; color: #6b7280;
-      margin-bottom: 0.25rem; text-align: center;
-      text-transform: uppercase; letter-spacing: 0.05em;
+    .sentence-card.incorrect::before {
+      background: #ef4444;
+      opacity: 1;
     }
 
-    .fixed-badge {
-      display: inline-flex; align-items: center; gap: 0.25rem;
+    /* AVAILABLE SENTENCES POOL */
+    .available-sentences {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(84, 84, 88, 0.2);
+      border-radius: 0.875rem;
+      padding: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .available-header {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.5625rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      color: #7a6530; background: rgba(201, 169, 97, 0.2);
-      border: 1px solid rgba(201, 169, 97, 0.3);
-      border-radius: 999px; padding: 0.175rem 0.5rem;
-      flex-shrink: 0; white-space: nowrap;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #C9A961;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.625rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(201, 169, 97, 0.2);
     }
-    .fixed-badge svg { width: 10px; height: 10px; fill: #7a6530; }
 
-    /* ── ACTION BAR ── */
-    .game-actions {
-      display: flex; gap: 0.5rem; justify-content: center; align-items: center; flex-wrap: wrap;
-      background: rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 999px; padding: 0.35rem;
-      max-width: fit-content; margin: 0 auto;
+    .available-pool {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      min-height: 60px;
     }
+
+    .available-pool.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .empty-message {
+      font-size: 0.8rem;
+      color: #6b7280;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* LINKING WORDS */
+    .linking-word {
+      color: #dc2626;
+      font-weight: 700;
+      padding: 0 0.125rem;
+    }
+
+    /* ACTION BAR */
+    .game-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      padding: 0.35rem;
+      max-width: fit-content;
+      margin: 0 auto;
+    }
+
     .game-btn {
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.01em;
-      padding: 0.5rem 1.125rem; border: none; border-radius: 999px;
-      cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      padding: 0.5rem 1.125rem;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
     }
-    .game-btn .btn-icon { font-size: 0.85rem; line-height: 1; }
 
-    .btn-submit { background: #C9A961; color: #111; font-weight: 700; box-shadow: 0 2px 10px rgba(201, 169, 97, 0.35); }
-    .btn-submit:hover:not(:disabled) { background: #d4b46e; box-shadow: 0 4px 18px rgba(201, 169, 97, 0.5); transform: scale(1.04); }
-    .btn-submit:active:not(:disabled) { transform: scale(0.97); }
-    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    .game-btn .btn-icon {
+      font-size: 0.85rem;
+      line-height: 1;
+    }
 
-    .btn-retry { background: rgba(255,255,255,0.08); color: #d4d4d8; border: 1px solid rgba(255,255,255,0.1); }
-    .btn-retry:hover { background: rgba(255,255,255,0.14); color: #fff; transform: scale(1.04); }
+    .btn-submit {
+      background: #C9A961;
+      color: #111;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(201, 169, 97, 0.35);
+    }
 
-    .btn-new { background: rgba(255,255,255,0.05); color: #8e8e93; border: 1px solid rgba(255,255,255,0.06); }
-    .btn-new:hover { background: rgba(255,255,255,0.1); color: #C9A961; transform: scale(1.04); }
+    .btn-submit:hover:not(:disabled) {
+      background: #d4b46e;
+      box-shadow: 0 4px 18px rgba(201, 169, 97, 0.5);
+      transform: scale(1.04);
+    }
 
-    .btn-answers { background: rgba(99,140,255,0.1); color: #7ba4ff; border: 1px solid rgba(99,140,255,0.15); }
-    .btn-answers:hover { background: rgba(99,140,255,0.18); color: #a0bfff; transform: scale(1.04); }
-    .btn-answers.showing-answers { background: rgba(99,140,255,0.22); color: #fff; border-color: rgba(99,140,255,0.3); }
+    .btn-submit:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-retry {
+      background: rgba(255, 255, 255, 0.08);
+      color: #d4d4d8;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-retry:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      transform: scale(1.04);
+    }
+
+    .btn-new {
+      background: rgba(255, 255, 255, 0.05);
+      color: #8e8e93;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-new:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #C9A961;
+      transform: scale(1.04);
+    }
+
+    .btn-answers {
+      background: rgba(99, 140, 255, 0.1);
+      color: #7ba4ff;
+      border: 1px solid rgba(99, 140, 255, 0.15);
+    }
+
+    .btn-answers:hover {
+      background: rgba(99, 140, 255, 0.18);
+      color: #a0bfff;
+      transform: scale(1.04);
+    }
+
+    .btn-answers.showing-answers {
+      background: rgba(99, 140, 255, 0.22);
+      color: #fff;
+      border-color: rgba(99, 140, 255, 0.3);
+    }
 
     /* ANSWER KEY */
     .answer-key-display {
       display: none;
-      background: linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(37,99,235,0.08) 100%);
-      border: 2px solid rgba(59,130,246,0.4); border-radius: 1.125rem;
-      margin-bottom: 1.5rem; overflow: hidden;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.08) 100%);
+      border: 2px solid rgba(59, 130, 246, 0.4);
+      border-radius: 1.125rem;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
     }
-    .answer-key-display.show { display: block; animation: slideIn 0.4s ease-out; }
+
+    .answer-key-display.show {
+      display: block;
+      animation: slideIn 0.4s ease-out;
+    }
+
     .answer-key-header {
-      background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(37,99,235,0.15) 100%);
-      padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid rgba(59,130,246,0.3);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%);
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.3);
     }
-    .answer-key-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .answer-key-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #3b82f6;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
     .close-answers {
-      background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3);
-      color: #3b82f6; font-size: 1.25rem; font-weight: 700;
-      width: 32px; height: 32px; border-radius: 0.5rem;
-      cursor: pointer; transition: all 0.3s;
-      display: flex; align-items: center; justify-content: center; padding: 0;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #3b82f6;
+      font-size: 1.25rem;
+      font-weight: 700;
+      width: 32px;
+      height: 32px;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
     }
-    .close-answers:hover { background: rgba(59,130,246,0.25); transform: scale(1.1); }
-    .answer-key-content { padding: 1.25rem; max-height: 400px; overflow-y: auto; }
+
+    .close-answers:hover {
+      background: rgba(59, 130, 246, 0.25);
+      transform: scale(1.1);
+    }
+
+    .answer-key-content {
+      padding: 1.25rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .answer-paragraph {
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-paragraph:last-child {
+      margin-bottom: 0;
+    }
+
+    .answer-para-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #3b82f6;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
     .answer-sentence {
-      display: flex; gap: 0.875rem; align-items: flex-start;
-      padding: 0.75rem 1rem; margin-bottom: 0.5rem;
-      background: rgba(255,255,255,0.5); border-radius: 0.75rem;
+      display: flex;
+      gap: 0.875rem;
+      align-items: flex-start;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 0.75rem;
       border-left: 4px solid #3b82f6;
     }
-    .answer-sentence.answer-fixed { background: rgba(201,169,97,0.15); border-left: 4px solid #C9A961; }
-    .answer-number {
-      font-family: 'Space Grotesk', sans-serif; font-size: 1.125rem; font-weight: 800;
-      min-width: 32px; height: 32px;
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      color: white; border-radius: 0.5rem;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+
+    .answer-sentence:last-child {
+      margin-bottom: 0;
     }
-    .answer-sentence.answer-fixed .answer-number { background: linear-gradient(135deg, #C9A961 0%, #B89650 100%); color: #1a1a2e; }
-    .answer-text { flex: 1; font-family: 'Crimson Text', serif; font-size: 0.95rem; line-height: 1.5; color: #1c1c1e; font-weight: 600; }
+
+    .answer-sentence.answer-fixed {
+      background: rgba(201, 169, 97, 0.15);
+      border-left: 4px solid #C9A961;
+    }
+
+    .answer-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 800;
+      min-width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .answer-sentence.answer-fixed .answer-number {
+      background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
+      color: #1a1a2e;
+    }
+
+    .answer-text {
+      flex: 1;
+      font-family: 'Crimson Text', serif;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #1c1c1e;
+      font-weight: 600;
+    }
 
     /* RESULTS */
     .results-display {
       display: none;
-      background: linear-gradient(135deg, rgba(201,169,97,0.15) 0%, rgba(201,169,97,0.1) 100%);
-      border: 2px solid rgba(201,169,97,0.5); border-radius: 1.125rem;
-      padding: 1.75rem; margin-bottom: 1.5rem; text-align: center;
+      background: linear-gradient(135deg, rgba(201, 169, 97, 0.15) 0%, rgba(201, 169, 97, 0.1) 100%);
+      border: 2px solid rgba(201, 169, 97, 0.5);
+      border-radius: 1.125rem;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
     }
-    .results-display.show { display: block; animation: slideIn 0.5s ease-out; }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    .results-score { font-family: 'Space Grotesk', sans-serif; font-size: 2.75rem; font-weight: 800; color: #C9A961; margin-bottom: 0.625rem; }
-    .results-message { font-size: 1.0625rem; color: #f5f5f7; font-weight: 500; }
-    .perfect-score { color: #10b981; }
 
-    .sentences-display::-webkit-scrollbar { width: 8px; }
-    .sentences-display::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
-    .sentences-display::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #C9A961 0%, #B89650 50%); border-radius: 4px; }
+    .results-display.show {
+      display: block;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .results-score {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: #C9A961;
+      margin-bottom: 0.625rem;
+    }
+
+    .results-message {
+      font-size: 1.0625rem;
+      color: #f5f5f7;
+      font-weight: 500;
+    }
+
+    .perfect-score {
+      color: #10b981;
+    }
+
+    /* SCROLLBAR */
+    .paragraphs-container::-webkit-scrollbar,
+    .answer-key-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .paragraphs-container::-webkit-scrollbar-track,
+    .answer-key-content::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+
+    .paragraphs-container::-webkit-scrollbar-thumb,
+    .answer-key-content::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #C9A961 0%, #B89650 50%);
+      border-radius: 4px;
+    }
 
     @media (max-width: 768px) {
-      .back-btn { top: 1rem; left: 1rem; padding: 0.5rem 1rem; font-size: 0.65rem; }
-      .sentence-card { padding: 0.75rem 0.875rem; flex-direction: column; gap: 0.625rem; align-items: stretch; }
-      .sentence-content { flex-direction: column; gap: 0.625rem; width: 100%; }
-      .sentence-input { display: flex; align-items: center; gap: 0.5rem; justify-content: flex-end; }
-      .sentence-input label { margin-bottom: 0; }
-      .game-btn { padding: 0.45rem 0.875rem; font-size: 0.65rem; }
+      .back-btn {
+        top: 1rem;
+        left: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.65rem;
+      }
+
+      .sentence-card,
+      .fixed-sentence {
+        padding: 0.75rem 0.875rem;
+      }
+
+      .game-btn {
+        padding: 0.45rem 0.875rem;
+        font-size: 0.65rem;
+      }
     }
   </style>
 </head>
@@ -396,11 +774,14 @@
     <div class="game-screen active" id="gameScreen">
       <div class="game-container">
         <h2 class="game-title" id="gameTitle"></h2>
-        <p class="game-hint">Put the sentences into the correct order. The first sentence of each paragraph is provided </p>
+        <p class="game-hint">Drag sentences into the correct order within each paragraph</p>
 
-        <div class="sentences-display">
-          <div class="sentences-grid" id="sentencesGrid"></div>
+        <div class="available-sentences">
+          <div class="available-header">📦 Available Sentences</div>
+          <div class="available-pool" id="availablePool"></div>
         </div>
+
+        <div class="paragraphs-container" id="paragraphsContainer"></div>
 
         <div class="answer-key-display" id="answerKeyDisplay">
           <div class="answer-key-header">
@@ -426,36 +807,41 @@
   </div>
 
   <script>
-    let currentData = null, currentSample = null;
-    let sentences = [], paragraphMap = {}, isFirstInParagraph = {}, fixedPositions = {};
-    let movableSentences = [], userPositions = {};
-    let hasSubmitted = false, showingAnswers = false, totalSentences = 0;
+    let currentData = null;
+    let currentSample = null;
+    let paragraphsData = [];
+    let draggedElement = null;
+    let hasSubmitted = false;
+    let showingAnswers = false;
+
+    const LINKING_WORDS = [
+      'however', 'therefore', 'moreover', 'furthermore', 'additionally', 'consequently',
+      'meanwhile', 'nevertheless', 'nonetheless', 'thus', 'hence', 'accordingly',
+      'besides', 'likewise', 'similarly', 'conversely', 'alternatively', 'specifically',
+      'indeed', 'subsequently', 'finally', 'firstly', 'secondly', 'thirdly', 'lastly',
+      'in addition', 'in contrast', 'for example', 'for instance', 'as a result',
+      'on the other hand', 'in conclusion', 'to sum up', 'in summary', 'in brief',
+      'in short', 'overall', 'essentially', 'basically', 'what is more',
+      'to begin with', 'to start with', 'by far', 'it is generally agreed',
+      'it was generally felt', 'one positive aspect', 'one major concern',
+      'this is because', 'this is mainly due to', 'as a consequence', 'what makes', 'what made'
+    ];
 
     const urlParams = new URLSearchParams(window.location.search);
     const contentType = urlParams.get('type') || 'essays';
-    const isInSubfolder = window.location.pathname.includes('/skills/writing/');
-    const dataPrefix = isInSubfolder ? '../../../' : '';
+    
+    // Data paths - adjust based on actual file structure
     const DATA_PATHS = {
-      essays: `${dataPrefix}data/essays-models.json`,
-      reports: `${dataPrefix}data/reports-models.json`,
-      reviews: `${dataPrefix}data/reviews-models.json`,
-      emails: `${dataPrefix}data/emails-models.json`
+      essays: 'data/essays-models.json',
+      reports: 'data/reports-models.json',
+      reviews: 'data/reviews-models.json',
+      emails: 'data/emails-models.json'
     };
 
-    const LINKING_WORDS = [
-      'however','therefore','moreover','furthermore','additionally','consequently',
-      'meanwhile','nevertheless','nonetheless','thus','hence','accordingly',
-      'besides','likewise','similarly','conversely','alternatively','specifically',
-      'indeed','subsequently','finally','firstly','secondly','thirdly','lastly',
-      'in addition','in contrast','for example','for instance','as a result',
-      'on the other hand','in conclusion','to sum up','in summary','in brief',
-      'in short','overall','essentially','basically','what is more',
-      'to begin with','to start with','by far','it is generally agreed',
-      'it was generally felt','one positive aspect','one major concern',
-      'this is because','this is mainly due to','as a consequence','what makes','what made'
-    ];
+    function goBack() {
+      window.location.href = 'index.html';
+    }
 
-    function goBack() { window.location.href = 'index.html'; }
     window.addEventListener('DOMContentLoaded', () => startGame(contentType));
 
     async function startGame(type) {
@@ -464,198 +850,422 @@
         if (!response.ok) throw new Error(`Failed to load ${type}`);
         currentData = await response.json();
         currentSample = currentData.samples[Math.floor(Math.random() * currentData.samples.length)];
-        extractSentences();
+        extractParagraphs();
         document.getElementById('gameTitle').textContent = currentSample.topic || 'Sentence Sequencing Challenge';
         renderGame();
-      } catch (e) { console.error(e); alert('Failed to load game data.'); }
+      } catch (e) {
+        console.error(e);
+        alert('Failed to load game data.');
+      }
     }
 
-    function extractSentences() {
-      sentences = []; paragraphMap = {}; isFirstInParagraph = {}; fixedPositions = {};
-      let idx = 0;
-      currentSample.paragraphs.forEach(para => {
-        const ps = para.text.split(/(?<=[.!?])\s+/).filter(s => s.trim()).map(s => s.trim());
-        ps.forEach((s, i) => {
-          paragraphMap[idx] = para.label;
-          isFirstInParagraph[idx] = (i === 0);
-          if (i === 0) fixedPositions[idx] = idx + 1;
-          idx++;
+    function extractParagraphs() {
+      paragraphsData = [];
+      let globalIndex = 0;
+
+      currentSample.paragraphs.forEach((para, paraIdx) => {
+        const sentences = para.text
+          .split(/(?<=[.!?])\s+/)
+          .filter(s => s.trim())
+          .map(s => s.trim());
+
+        const paraData = {
+          label: para.label,
+          sentences: [],
+          fixedSentence: null
+        };
+
+        sentences.forEach((text, sentIdx) => {
+          const sentenceObj = {
+            text,
+            globalIndex,
+            isFixed: sentIdx === 0,
+            correctSlot: sentIdx
+          };
+
+          if (sentIdx === 0) {
+                paraData.fixedSentence = sentenceObj;
+          } else {
+            paraData.sentences.push(sentenceObj);
+          }
+
+          globalIndex++;
         });
-        sentences.push(...ps);
+
+        paragraphsData.push(paraData);
       });
-      totalSentences = sentences.length;
-
-      const movableIndices = [];
-      sentences.forEach((_, i) => { if (!isFirstInParagraph[i]) movableIndices.push(i); });
-      shuffleArray(movableIndices);
-      movableSentences = movableIndices.map(i => ({ text: sentences[i], originalIndex: i, correctPosition: i + 1 }));
     }
-
-    function shuffleArray(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } }
 
     function highlightLinkingWords(text) {
-      let r = text;
-      LINKING_WORDS.forEach(w => { r = r.replace(new RegExp(`\\b(${w})\\b`, 'gi'), '<span class="linking-word">$1</span>'); });
-      return r;
+      let result = text;
+      LINKING_WORDS.forEach(word => {
+        const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+        result = result.replace(regex, '<span class="linking-word">$1</span>');
+      });
+      return result;
     }
 
     function renderGame() {
-      hasSubmitted = false; userPositions = {};
+      hasSubmitted = false;
       document.getElementById('resultsDisplay').classList.remove('show');
       document.getElementById('submitBtn').style.display = 'inline-flex';
       document.getElementById('retryBtn').style.display = 'none';
-      renderSentences();
+      document.getElementById('answersBtn').style.display = 'none';
+      document.getElementById('answerKeyDisplay').classList.remove('show');
+      showingAnswers = false;
+
+      renderParagraphs();
+      renderAvailablePool();
     }
 
-    function renderSentences() {
-      const grid = document.getElementById('sentencesGrid');
-      grid.innerHTML = '';
+    function renderParagraphs() {
+      const container = document.getElementById('paragraphsContainer');
+      container.innerHTML = '';
 
-      // 1. Fixed anchors (in correct order)
-      Object.keys(fixedPositions).map(Number).sort((a,b) => a - b).forEach(origIdx => {
-        const card = document.createElement('div');
-        card.className = 'sentence-card fixed-sentence';
-        card.id = `card-fixed-${origIdx}`;
-        card.innerHTML = `
-          <div class="sentence-label">S${origIdx + 1}</div>
-          <div class="sentence-content">
-            <div class="sentence-text-display">${highlightLinkingWords(sentences[origIdx])}</div>
-            <div class="fixed-badge">
-              <svg viewBox="0 0 16 16"><path d="M11.5 1a3.5 3.5 0 0 0-3.5 3.5V7H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H9.5V4.5a2 2 0 1 1 4 0V6h1.5V4.5A3.5 3.5 0 0 0 11.5 1z"/></svg>
-              <span>#${origIdx + 1}</span>
-            </div>
-          </div>`;
-        grid.appendChild(card);
+      paragraphsData.forEach((para, paraIdx) => {
+        const section = document.createElement('div');
+        section.className = 'paragraph-section';
+        section.dataset.paraIndex = paraIdx;
+
+        const header = document.createElement('div');
+        header.className = 'paragraph-header';
+        header.innerHTML = `
+          <div class="paragraph-label">${para.label}</div>
+          <div class="paragraph-count">${para.sentences.length + 1} sentences</div>
+        `;
+        section.appendChild(header);
+
+        // Fixed sentence
+        const fixedDiv = document.createElement('div');
+        fixedDiv.className = 'fixed-sentence';
+        fixedDiv.innerHTML = `
+          <div class="sentence-label">S${para.fixedSentence.globalIndex + 1}</div>
+          <div class="sentence-text">${highlightLinkingWords(para.fixedSentence.text)}</div>
+          <div class="fixed-badge">
+            <svg viewBox="0 0 16 16"><path d="M11.5 1a3.5 3.5 0 0 0-3.5 3.5V7H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H9.5V4.5a2 2 0 1 1 4 0V6h1.5V4.5A3.5 3.5 0 0 0 11.5 1z"/></svg>
+            <span>Anchor</span>
+          </div>
+        `;
+        section.appendChild(fixedDiv);
+
+        // Drop slots
+        const slotsDiv = document.createElement('div');
+        slotsDiv.className = 'drop-slots';
+        
+        para.sentences.forEach((_, slotIdx) => {
+          const slot = document.createElement('div');
+          slot.className = 'drop-slot';
+          slot.dataset.paraIndex = paraIdx;
+          slot.dataset.slotIndex = slotIdx;
+          slot.innerHTML = `<div class="drop-slot-label">Drop sentence here</div>`;
+          
+          slot.addEventListener('dragover', handleDragOver);
+          slot.addEventListener('dragleave', handleDragLeave);
+          slot.addEventListener('drop', handleDrop);
+          
+          slotsDiv.appendChild(slot);
+        });
+
+        section.appendChild(slotsDiv);
+        container.appendChild(section);
       });
+    }
 
-      // 2. Movable: positioned first (sorted), then unpositioned
-      const display = movableSentences.map((item, i) => ({ ...item, si: i, up: userPositions[i] ?? null }));
-      const positioned = display.filter(m => m.up !== null).sort((a, b) => a.up - b.up);
-      const unpositioned = display.filter(m => m.up === null);
+    function renderAvailablePool() {
+      const pool = document.getElementById('availablePool');
+      pool.innerHTML = '';
 
-      const posCounts = {};
-      positioned.forEach(o => { posCounts[o.up] = (posCounts[o.up] || 0) + 1; });
-      const fixedSet = new Set(Object.values(fixedPositions));
-
-      [...positioned, ...unpositioned].forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'sentence-card';
-        card.id = `card-movable-${item.si}`;
-        if (item.up !== null) {
-          card.classList.add('has-number');
-          if (posCounts[item.up] > 1 || fixedSet.has(item.up)) card.classList.add('duplicate-number');
-        }
-        card.innerHTML = `
-          <div class="sentence-label">S${item.originalIndex + 1}</div>
-          <div class="sentence-content">
-            <div class="sentence-text-display">${highlightLinkingWords(item.text)}</div>
-            <div class="sentence-input">
-              <label>Order</label>
-              <input type="number" id="input-${item.si}" min="1" max="${totalSentences}"
-                     value="${item.up || ''}" placeholder="#"
-                     onblur="updatePosition(${item.si})"
-                     onkeypress="if(event.key==='Enter')this.blur()">
-            </div>
-          </div>`;
-        grid.appendChild(card);
-      });
-
-      requestAnimationFrame(() => {
-        grid.querySelectorAll('.sentence-card').forEach(c => {
-          const t = c.querySelector('.sentence-text-display');
-          if (t && Math.round(t.offsetHeight / parseFloat(getComputedStyle(t).lineHeight)) > 1) c.classList.add('multi-line');
+      // Collect all movable sentences
+      const allMovable = [];
+      paragraphsData.forEach((para, paraIdx) => {
+        para.sentences.forEach((sent) => {
+          allMovable.push({ ...sent, paraIdx });
         });
       });
-    }
 
-    function updatePosition(si) {
-      const v = parseInt(document.getElementById(`input-${si}`).value);
-      if (v >= 1 && v <= totalSentences) { userPositions[si] = v; renderSentences(); }
-      else if (document.getElementById(`input-${si}`).value === '') { delete userPositions[si]; renderSentences(); }
-    }
+      // Shuffle
+      shuffleArray(allMovable);
 
-    function checkAnswer() {
-      if (hasSubmitted) return;
-      let allFilled = true;
-      const answers = movableSentences.map((item, si) => {
-        const p = userPositions[si];
-        if (!p || p < 1 || p > totalSentences) allFilled = false;
-        return { si, userPos: p || 0, originalIndex: item.originalIndex, correctPosition: item.correctPosition };
-      });
-      if (!allFilled) { alert('Please fill in all order numbers (1 to ' + totalSentences + ').'); return; }
-
-      const all = [...answers.map(a => a.userPos), ...Object.values(fixedPositions)];
-      if (new Set(all).size !== all.length) {
-        const seen = new Set(), dupes = new Set();
-        all.forEach(p => { if (seen.has(p)) dupes.add(p); seen.add(p); });
-        const fd = [...dupes].filter(d => Object.values(fixedPositions).includes(d));
-        alert(fd.length ? `Position(s) ${fd.join(', ')} are taken by fixed sentences.` : 'Each number can only be used once!');
+      if (allMovable.length === 0) {
+        pool.classList.add('empty');
+        pool.innerHTML = '<div class="empty-message">All sentences placed!</div>';
         return;
       }
 
-      hasSubmitted = true;
-      let cc = 0; const cm = new Set();
-      answers.forEach(a => { if (a.userPos === a.correctPosition) { cc++; cm.add(a.si); } });
-      answers.forEach(a => {
-        const c = document.getElementById(`card-movable-${a.si}`);
-        if (c) { c.classList.toggle('correct', cm.has(a.si)); c.classList.toggle('incorrect', !cm.has(a.si)); }
-      });
-      Object.keys(fixedPositions).forEach(i => { const c = document.getElementById(`card-fixed-${i}`); if (c) c.classList.add('correct'); });
+      pool.classList.remove('empty');
 
-      const fc = Object.keys(fixedPositions).length;
-      showResults(Math.round(((cc + fc) / totalSentences) * 100), cc + fc);
+      allMovable.forEach((sent) => {
+        const card = createSentenceCard(sent);
+        pool.appendChild(card);
+      });
     }
 
-    function showResults(pct, correct) {
-      const s = document.getElementById('resultsScore'), m = document.getElementById('resultsMessage');
-      s.textContent = `${pct}%`;
-      if (pct === 100) { s.className = 'results-score perfect-score'; m.textContent = '🎉 Perfect! You mastered this text structure!'; }
-      else if (pct >= 80) { s.className = 'results-score'; m.textContent = `Great job! ${correct} out of ${totalSentences} correct!`; }
-      else if (pct >= 60) { s.className = 'results-score'; m.textContent = `Good effort! ${correct} out of ${totalSentences} correct. Try again!`; }
-      else { s.className = 'results-score'; m.textContent = `${correct} out of ${totalSentences} correct. Keep practising!`; }
+    function createSentenceCard(sentenceObj) {
+      const card = document.createElement('div');
+      card.className = 'sentence-card';
+      card.draggable = true;
+      card.dataset.globalIndex = sentenceObj.globalIndex;
+      card.dataset.paraIndex = sentenceObj.paraIdx;
+      card.dataset.correctSlot = sentenceObj.correctSlot;
+
+      card.innerHTML = `
+        <div class="drag-handle">⋮⋮</div>
+        <div class="sentence-label">S${sentenceObj.globalIndex + 1}</div>
+        <div class="sentence-text">${highlightLinkingWords(sentenceObj.text)}</div>
+      `;
+
+      card.addEventListener('dragstart', handleDragStart);
+      card.addEventListener('dragend', handleDragEnd);
+
+      return card;
+    }
+
+    function handleDragStart(e) {
+      draggedElement = e.currentTarget;
+      e.currentTarget.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', e.currentTarget.innerHTML);
+    }
+
+    function handleDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+    }
+
+    function handleDragOver(e) {
+      if (e.preventDefault) e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      
+      const slot = e.currentTarget;
+      if (slot.classList.contains('drop-slot') && !slot.querySelector('.sentence-card')) {
+        slot.classList.add('drag-over');
+      }
+      
+      return false;
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      if (e.stopPropagation) e.stopPropagation();
+      e.preventDefault();
+
+      const slot = e.currentTarget;
+      slot.classList.remove('drag-over');
+
+      if (!draggedElement) return;
+
+      // Check if slot is empty
+      if (slot.querySelector('.sentence-card')) {
+        return false;
+      }
+
+      // Move card to slot
+      const label = slot.querySelector('.drop-slot-label');
+      if (label) label.remove();
+      
+      slot.appendChild(draggedElement);
+      draggedElement = null;
+
+      // Check if pool is empty
+      updateAvailablePool();
+
+      return false;
+    }
+
+    function updateAvailablePool() {
+      const pool = document.getElementById('availablePool');
+      const cards = pool.querySelectorAll('.sentence-card');
+      
+      if (cards.length === 0) {
+        pool.classList.add('empty');
+        pool.innerHTML = '<div class="empty-message">✓ All sentences placed!</div>';
+      }
+    }
+
+    // Allow cards to be dragged back to pool
+    document.getElementById('availablePool').addEventListener('dragover', handleDragOver);
+    document.getElementById('availablePool').addEventListener('drop', function(e) {
+      if (e.stopPropagation) e.stopPropagation();
+      e.preventDefault();
+
+      if (!draggedElement) return;
+
+      const pool = document.getElementById('availablePool');
+      
+      // Remove empty message if exists
+      const emptyMsg = pool.querySelector('.empty-message');
+      if (emptyMsg) {
+        emptyMsg.remove();
+        pool.classList.remove('empty');
+      }
+
+      // If card came from a slot, restore the drop zone
+      const oldParent = draggedElement.parentElement;
+      if (oldParent && oldParent.classList.contains('drop-slot')) {
+        oldParent.innerHTML = '<div class="drop-slot-label">Drop sentence here</div>';
+      }
+
+      pool.appendChild(draggedElement);
+      draggedElement = null;
+    });
+
+    function checkAnswer() {
+      if (hasSubmitted) return;
+
+      let totalSentences = 0;
+      let correctCount = 0;
+
+      paragraphsData.forEach((para, paraIdx) => {
+        // Count fixed sentence as always correct
+        totalSentences++;
+        correctCount++;
+
+        // Check movable sentences
+        const slots = document.querySelectorAll(`.drop-slot[data-para-index="${paraIdx}"]`);
+        
+        slots.forEach((slot, slotIdx) => {
+          totalSentences++;
+          const card = slot.querySelector('.sentence-card');
+          
+          if (card) {
+            const correctSlot = parseInt(card.dataset.correctSlot);
+            const cardParaIdx = parseInt(card.dataset.paraIndex);
+            
+            if (cardParaIdx === paraIdx && correctSlot === (slotIdx + 1)) {
+              card.classList.add('correct');
+              correctCount++;
+            } else {
+              card.classList.add('incorrect');
+            }
+          }
+        });
+      });
+
+      // Mark all fixed sentences as correct
+      document.querySelectorAll('.fixed-sentence').forEach(fixed => {
+        fixed.style.borderColor = '#10b981';
+        fixed.style.boxShadow = '0 4px 16px rgba(16, 185, 129, 0.25)';
+      });
+
+      hasSubmitted = true;
+      const percentage = Math.round((correctCount / totalSentences) * 100);
+      showResults(percentage, correctCount, totalSentences);
+    }
+
+    function showResults(percentage, correct, total) {
+      const scoreEl = document.getElementById('resultsScore');
+      const messageEl = document.getElementById('resultsMessage');
+
+      scoreEl.textContent = `${percentage}%`;
+
+      if (percentage === 100) {
+        scoreEl.className = 'results-score perfect-score';
+        messageEl.textContent = '🎉 Perfect! You mastered this text structure!';
+      } else if (percentage >= 80) {
+        scoreEl.className = 'results-score';
+        messageEl.textContent = `Great job! ${correct} out of ${total} correct!`;
+      } else if (percentage >= 60) {
+        scoreEl.className = 'results-score';
+        messageEl.textContent = `Good effort! ${correct} out of ${total} correct. Try again!`;
+      } else {
+        scoreEl.className = 'results-score';
+        messageEl.textContent = `${correct} out of ${total} correct. Keep practicing!`;
+      }
+
       document.getElementById('resultsDisplay').classList.add('show');
       document.getElementById('submitBtn').style.display = 'none';
       document.getElementById('retryBtn').style.display = 'inline-flex';
       document.getElementById('answersBtn').style.display = 'inline-flex';
+
+      // Disable dragging after submission
+      document.querySelectorAll('.sentence-card').forEach(card => {
+        card.draggable = false;
+        card.style.cursor = 'default';
+      });
     }
 
     function retry() {
-      hasSubmitted = false; userPositions = {}; showingAnswers = false;
+      hasSubmitted = false;
+      showingAnswers = false;
+      
       document.getElementById('answersBtn').innerHTML = '<span class="btn-icon">👁</span> Answers';
       document.getElementById('answersBtn').classList.remove('showing-answers');
       document.getElementById('answersBtn').style.display = 'none';
       document.getElementById('answerKeyDisplay').classList.remove('show');
-      shuffleArray(movableSentences); renderSentences();
-      document.getElementById('resultsDisplay').classList.remove('show');
-      document.getElementById('submitBtn').style.display = 'inline-flex';
-      document.getElementById('retryBtn').style.display = 'none';
+      
+      // Reset fixed sentences styling
+      document.querySelectorAll('.fixed-sentence').forEach(fixed => {
+        fixed.style.borderColor = '';
+        fixed.style.boxShadow = '';
+      });
+      
+      renderGame();
     }
 
     function toggleAnswers() {
-      const btn = document.getElementById('answersBtn'), disp = document.getElementById('answerKeyDisplay'), cont = document.getElementById('answerKeyContent');
+      const btn = document.getElementById('answersBtn');
+      const display = document.getElementById('answerKeyDisplay');
+      const content = document.getElementById('answerKeyContent');
+
       if (showingAnswers) {
-        showingAnswers = false; btn.innerHTML = '<span class="btn-icon">👁</span> Answers';
-        btn.classList.remove('showing-answers'); disp.classList.remove('show');
+        showingAnswers = false;
+        btn.innerHTML = '<span class="btn-icon">👁</span> Answers';
+        btn.classList.remove('showing-answers');
+        display.classList.remove('show');
       } else {
-        showingAnswers = true; btn.innerHTML = '<span class="btn-icon">✕</span> Hide';
-        btn.classList.add('showing-answers'); cont.innerHTML = '';
-        sentences.forEach((s, i) => {
-          const d = document.createElement('div');
-          d.className = `answer-sentence${isFirstInParagraph[i] ? ' answer-fixed' : ''}`;
-          d.innerHTML = `<div class="answer-number">${i + 1}</div><div class="answer-text">${highlightLinkingWords(s)}</div>`;
-          cont.appendChild(d);
+        showingAnswers = true;
+        btn.innerHTML = '<span class="btn-icon">✕</span> Hide';
+        btn.classList.add('showing-answers');
+        
+        content.innerHTML = '';
+        
+        paragraphsData.forEach((para) => {
+          const paraDiv = document.createElement('div');
+          paraDiv.className = 'answer-paragraph';
+          
+          const label = document.createElement('div');
+          label.className = 'answer-para-label';
+          label.textContent = para.label;
+          paraDiv.appendChild(label);
+
+          // Fixed sentence
+          const fixedDiv = document.createElement('div');
+          fixedDiv.className = 'answer-sentence answer-fixed';
+          fixedDiv.innerHTML = `
+            <div class="answer-number">${para.fixedSentence.globalIndex + 1}</div>
+            <div class="answer-text">${highlightLinkingWords(para.fixedSentence.text)}</div>
+          `;
+          paraDiv.appendChild(fixedDiv);
+
+          // Movable sentences in correct order
+          para.sentences.forEach((sent) => {
+            const sentDiv = document.createElement('div');
+            sentDiv.className = 'answer-sentence';
+            sentDiv.innerHTML = `
+              <div class="answer-number">${sent.globalIndex + 1}</div>
+              <div class="answer-text">${highlightLinkingWords(sent.text)}</div>
+            `;
+            paraDiv.appendChild(sentDiv);
+          });
+
+          content.appendChild(paraDiv);
         });
-        disp.classList.add('show');
+
+        display.classList.add('show');
       }
     }
 
     function newGame() {
-      showingAnswers = false;
-      document.getElementById('answersBtn').innerHTML = '<span class="btn-icon">👁</span> Answers';
-      document.getElementById('answersBtn').classList.remove('showing-answers');
-      document.getElementById('answersBtn').style.display = 'none';
-      document.getElementById('answerKeyDisplay').classList.remove('show');
       window.location.href = 'index.html';
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
     }
   </script>
 </body>
