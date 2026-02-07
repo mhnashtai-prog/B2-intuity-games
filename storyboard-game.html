@@ -18,6 +18,7 @@
       overflow-x: hidden;
       min-height: 100vh;
       position: relative;
+      padding-bottom: 6rem; /* Space for fixed footer */
     }
 
     .background {
@@ -230,6 +231,8 @@
       border-radius: 0.75rem;
       margin-bottom: 1.5rem;
       border: 1px solid rgba(84, 84, 88, 0.2);
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .stat-item {
@@ -269,97 +272,6 @@
     .read-dot.used {
       background: #C9A961;
       box-shadow: 0 0 8px rgba(201, 169, 97, 0.5);
-    }
-
-    /* READING AREA */
-    .reading-area {
-      background: linear-gradient(135deg, rgba(15, 15, 17, 0.8) 0%, rgba(20, 20, 22, 0.6) 100%);
-      border-radius: 1rem;
-      padding: 2rem;
-      margin-bottom: 1.5rem;
-      min-height: 250px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(84, 84, 88, 0.25);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .reading-text {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.125rem;
-      line-height: 1.8;
-      color: #e5e5e7;
-      text-align: center;
-      max-width: 700px;
-      display: none;
-    }
-
-    .reading-text.show {
-      display: block;
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .timer-display {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 4rem;
-      font-weight: 800;
-      color: #C9A961;
-      text-shadow: 0 0 20px rgba(201, 169, 97, 0.5);
-      animation: pulse 1s ease-in-out infinite;
-      display: none;
-    }
-
-    .timer-display.show {
-      display: block;
-    }
-
-    .timer-display.warning {
-      color: #f59e0b;
-      animation: pulseWarning 0.5s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    @keyframes pulseWarning {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.8; }
-    }
-
-    .read-btn {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.75rem 1.5rem;
-      background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
-      color: #1c1c1e;
-      border: none;
-      border-radius: 0.625rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 12px rgba(201, 169, 97, 0.3);
-    }
-
-    .read-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(201, 169, 97, 0.4);
-    }
-
-    .read-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
     }
 
     /* WORD BLANKS AREA */
@@ -552,86 +464,85 @@
       letter-spacing: 0.05em;
     }
 
-    /* ACTION BUTTONS */
+    /* FIXED FOOTER BUTTONS */
     .game-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 13, 13, 0.98);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(84, 84, 88, 0.3);
+      padding: 1.25rem 2rem;
       display: flex;
-      gap: 0.75rem;
       justify-content: center;
-      flex-wrap: wrap;
+      align-items: center;
+      gap: 2.5rem;
+      z-index: 50;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
     }
 
     .game-btn {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
+      font-size: 0.875rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.75rem 1.5rem;
+      letter-spacing: 0.1em;
+      padding: 0;
       border: none;
-      border-radius: 0.75rem;
+      background: none;
       cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      color: #8e8e93;
+      position: relative;
+    }
+
+    .game-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .game-btn:hover {
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .game-btn:hover::after {
+      background: rgba(201, 169, 97, 0.6);
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
-      color: #1c1c1e;
-      box-shadow: 0 4px 16px rgba(201, 169, 97, 0.4);
+      color: #C9A961;
+      font-weight: 700;
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.5);
+      color: #d4b873;
     }
 
-    .btn-secondary {
-      background: linear-gradient(135deg, #F5F1E8 0%, #EBE6DC 100%);
-      border: 2px solid #C9A961;
-      color: #1c1c1e;
-    }
-
-    .btn-secondary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.3);
+    .btn-primary:hover::after {
+      background: #C9A961;
     }
 
     .btn-show-answers {
-      background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.1) 100%);
-      border: 2px solid rgba(201, 169, 97, 0.5);
-      color: #C9A961;
+      display: none;
     }
 
-    .btn-show-answers:hover {
-      background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(201, 169, 97, 0.2) 100%);
-      transform: translateY(-2px);
-    }
-
-    .btn-read {
-      background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
-      color: #1c1c1e;
-      box-shadow: 0 4px 16px rgba(201, 169, 97, 0.4);
-    }
-
-    .btn-read:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.5);
-    }
-
-    .btn-read:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* FLOATING READ BUTTON - NEUMORPHIC */
+    /* FLOATING READ BUTTON - AUBERGINE */
     .floating-read-btn {
       position: fixed;
-      bottom: 2rem;
+      bottom: 1.25rem; /* Same level as footer content */
       right: 2rem;
       width: 64px;
       height: 64px;
       border-radius: 50%;
-      background: linear-gradient(145deg, #e0e5ec, #ffffff);
+      background: linear-gradient(145deg, #6b4b5f, #4a2f42);
       border: none;
       display: flex;
       flex-direction: column;
@@ -639,42 +550,40 @@
       justify-content: center;
       cursor: pointer;
       box-shadow: 
-        4px 4px 8px rgba(163, 177, 198, 0.4),
-        -4px -4px 8px rgba(255, 255, 255, 0.4);
+        4px 4px 12px rgba(0, 0, 0, 0.3),
+        -2px -2px 8px rgba(107, 75, 95, 0.2);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1000;
       font-family: 'Space Grotesk', sans-serif;
     }
 
     .floating-read-btn:hover {
+      background: linear-gradient(145deg, #7a5a6e, #593d51);
       box-shadow: 
-        6px 6px 12px rgba(163, 177, 198, 0.45),
-        -6px -6px 12px rgba(255, 255, 255, 0.45);
+        6px 6px 16px rgba(0, 0, 0, 0.4),
+        -3px -3px 10px rgba(107, 75, 95, 0.3);
       transform: translateY(-2px);
     }
 
     .floating-read-btn:active {
       box-shadow: 
-        2px 2px 4px rgba(163, 177, 198, 0.4) inset,
-        -2px -2px 4px rgba(255, 255, 255, 0.3) inset;
+        2px 2px 6px rgba(0, 0, 0, 0.4) inset,
+        -1px -1px 3px rgba(107, 75, 95, 0.2) inset;
       transform: translateY(0);
     }
 
     .floating-read-btn:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
-      box-shadow: 
-        3px 3px 6px rgba(163, 177, 198, 0.3),
-        -3px -3px 6px rgba(255, 255, 255, 0.3);
+      background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
     }
 
     .read-text {
       font-size: 0.6875rem;
       font-weight: 700;
       letter-spacing: 0.08em;
-      color: #614051;
+      color: #f0e6ed;
       text-transform: uppercase;
-      text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
     }
 
     .reads-remaining {
@@ -703,7 +612,7 @@
         -1px -1px 2px rgba(255, 255, 255, 0.2);
     }
 
-    /* READING MODAL - SEPARATE OVERLAY */
+    /* READING MODAL */
     .reading-modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -720,6 +629,11 @@
     .reading-modal-overlay.show {
       display: flex;
       animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .reading-modal {
@@ -789,6 +703,16 @@
       animation: pulseWarning 0.5s ease-in-out infinite;
     }
 
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes pulseWarning {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
     /* MOBILE */
     @media (max-width: 768px) {
       .back-btn {
@@ -816,20 +740,10 @@
         bottom: -1rem;
       }
 
-      .reading-area {
-        padding: 1.5rem;
-        min-height: 180px;
-      }
-
-      .read-btn {
-        font-size: 0.6875rem;
-        padding: 0.625rem 1.25rem;
-      }
-
       .floating-read-btn {
         width: 56px;
         height: 56px;
-        bottom: 1.5rem;
+        bottom: 1rem;
         right: 1.5rem;
       }
 
@@ -864,13 +778,13 @@
         padding: 1rem;
       }
 
-      .game-btn {
-        padding: 0.625rem 1.125rem;
-        font-size: 0.6875rem;
+      .game-actions {
+        gap: 1.5rem;
+        padding: 1rem 1.5rem;
       }
 
-      .game-actions {
-        gap: 0.5rem;
+      .game-btn {
+        font-size: 0.75rem;
       }
 
       .reading-modal {
@@ -892,7 +806,7 @@
       .floating-read-btn {
         width: 52px;
         height: 52px;
-        bottom: 1rem;
+        bottom: 0.875rem;
         right: 1rem;
       }
 
@@ -919,14 +833,13 @@
         font-size: 1rem;
       }
 
-      .game-btn {
-        padding: 0.5rem 0.875rem;
-        font-size: 0.625rem;
+      .game-actions {
+        gap: 1rem;
+        padding: 1rem;
       }
 
-      .read-btn {
-        font-size: 0.625rem;
-        padding: 0.5rem 1rem;
+      .game-btn {
+        font-size: 0.6875rem;
       }
     }
   </style>
@@ -1014,23 +927,23 @@
           </div>
         </div>
       </div>
-
-      <!-- ACTIONS -->
-      <div class="game-actions">
-        <button class="game-btn btn-show-answers" id="showAnswersBtn" onclick="showAllAnswers()" style="display: none;">Show Answers</button>
-        <button class="game-btn btn-primary" onclick="nextParagraph()">Next Paragraph</button>
-        <button class="game-btn btn-secondary" onclick="resetParagraph()">Retry This One</button>
-      </div>
-
-      <!-- FLOATING READ BUTTON - NEUMORPHIC -->
-      <button class="floating-read-btn" id="readBtn" onclick="openReadingModal()" title="Read Paragraph Again">
-        <span class="read-text">READ</span>
-        <span class="reads-remaining" id="readsRemaining">5</span>
-      </button>
     </div>
   </div>
 
-  <!-- READING MODAL - SEPARATE OVERLAY -->
+  <!-- FIXED FOOTER BUTTONS -->
+  <div class="game-actions">
+    <button class="game-btn btn-show-answers" id="showAnswersBtn" onclick="showAllAnswers()">Answers</button>
+    <button class="game-btn btn-primary" onclick="nextParagraph()">Next</button>
+    <button class="game-btn" onclick="resetParagraph()">Retry</button>
+  </div>
+
+  <!-- FLOATING READ BUTTON -->
+  <button class="floating-read-btn" id="readBtn" onclick="openReadingModal()" title="Read Paragraph Again">
+    <span class="read-text">READ</span>
+    <span class="reads-remaining" id="readsRemaining">5</span>
+  </button>
+
+  <!-- READING MODAL -->
   <div class="reading-modal-overlay" id="readingModalOverlay">
     <div class="reading-modal">
       <button class="reading-modal-close" onclick="closeReadingModal()">×</button>
@@ -1066,6 +979,8 @@
     let isReading = false;
     let timerInterval = null;
     let attemptedWords = [];
+    let incorrectAttempts = 0;
+    let maxIncorrectAttempts = 5;
 
     // Load data on page load
     async function loadData() {
@@ -1120,13 +1035,9 @@
       currentParagraphIndex = index;
       currentParagraph = currentSample.paragraphs[index];
       
-      // DON'T reset revealed words - preserve progress!
-      // Only reset if this is a brand new paragraph
-      if (!words.length || index !== currentParagraphIndex) {
-        revealedWords = new Set();
-        attemptedWords = [];
-      }
-      
+      // Reset state for new paragraph
+      revealedWords = new Set();
+      attemptedWords = [];
       readsUsed = 0;
       incorrectAttempts = 0;
       
@@ -1149,23 +1060,16 @@
       document.getElementById('readsRemaining').textContent = '5';
       document.getElementById('readsRemaining').classList.remove('zero');
       
-      // Hide Show Answers button (only appears after first submission)
+      // Hide elements initially
       document.getElementById('showAnswersBtn').style.display = 'none';
+      document.getElementById('blanksArea').classList.remove('show');
+      document.getElementById('inputArea').classList.remove('show');
       
-      // Show blanks and input if we have progress
-      if (revealedWords.size > 0) {
-        renderWordBlanks();
-        document.getElementById('blanksArea').classList.add('show');
-        document.getElementById('inputArea').classList.add('show');
-      } else {
-        document.getElementById('blanksArea').classList.remove('show');
-        document.getElementById('inputArea').classList.remove('show');
-      }
-      
-      // Reset input field state
+      // Reset input field
       const input = document.getElementById('wordInput');
       if (input) {
         input.disabled = false;
+        input.value = '';
         input.placeholder = 'Type a word you remember...';
       }
       
@@ -1230,7 +1134,7 @@
       // Hide modal
       document.getElementById('readingModalOverlay').classList.remove('show');
       
-      // Show blanks and input area (preserve existing progress!)
+      // Show blanks and input area
       renderWordBlanks();
       document.getElementById('blanksArea').classList.add('show');
       document.getElementById('inputArea').classList.add('show');
@@ -1244,23 +1148,10 @@
       document.getElementById('wordInput').focus();
     }
 
-    function startReading() {
-      // This function is now replaced by openReadingModal()
-      openReadingModal();
-    }
-
-    function endReading() {
-      // This function is now replaced by closeReadingModal()
-      closeReadingModal();
-    }
-
-    let incorrectAttempts = 0;
-    let maxIncorrectAttempts = 5;
-
     function renderWordBlanks() {
       const grid = document.getElementById('wordGrid');
       
-      // If grid is empty, build it from scratch
+      // Build grid from scratch if empty
       if (grid.children.length === 0) {
         grid.innerHTML = '';
         
@@ -1281,7 +1172,6 @@
                 blank.classList.add('revealed');
                 updateStats();
                 
-                // Check if complete
                 if (revealedWords.size === words.length) {
                   showResults();
                 }
@@ -1297,7 +1187,7 @@
           }
         });
       } else {
-        // Just update existing spans - no re-render, no shake!
+        // Update existing spans
         const spans = grid.querySelectorAll('.word-blank');
         spans.forEach((span, index) => {
           const word = words[index];
@@ -1342,7 +1232,6 @@
         
         // Show warning if approaching limit
         if (incorrectAttempts === 4) {
-          // 1 attempt left warning
           const inputArea = document.getElementById('inputArea');
           const warning = document.createElement('div');
           warning.style.cssText = 'color: #f59e0b; font-size: 0.75rem; text-align: center; margin-top: 0.5rem;';
@@ -1350,10 +1239,10 @@
           inputArea.appendChild(warning);
           setTimeout(() => warning.remove(), 3000);
         } else if (incorrectAttempts >= maxIncorrectAttempts) {
-          // Max attempts reached - show "Show Answers" button
+          // Max attempts reached
           document.getElementById('showAnswersBtn').style.display = 'block';
           input.disabled = true;
-          input.placeholder = 'Maximum attempts reached. Click "Show Answers" to continue.';
+          input.placeholder = 'Maximum attempts reached. Click "Answers" to continue.';
         }
       }
       
