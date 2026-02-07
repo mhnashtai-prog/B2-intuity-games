@@ -786,6 +786,12 @@
             </div>
 
           </div>
+
+          <!-- Navigation Footer -->
+          <div class="game-actions" style="margin-top: 2rem;">
+            <button class="game-btn btn-secondary" id="prevBtnBuild" onclick="previousTopic()">← Previous</button>
+            <button class="game-btn btn-secondary" id="nextBtnBuild" onclick="nextTopic()">Next →</button>
+          </div>
         </div>
       </div>
     </div>
@@ -900,6 +906,8 @@
       const buildTopicTitle = document.getElementById('buildTopicTitle');
       const prevBtn = document.getElementById('prevBtn');
       const nextBtn = document.getElementById('nextBtn');
+      const prevBtnBuild = document.getElementById('prevBtnBuild');
+      const nextBtnBuild = document.getElementById('nextBtnBuild');
       
       const topic = getCurrentTopic();
       
@@ -915,6 +923,16 @@
       if (nextBtn) {
         nextBtn.disabled = currentTopicIndex >= allTopics.length - 1;
         nextBtn.classList.toggle('btn-disabled', currentTopicIndex >= allTopics.length - 1);
+      }
+      
+      // Build mode buttons
+      if (prevBtnBuild) {
+        prevBtnBuild.disabled = currentTopicIndex === 0;
+        prevBtnBuild.classList.toggle('btn-disabled', currentTopicIndex === 0);
+      }
+      if (nextBtnBuild) {
+        nextBtnBuild.disabled = currentTopicIndex >= allTopics.length - 1;
+        nextBtnBuild.classList.toggle('btn-disabled', currentTopicIndex >= allTopics.length - 1);
       }
     }
 
