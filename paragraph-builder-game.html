@@ -808,13 +808,28 @@
       // Select a random opener
       const randomOpener = openers[Math.floor(Math.random() * openers.length)];
       
+      // Create the opener sentence (combine with base if opener ends with 'that')
+      let openerText = randomOpener;
+      let baseText = sentenceData.base;
+      
+      // If opener ends with 'that', combine it with lowercase base sentence
+      if (randomOpener.trim().endsWith('that')) {
+        const baseLowercase = sentenceData.base.charAt(0).toLowerCase() + sentenceData.base.slice(1);
+        openerText = `${randomOpener} ${baseLowercase}`;
+        baseText = null; // Don't add base separately
+      }
+      
       // Build the complete sentence sequence including opener
       const allSentences = [
-        { text: randomOpener, order: 0, type: 'opener' },
-        { text: sentenceData.base, order: 1, type: 'topic' }
+        { text: openerText, order: 0, type: 'opener' }
       ];
+      
+      // Add base sentence only if it wasn't combined with opener
+      if (baseText) {
+        allSentences.push({ text: baseText, order: 1, type: 'topic' });
+      }
 
-      let order = 2;
+      let order = baseText ? 2 : 1;
       buildSequence.forEach(type => {
         if (sentenceData[type] && sentenceData[type].length > 0) {
           const options = sentenceData[type];
