@@ -242,75 +242,182 @@
     }
 
     /* ========================================
-       BUILD MODE - STEVE JOBS MINIMALIST STYLE
+       BUILD MODE - PHONE NEUMORPHIC STAGES
        ======================================== */
     
     .build-container {
-      max-width: 700px;
-      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 2rem 1rem;
+      min-height: 70vh;
     }
 
-    /* Introductory Sentence - No box, just text */
+    .phone-container {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+      border-radius: 2.5rem;
+      padding: 2rem 1.5rem;
+      box-shadow: 
+        20px 20px 60px #050505,
+        -20px -20px 60px #1f1f1f,
+        inset 2px 2px 5px rgba(255, 255, 255, 0.03),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .build-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .build-brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      background: linear-gradient(135deg, #C9A961 0%, #d4b46e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.35rem;
+    }
+
+    .build-topic-title {
+      font-size: 0.8rem;
+      color: #6b7280;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Intro Section */
+    .intro-section {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .intro-label {
+      font-size: 0.7rem;
+      color: #C9A961;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
     .intro-sentence {
       font-family: 'Crimson Text', serif;
-      font-size: 2rem;
-      line-height: 1.5;
-      color: #f5f5f7;
-      text-align: center;
-      margin-bottom: 4rem;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #e5e5e5;
       font-weight: 400;
-      transition: opacity 0.4s ease;
     }
 
-    .intro-sentence .opener-text {
+    .opener-text {
       color: #34d399;
       font-weight: 500;
     }
 
-    .intro-sentence .topic-text {
+    .topic-text {
       color: #fbbf24;
       font-weight: 500;
     }
 
-    /* Category Buttons - Minimal, elegant */
-    .category-buttons {
+    /* Stage Items */
+    .stages-container {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 4rem;
+      gap: 0.75rem;
+    }
+
+    .stage-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.25rem 0;
+      transition: all 0.3s ease;
+    }
+
+    .stage-item:hover {
+      transform: translateX(4px);
+    }
+
+    /* Label Circle */
+    .stage-label {
+      flex-shrink: 0;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+      box-shadow: 
+        6px 6px 12px #050505,
+        -6px -6px 12px #252525,
+        inset 1px 1px 2px rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ca3af;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .stage-label:hover {
+      color: #C9A961;
+      border-color: rgba(201, 169, 97, 0.3);
+      box-shadow: 
+        6px 6px 12px #050505,
+        -6px -6px 12px #252525,
+        inset 1px 1px 2px rgba(201, 169, 97, 0.1);
+    }
+
+    .stage-label.active {
+      background: linear-gradient(145deg, #C9A961, #b89650);
+      color: #0a0a0a;
+      border-color: #C9A961;
+      box-shadow: 
+        0 0 15px rgba(201, 169, 97, 0.3),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Content */
+    .stage-content {
+      flex: 1;
+      padding-top: 0.25rem;
+    }
+
+    .stage-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #d1d5db;
+      font-weight: 400;
+      min-height: 45px;
+      display: flex;
       align-items: center;
     }
 
-    .category-btn {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #9ca3af;
-      background: transparent;
-      border: none;
-      padding: 0.75rem 2rem;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      letter-spacing: 0.02em;
-      border-radius: 0.5rem;
+    .stage-text.empty {
+      color: #4b5563;
+      font-style: italic;
+      font-size: 0.85rem;
     }
 
-    .category-btn:hover {
-      color: #f5f5f7;
-      background: rgba(255, 255, 255, 0.05);
-      transform: translateX(8px);
+    .placeholder-dots {
+      display: inline-block;
+      color: #374151;
     }
 
-    /* Built Paragraph - Clean, flowing text */
-    .built-paragraph {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.3rem;
-      line-height: 1.8;
-      color: #d1d5db;
-      text-align: center;
-      margin-bottom: 3rem;
-      min-height: 100px;
+    /* Linking words highlight */
+    .linking-highlight {
+      color: #60a5fa;
+      font-weight: 600;
     }
 
     .built-sentence {
@@ -327,19 +434,6 @@
         opacity: 1;
         filter: blur(0);
       }
-    }
-
-    .built-sentence .linking-highlight {
-      color: #60a5fa;
-      font-weight: 600;
-    }
-
-    /* Build Footer - Minimal navigation */
-    .build-footer {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-top: 3rem;
     }
 
     /* ACTIONS */
@@ -408,7 +502,7 @@
       transform: none;
     }
 
-    /* MODAL - Using saved architecture */
+    /* MODAL */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -442,76 +536,29 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
     .modal-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
+      font-size: 1.25rem;
       color: #C9A961;
       text-transform: uppercase;
-      text-align: center;
-    }
-
-    .modal-option {
-      display: flex;
-      align-items: start;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 0.75rem;
-      transition: all 0.3s;
-    }
-
-    .modal-option:hover {
-      background: rgba(0, 0, 0, 0.5);
-      border-color: rgba(255, 255, 255, 0.08);
-    }
-
-    .option-number {
-      font-weight: 700;
-      color: #C9A961;
-      min-width: 2rem;
-    }
-
-    .option-text {
-      flex: 1;
-      color: #e5e7eb;
-      line-height: 1.6;
-    }
-
-    .use-btn {
-      padding: 0.5rem 1rem;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-      color: #000;
-      border: none;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-transform: uppercase;
-      white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-    }
-
-    .use-btn:hover {
-      background: linear-gradient(135deg, #34d399 0%, #6ee7b7 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      letter-spacing: 0.1em;
+      font-weight: 600;
     }
 
     .modal-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
       width: 2rem;
       height: 2rem;
       border-radius: 50%;
       background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #8e8e93;
+      color: #9ca3af;
       font-size: 1.25rem;
       cursor: pointer;
       transition: all 0.3s;
@@ -522,8 +569,44 @@
 
     .modal-close:hover {
       background: rgba(0, 0, 0, 0.6);
-      color: #e5e5e7;
-      border-color: rgba(255, 255, 255, 0.15);
+      color: #e5e5e5;
+    }
+
+    .modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .modal-option {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 0.75rem;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .modal-option:hover {
+      background: rgba(0, 0, 0, 0.5);
+      border-color: rgba(201, 169, 97, 0.3);
+      transform: translateX(4px);
+    }
+
+    .option-number {
+      font-weight: 700;
+      color: #C9A961;
+      min-width: 2rem;
+    }
+
+    .option-text {
+      flex: 1;
+      color: #d1d5db;
+      line-height: 1.6;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
     }
 
     /* SCROLLBAR */
@@ -546,18 +629,31 @@
 
     /* MOBILE */
     @media (max-width: 768px) {
+      .phone-container {
+        border-radius: 1.5rem;
+        padding: 1.5rem 1.25rem;
+      }
+
+      .stage-label {
+        width: 55px;
+        height: 55px;
+        font-size: 0.55rem;
+      }
+
+      .stage-text {
+        font-size: 0.9rem;
+      }
+
       .intro-sentence {
-        font-size: 1.5rem;
-        margin-bottom: 3rem;
+        font-size: 1rem;
       }
-
-      .category-btn {
-        font-size: 0.85rem;
-        padding: 0.65rem 1.5rem;
-      }
-
-      .built-paragraph {
+      
+      .build-brand {
         font-size: 1.1rem;
+      }
+      
+      .build-topic-title {
+        font-size: 0.75rem;
       }
     }
   </style>
@@ -609,44 +705,100 @@
       </div>
     </div>
 
-    <!-- BUILD MODE - STEVE JOBS MINIMALIST -->
+    <!-- BUILD MODE - PHONE NEUMORPHIC STAGES -->
     <div class="game-screen" id="buildMode">
       <div class="build-container">
-        <!-- Introductory Sentence (Auto-populated) -->
-        <div class="intro-sentence" id="introSentence">
-          <!-- Opener + Topic will be auto-inserted here -->
-        </div>
+        <div class="phone-container">
+          <div class="build-header">
+            <div class="build-brand">INTUITY</div>
+            <div class="build-topic-title" id="buildTopicTitle">Loading...</div>
+          </div>
 
-        <!-- Category Buttons (Always visible) -->
-        <div class="category-buttons" id="categoryButtons">
-          <button class="category-btn" onclick="openCategoryModal('explain')">Explain</button>
-          <button class="category-btn" onclick="openCategoryModal('reason')">Reason</button>
-          <button class="category-btn" onclick="openCategoryModal('example')">Example</button>
-          <button class="category-btn" onclick="openCategoryModal('result')">Result</button>
-          <button class="category-btn" onclick="openCategoryModal('compare')">Compare</button>
-          <button class="category-btn" onclick="openCategoryModal('contrast')">Contrast</button>
-        </div>
+          <!-- Introductory Sentence -->
+          <div class="intro-section">
+            <div class="intro-label">Introduction</div>
+            <div class="intro-sentence" id="introSentence">
+              <!-- Opener + Topic will be inserted here -->
+            </div>
+          </div>
 
-        <!-- Built Paragraph Display -->
-        <div class="built-paragraph" id="builtParagraph">
-          <!-- Selected sentences appear here -->
-        </div>
+          <!-- Paragraph Stages -->
+          <div class="stages-container" id="stagesContainer">
+            
+            <!-- REASON -->
+            <div class="stage-item">
+              <div class="stage-label" onclick="openStageModal('reason')">
+                Reason
+              </div>
+              <div class="stage-content">
+                <div class="stage-text empty" data-category="reason">
+                  <span class="placeholder-dots">. . .</span>
+                </div>
+              </div>
+            </div>
 
-        <!-- Simple Footer Navigation -->
-        <div class="build-footer">
-          <button class="game-btn btn-secondary" id="prevBtnBuild" onclick="previousTopic()">← Previous</button>
-          <button class="game-btn btn-secondary" id="nextBtnBuild" onclick="nextTopic()">Next →</button>
+            <!-- EXAMPLE -->
+            <div class="stage-item">
+              <div class="stage-label" onclick="openStageModal('example')">
+                Example
+              </div>
+              <div class="stage-content">
+                <div class="stage-text empty" data-category="example">
+                  <span class="placeholder-dots">. . .</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- RESULT -->
+            <div class="stage-item">
+              <div class="stage-label" onclick="openStageModal('result')">
+                Result
+              </div>
+              <div class="stage-content">
+                <div class="stage-text empty" data-category="result">
+                  <span class="placeholder-dots">. . .</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- COMPARE -->
+            <div class="stage-item">
+              <div class="stage-label" onclick="openStageModal('compare')">
+                Compare
+              </div>
+              <div class="stage-content">
+                <div class="stage-text empty" data-category="compare">
+                  <span class="placeholder-dots">. . .</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CONTRAST -->
+            <div class="stage-item">
+              <div class="stage-label" onclick="openStageModal('contrast')">
+                Contrast
+              </div>
+              <div class="stage-content">
+                <div class="stage-text empty" data-category="contrast">
+                  <span class="placeholder-dots">. . .</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL (Saved Architecture) -->
+  <!-- MODAL for sentence selection -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()">×</button>
-      <h2 class="modal-title" id="modalTitle">Select Option</h2>
-      <div id="modalOptions"></div>
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Select Option</div>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-options" id="modalOptions"></div>
     </div>
   </div>
 
@@ -670,8 +822,14 @@
     let hasCheckedOrder = false;
 
     // BUILD MODE STATE
-    let buildSentences = [];
     let currentCategory = '';
+    let selectedSentences = {
+      reason: null,
+      example: null,
+      result: null,
+      compare: null,
+      contrast: null
+    };
 
     // LOAD DATA FROM JSON FILES
     async function loadData() {
@@ -739,14 +897,14 @@
     function updateTopicDisplay() {
       const topicTitle = document.getElementById('topicTitle');
       const topicCounter = document.getElementById('topicCounter');
+      const buildTopicTitle = document.getElementById('buildTopicTitle');
       const prevBtn = document.getElementById('prevBtn');
       const nextBtn = document.getElementById('nextBtn');
-      const prevBtnBuild = document.getElementById('prevBtnBuild');
-      const nextBtnBuild = document.getElementById('nextBtnBuild');
       
       const topic = getCurrentTopic();
       
       if (topicTitle) topicTitle.textContent = topic.title || 'Topic';
+      if (buildTopicTitle) buildTopicTitle.textContent = topic.title || 'Topic';
       if (topicCounter) topicCounter.textContent = `${currentTopicIndex + 1} / ${allTopics.length}`;
       
       // Order mode buttons
@@ -757,16 +915,6 @@
       if (nextBtn) {
         nextBtn.disabled = currentTopicIndex >= allTopics.length - 1;
         nextBtn.classList.toggle('btn-disabled', currentTopicIndex >= allTopics.length - 1);
-      }
-      
-      // Build mode buttons
-      if (prevBtnBuild) {
-        prevBtnBuild.disabled = currentTopicIndex === 0;
-        prevBtnBuild.classList.toggle('btn-disabled', currentTopicIndex === 0);
-      }
-      if (nextBtnBuild) {
-        nextBtnBuild.disabled = currentTopicIndex >= allTopics.length - 1;
-        nextBtnBuild.classList.toggle('btn-disabled', currentTopicIndex >= allTopics.length - 1);
       }
     }
 
@@ -968,90 +1116,104 @@
     }
 
     // ========================================
-    // BUILD MODE - MINIMALIST STEVE JOBS STYLE
+    // BUILD MODE - PHONE NEUMORPHIC STAGES
     // ========================================
     
     function initBuild() {
-      buildSentences = [];
+      // Reset selections
+      selectedSentences = {
+        reason: null,
+        example: null,
+        result: null,
+        compare: null,
+        contrast: null
+      };
       
       const topic = getCurrentTopic();
       const introSentence = document.getElementById('introSentence');
-      const builtParagraph = document.getElementById('builtParagraph');
       
       // Auto-select random opener
       const randomOpener = openers[Math.floor(Math.random() * openers.length)];
       
-      // Display opener + topic sentence
+      // Display opener + topic sentence with smart combination
       if (topic.base) {
-        const baseSentence = topic.base.charAt(0).toLowerCase() + topic.base.slice(1);
-        introSentence.innerHTML = `<span class="opener-text">${randomOpener}</span> <span class="topic-text">${baseSentence}</span>`;
+        // If opener ends with 'that', combine it with lowercase base sentence
+        if (randomOpener.trim().endsWith('that')) {
+          const baseLowercase = topic.base.charAt(0).toLowerCase() + topic.base.slice(1);
+          introSentence.innerHTML = `<span class="opener-text">${randomOpener}</span> <span class="topic-text">${baseLowercase}</span>`;
+        } else {
+          // Otherwise, display them separately
+          introSentence.innerHTML = `<span class="opener-text">${randomOpener}</span> <span class="topic-text">${topic.base}</span>`;
+        }
       }
       
-      // Clear built paragraph
-      builtParagraph.innerHTML = '';
+      // Reset all stage texts
+      document.querySelectorAll('.stage-text').forEach(text => {
+        text.innerHTML = '<span class="placeholder-dots">. . .</span>';
+        text.classList.add('empty');
+      });
+      
+      // Reset all stage labels
+      document.querySelectorAll('.stage-label').forEach(label => {
+        label.classList.remove('active');
+      });
     }
 
-    function openCategoryModal(category) {
+    function openStageModal(category) {
       currentCategory = category;
       const topic = getCurrentTopic();
       const modal = document.getElementById('modalOverlay');
       const modalTitle = document.getElementById('modalTitle');
       const modalOptions = document.getElementById('modalOptions');
-      
-      // Set modal title
+
       modalTitle.textContent = category.toUpperCase();
-      
-      // Get options for this category
+
       const options = topic[category] || [];
-      
-      // Populate modal with options
       let html = '';
+      
       options.forEach((option, index) => {
+        const highlighted = highlightLinkingWordsForBuild(option);
         html += `
-          <div class="modal-option">
+          <div class="modal-option" onclick="selectStageOption(${index})">
             <div class="option-number">${index + 1}.</div>
-            <div class="option-text">${option}</div>
-            <button class="use-btn" onclick="selectBuildOption(${index})">
-              <span style="margin-right: 0.25rem;">+</span> USE
-            </button>
+            <div class="option-text">${highlighted}</div>
           </div>
         `;
       });
-      
+
       modalOptions.innerHTML = html;
       modal.classList.add('show');
     }
 
-    function selectBuildOption(index) {
+    function selectStageOption(index) {
       const topic = getCurrentTopic();
       const selectedText = topic[currentCategory][index];
       
-      // Add to build sentences
-      buildSentences.push(selectedText);
+      selectedSentences[currentCategory] = selectedText;
       
-      // Update paragraph display
-      renderBuiltParagraph();
-      
-      // Close modal
+      // Find the stage text element and update it
+      const stageText = document.querySelector(`.stage-text[data-category="${currentCategory}"]`);
+      if (stageText) {
+        const highlighted = highlightLinkingWordsForBuild(selectedText);
+        stageText.innerHTML = `<span class="built-sentence">${highlighted}</span>`;
+        stageText.classList.remove('empty');
+        
+        // Activate the label
+        const stageItem = stageText.closest('.stage-item');
+        const label = stageItem.querySelector('.stage-label');
+        label.classList.add('active');
+      }
+
       closeModal();
     }
 
-    function renderBuiltParagraph() {
-      const builtParagraph = document.getElementById('builtParagraph');
-      
-      let html = '';
-      buildSentences.forEach((sentence, index) => {
-        // Highlight linking words
-        let highlighted = sentence;
-        linkingWords.forEach(word => {
-          const regex = new RegExp(`\\b(${word})\\b`, 'gi');
-          highlighted = highlighted.replace(regex, '<span class="linking-highlight">$1</span>');
-        });
-        
-        html += `<span class="built-sentence">${highlighted} </span>`;
+    function highlightLinkingWordsForBuild(text) {
+      let result = text;
+      linkingWords.forEach(word => {
+        const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+        result = result.replace(regex, '<span class="linking-highlight">$1</span>');
       });
-      
-      builtParagraph.innerHTML = html;
+      return result;
     }
 
     function closeModal() {
