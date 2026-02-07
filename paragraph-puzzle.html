@@ -37,7 +37,7 @@
       margin: 0 auto; 
       position: relative;
       z-index: 2;
-      padding: 0 1rem;
+      padding: 0 1rem 6rem 1rem; /* Added bottom padding for fixed buttons */
     }
 
     /* BACK BUTTON */
@@ -201,8 +201,8 @@
 
     .building-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 700;
+      font-size: 0.75rem;
+      font-weight: 600;
       color: #636366;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -231,10 +231,9 @@
       border-radius: 0.5rem;
       color: #4a4a4a;
       font-size: 1.125rem;
-      cursor: move;
+      cursor: grab;
       transition: all 0.2s;
       user-select: none;
-      touch-action: none;
       position: relative;
     }
 
@@ -256,8 +255,12 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
+    .built-word:not(.sentence-first):active {
+      cursor: grabbing;
+    }
+
     .built-word.dragging {
-      opacity: 0.4;
+      opacity: 0.5;
       cursor: grabbing;
     }
 
@@ -271,71 +274,74 @@
       border-color: rgba(239, 68, 68, 0.5);
     }
 
-    /* ACTION BUTTONS */
+    /* FIXED FOOTER BUTTONS */
     .game-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 13, 13, 0.98);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(84, 84, 88, 0.3);
+      padding: 1.25rem 2rem;
       display: flex;
-      gap: 0.75rem;
       justify-content: center;
-      flex-wrap: wrap;
+      align-items: center;
+      gap: 2.5rem;
+      z-index: 50;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
     }
 
     .game-btn {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
+      font-size: 0.875rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.75rem 1.5rem;
+      letter-spacing: 0.1em;
+      padding: 0;
       border: none;
-      border-radius: 0.75rem;
+      background: none;
       cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      color: #8e8e93;
+      position: relative;
+    }
+
+    .game-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .game-btn:hover {
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .game-btn:hover::after {
+      background: rgba(201, 169, 97, 0.6);
     }
 
     .btn-submit {
-      background: linear-gradient(135deg, #C9A961 0%, #B89650 100%);
-      color: #1c1c1e;
-      box-shadow: 0 4px 16px rgba(201, 169, 97, 0.4);
+      color: #C9A961;
+      font-weight: 700;
     }
 
     .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.5);
+      color: #d4b873;
     }
 
-    .btn-clear {
-      background: linear-gradient(135deg, rgba(201, 169, 97, 0.2) 0%, rgba(201, 169, 97, 0.1) 100%);
-      border: 2px solid rgba(201, 169, 97, 0.5);
-      color: #C9A961;
-    }
-
-    .btn-clear:hover {
-      background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(201, 169, 97, 0.2) 100%);
-      transform: translateY(-2px);
+    .btn-submit:hover::after {
+      background: #C9A961;
     }
 
     .btn-show-answer {
-      background: linear-gradient(135deg, #F5F1E8 0%, #EBE6DC 100%);
-      border: 2px solid #C9A961;
-      color: #1c1c1e;
       display: none;
-    }
-
-    .btn-show-answer:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.3);
-    }
-
-    .btn-secondary {
-      background: linear-gradient(135deg, #F5F1E8 0%, #EBE6DC 100%);
-      border: 2px solid #C9A961;
-      color: #1c1c1e;
-    }
-
-    .btn-secondary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(201, 169, 97, 0.3);
     }
 
     /* RESULTS */
@@ -400,12 +406,12 @@
     /* FLOATING READ BUTTON */
     .floating-read-btn {
       position: fixed;
-      bottom: 2rem;
+      bottom: 7rem; /* Above footer buttons */
       right: 2rem;
       width: 64px;
       height: 64px;
       border-radius: 50%;
-      background: linear-gradient(145deg, #e0e5ec, #ffffff);
+      background: linear-gradient(145deg, #6b4b5f, #4a2f42);
       border: none;
       display: flex;
       flex-direction: column;
@@ -413,30 +419,32 @@
       justify-content: center;
       cursor: pointer;
       box-shadow: 
-        4px 4px 8px rgba(163, 177, 198, 0.4),
-        -4px -4px 8px rgba(255, 255, 255, 0.4);
+        4px 4px 12px rgba(0, 0, 0, 0.3),
+        -2px -2px 8px rgba(107, 75, 95, 0.2);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1000;
       font-family: 'Space Grotesk', sans-serif;
     }
 
     .floating-read-btn:hover {
+      background: linear-gradient(145deg, #7a5a6e, #593d51);
       box-shadow: 
-        6px 6px 12px rgba(163, 177, 198, 0.45),
-        -6px -6px 12px rgba(255, 255, 255, 0.45);
+        6px 6px 16px rgba(0, 0, 0, 0.4),
+        -3px -3px 10px rgba(107, 75, 95, 0.3);
       transform: translateY(-2px);
     }
 
     .floating-read-btn:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
+      background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
     }
 
     .read-text {
       font-size: 0.6875rem;
       font-weight: 700;
       letter-spacing: 0.08em;
-      color: #614051;
+      color: #f0e6ed;
       text-transform: uppercase;
     }
 
@@ -571,9 +579,17 @@
         padding: 0.375rem 0.75rem;
       }
 
+      .game-actions {
+        gap: 1.5rem;
+        padding: 1rem 1.5rem;
+      }
+
       .game-btn {
-        font-size: 0.6875rem;
-        padding: 0.625rem 1.25rem;
+        font-size: 0.75rem;
+      }
+
+      .floating-read-btn {
+        bottom: 6rem;
       }
     }
 
@@ -587,9 +603,13 @@
         padding: 0.3rem 0.625rem;
       }
 
+      .game-actions {
+        gap: 1rem;
+        padding: 1rem;
+      }
+
       .game-btn {
-        font-size: 0.625rem;
-        padding: 0.5rem 1rem;
+        font-size: 0.6875rem;
       }
     }
   </style>
@@ -646,7 +666,7 @@
 
       <!-- BUILDING AREA -->
       <div class="building-area">
-        <div class="building-title">Drag Words to Reorder (Blue words are sentence anchors)</div>
+        <div class="building-title">Tap and hold to drag words • Blue words stay in place</div>
         <div class="built-sentence" id="builtSentence"></div>
       </div>
 
@@ -664,22 +684,22 @@
           </div>
         </div>
       </div>
-
-      <!-- ACTIONS -->
-      <div class="game-actions">
-        <button class="game-btn btn-submit" onclick="submitAnswer()">Submit</button>
-        <button class="game-btn btn-clear" onclick="shuffleWords()">Shuffle Again</button>
-        <button class="game-btn btn-show-answer" id="showAnswerBtn" onclick="showAnswer()">Show Answer</button>
-        <button class="game-btn btn-secondary" onclick="nextParagraph()">Next Paragraph</button>
-        <button class="game-btn btn-secondary" onclick="resetPuzzle()">Retry This One</button>
-      </div>
     </div>
+  </div>
+
+  <!-- FIXED FOOTER BUTTONS -->
+  <div class="game-actions">
+    <button class="game-btn btn-submit" onclick="submitAnswer()">Check</button>
+    <button class="game-btn" onclick="shuffleWords()">Shuffle</button>
+    <button class="game-btn btn-show-answer" id="showAnswerBtn" onclick="showAnswer()">Answer</button>
+    <button class="game-btn" onclick="nextParagraph()">Next</button>
+    <button class="game-btn" onclick="resetPuzzle()">Retry</button>
   </div>
 
   <!-- FLOATING READ BUTTON -->
   <button class="floating-read-btn" id="readBtn" onclick="openReadingModal()" title="Read Paragraph">
     <span class="read-text">READ</span>
-    <span class="reads-remaining" id="readsRemaining">3</span>
+    <span class="reads-remaining" id="readsRemaining">4</span>
   </button>
 
   <!-- READING MODAL -->
@@ -687,7 +707,7 @@
     <div class="reading-modal">
       <button class="reading-modal-close" onclick="closeReadingModal()">×</button>
       <div class="reading-modal-text" id="readingModalText"></div>
-      <div class="reading-modal-timer" id="readingModalTimer">20</div>
+      <div class="reading-modal-timer" id="readingModalTimer">25</div>
     </div>
   </div>
 
@@ -716,16 +736,20 @@
     let builtWords = [];
     let sentenceFirstWords = []; // Track sentence-starting words
     let readsUsed = 0;
-    let maxReads = 3;
+    let maxReads = 4; // Changed from 3 to 4
     let isReading = false;
     let timerInterval = null;
+    
+    // Improved drag state
     let draggedElement = null;
     let draggedIndex = null;
-
-    // Touch support
+    let isCurrentlyDragging = false;
+    
+    // Touch state
     let touchStartX = 0;
     let touchStartY = 0;
-    let isDragging = false;
+    let isTouching = false;
+    let touchMoveThreshold = 10; // Pixels to move before considering it a drag
 
     // Load data
     async function loadData() {
@@ -844,83 +868,100 @@
         
         return `
           <span class="built-word ${sentenceFirstClass}" 
-                draggable="${!isSentenceFirst}" 
                 data-index="${index}"
-                ${!isSentenceFirst ? `
-                  ondragstart="handleDragStart(event)"
-                  ondragover="handleDragOver(event)"
-                  ondrop="handleDrop(event)"
-                  ondragend="handleDragEnd(event)"
-                  ontouchstart="handleTouchStart(event)"
-                  ontouchmove="handleTouchMove(event)"
-                  ontouchend="handleTouchEnd(event)"
-                ` : ''}>
+                ${!isSentenceFirst ? 'draggable="true"' : ''}>
             ${word}
           </span>
         `;
       }).join('');
+      
+      // Add event listeners after rendering
+      attachWordEventListeners();
     }
 
-    // DRAG AND DROP HANDLERS (only for non-sentence-first words)
+    function attachWordEventListeners() {
+      const words = document.querySelectorAll('.built-word:not(.sentence-first)');
+      
+      words.forEach(word => {
+        // Remove old listeners by cloning
+        const newWord = word.cloneNode(true);
+        word.parentNode.replaceChild(newWord, word);
+      });
+      
+      // Re-query after cloning
+      const freshWords = document.querySelectorAll('.built-word:not(.sentence-first)');
+      
+      freshWords.forEach(word => {
+        // Desktop drag
+        word.addEventListener('dragstart', handleDragStart, false);
+        word.addEventListener('dragover', handleDragOver, false);
+        word.addEventListener('drop', handleDrop, false);
+        word.addEventListener('dragend', handleDragEnd, false);
+        
+        // Mobile touch with improved handling
+        word.addEventListener('touchstart', handleTouchStart, { passive: false });
+        word.addEventListener('touchmove', handleTouchMove, { passive: false });
+        word.addEventListener('touchend', handleTouchEnd, { passive: false });
+      });
+    }
+
+    // DRAG HANDLERS
     function handleDragStart(e) {
-      const word = e.target.textContent.trim();
-      if (sentenceFirstWords.includes(word)) {
-        e.preventDefault();
-        return;
-      }
+      if (isCurrentlyDragging) return;
       
       draggedElement = e.target;
       draggedIndex = parseInt(e.target.dataset.index);
+      isCurrentlyDragging = true;
+      
       e.target.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', e.target.innerHTML);
     }
 
     function handleDragOver(e) {
-      e.preventDefault();
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
       e.dataTransfer.dropEffect = 'move';
+      return false;
     }
 
     function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
       e.preventDefault();
-      e.stopPropagation();
       
       const dropTarget = e.target.closest('.built-word:not(.sentence-first)');
-      if (!dropTarget || dropTarget === draggedElement) return;
+      if (!dropTarget || dropTarget === draggedElement || !draggedElement) return;
       
       const dropIndex = parseInt(dropTarget.dataset.index);
       
       // Check if both words are in the same sentence
       if (!areInSameSentence(draggedIndex, dropIndex)) {
-        return; // Cannot swap words across sentence boundaries
-      }
-      
-      // Swap words (only if neither is a sentence-first word)
-      const dragWord = builtWords[draggedIndex];
-      const dropWord = builtWords[dropIndex];
-      
-      if (sentenceFirstWords.includes(dragWord) || sentenceFirstWords.includes(dropWord)) {
         return;
       }
       
+      // Swap words
       const temp = builtWords[draggedIndex];
       builtWords[draggedIndex] = builtWords[dropIndex];
       builtWords[dropIndex] = temp;
       
       renderBuiltSentence();
+      
+      return false;
     }
 
     function handleDragEnd(e) {
       e.target.classList.remove('dragging');
+      isCurrentlyDragging = false;
       draggedElement = null;
       draggedIndex = null;
     }
 
-    // TOUCH HANDLERS FOR MOBILE
+    // IMPROVED TOUCH HANDLERS
     function handleTouchStart(e) {
-      const word = e.target.textContent.trim();
-      if (sentenceFirstWords.includes(word)) {
-        return;
-      }
+      if (isTouching || isCurrentlyDragging) return;
       
       const touch = e.touches[0];
       touchStartX = touch.clientX;
@@ -928,20 +969,26 @@
       
       draggedElement = e.target.closest('.built-word');
       draggedIndex = parseInt(draggedElement.dataset.index);
-      isDragging = true;
+      isTouching = true;
       
-      draggedElement.classList.add('dragging');
+      // Don't add dragging class yet - wait for movement
       e.preventDefault();
     }
 
     function handleTouchMove(e) {
-      if (!isDragging) return;
+      if (!isTouching || !draggedElement) return;
       
       const touch = e.touches[0];
       const deltaX = Math.abs(touch.clientX - touchStartX);
       const deltaY = Math.abs(touch.clientY - touchStartY);
       
-      if (deltaX > 5 || deltaY > 5) {
+      // Only start dragging if moved past threshold
+      if ((deltaX > touchMoveThreshold || deltaY > touchMoveThreshold) && !isCurrentlyDragging) {
+        isCurrentlyDragging = true;
+        draggedElement.classList.add('dragging');
+      }
+      
+      if (isCurrentlyDragging) {
         const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
         const dropTarget = elementUnderTouch?.closest('.built-word:not(.sentence-first)');
         
@@ -949,28 +996,23 @@
           const dropIndex = parseInt(dropTarget.dataset.index);
           
           // Check if both words are in the same sentence
-          if (!areInSameSentence(draggedIndex, dropIndex)) {
-            return; // Cannot swap words across sentence boundaries
+          if (areInSameSentence(draggedIndex, dropIndex)) {
+            // Swap words
+            const temp = builtWords[draggedIndex];
+            builtWords[draggedIndex] = builtWords[dropIndex];
+            builtWords[dropIndex] = temp;
+            
+            // Update dragged index
+            draggedIndex = dropIndex;
+            
+            renderBuiltSentence();
+            
+            // Re-get the dragged element after re-render
+            draggedElement = document.querySelector(`[data-index="${dropIndex}"]`);
+            if (draggedElement) {
+              draggedElement.classList.add('dragging');
+            }
           }
-          
-          // Check neither word is sentence-first
-          const dragWord = builtWords[draggedIndex];
-          const dropWord = builtWords[dropIndex];
-          
-          if (sentenceFirstWords.includes(dragWord) || sentenceFirstWords.includes(dropWord)) {
-            return;
-          }
-          
-          // Swap words
-          const temp = builtWords[draggedIndex];
-          builtWords[draggedIndex] = builtWords[dropIndex];
-          builtWords[dropIndex] = temp;
-          
-          draggedIndex = dropIndex;
-          renderBuiltSentence();
-          
-          draggedElement = document.querySelector(`[data-index="${dropIndex}"]`);
-          draggedElement.classList.add('dragging');
         }
       }
       
@@ -982,7 +1024,8 @@
         draggedElement.classList.remove('dragging');
       }
       
-      isDragging = false;
+      isTouching = false;
+      isCurrentlyDragging = false;
       draggedElement = null;
       draggedIndex = null;
       
@@ -991,7 +1034,6 @@
 
     // Helper function to check if two word indices are in the same sentence
     function areInSameSentence(index1, index2) {
-      // Find which sentence each index belongs to
       let currentIndex = 0;
       const text = currentParagraph.text;
       const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
@@ -1010,11 +1052,11 @@
         const index2InThisSentence = index2 >= sentenceStartIndex && index2 <= sentenceEndIndex;
         
         if (index1InThisSentence && index2InThisSentence) {
-          return true; // Both in same sentence
+          return true;
         }
         
         if (index1InThisSentence || index2InThisSentence) {
-          return false; // One is in this sentence, other is not
+          return false;
         }
         
         currentIndex += words.length;
@@ -1119,12 +1161,12 @@
       const modalTimer = document.getElementById('readingModalTimer');
       
       modalText.textContent = currentParagraph.text;
-      modalTimer.textContent = '20';
+      modalTimer.textContent = '25'; // Changed from 20 to 25
       modalTimer.classList.remove('warning');
       
       modalOverlay.classList.add('show');
       
-      let timeLeft = 20;
+      let timeLeft = 25; // Changed from 20 to 25
       timerInterval = setInterval(() => {
         timeLeft--;
         modalTimer.textContent = timeLeft;
@@ -1156,7 +1198,7 @@
       readBtn.disabled = false;
       
       const counterEl = document.getElementById('readsRemaining');
-      counterEl.textContent = '3';
+      counterEl.textContent = '4'; // Changed from 3 to 4
       counterEl.classList.remove('zero');
     }
 
