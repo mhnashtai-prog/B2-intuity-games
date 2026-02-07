@@ -600,12 +600,7 @@
     </div>
   </div>
 
-  <div class="container">
-    <!-- BACK BUTTON -->
-    <button class="back-btn" onclick="window.location.href='/index.html?openModal=writing&submenu=sentence-structure'">
-      <span>←</span>
-      <span>Back</span>
-    </button>
+  <button class="back-btn" onclick="goBack()"><span>←</span><span>Back</span></button>
 
   <div class="container">
     <header class="header">
@@ -688,7 +683,7 @@
   <script>
     // DATA CONFIGURATION
     const CONFIG = {
-      masterDataFile: 'data/master-data.json'
+      masterDataFile: 'master-data.json'
     };
 
     // DATA STORAGE
