@@ -241,55 +241,84 @@
       padding-left: 0.75rem !important;
     }
 
-    /* BUILD MODE */
+    /* ========================================
+       BUILD MODE - STEVE JOBS MINIMALIST STYLE
+       ======================================== */
+    
     .build-container {
-      max-width: 900px;
+      max-width: 700px;
       margin: 0 auto;
+      padding: 2rem 1rem;
     }
 
-    .build-display {
-      background: rgba(28, 28, 30, 0.95);
-      backdrop-filter: blur(60px) saturate(180%);
-      border: 1px solid rgba(84, 84, 88, 0.4);
-      border-radius: 1.5rem;
-      padding: 3rem 2.5rem;
-      min-height: 500px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
-      margin-bottom: 1.5rem;
+    /* Introductory Sentence - No box, just text */
+    .intro-sentence {
+      font-family: 'Crimson Text', serif;
+      font-size: 2rem;
+      line-height: 1.5;
+      color: #f5f5f7;
+      text-align: center;
+      margin-bottom: 4rem;
+      font-weight: 400;
+      transition: opacity 0.4s ease;
     }
 
-    .build-content {
-      display: flex;
-      gap: 2rem;
-      align-items: flex-start;
+    .intro-sentence .opener-text {
+      color: #34d399;
+      font-weight: 500;
     }
 
-    /* PARAGRAPH DISPLAY (RIGHT SIDE) */
-    .paragraph-display {
-      flex: 1;
+    .intro-sentence .topic-text {
+      color: #fbbf24;
+      font-weight: 500;
+    }
+
+    /* Category Buttons - Minimal, elegant */
+    .category-buttons {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      min-height: 400px;
+      gap: 1rem;
+      margin-bottom: 4rem;
+      align-items: center;
     }
 
-    .paragraph-text {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.5rem;
-      line-height: 1.7;
+    .category-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #9ca3af;
+      background: transparent;
+      border: none;
+      padding: 0.75rem 2rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.02em;
+      border-radius: 0.5rem;
+    }
+
+    .category-btn:hover {
       color: #f5f5f7;
-      font-weight: 400;
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(8px);
     }
 
-    .sentence-part {
+    /* Built Paragraph - Clean, flowing text */
+    .built-paragraph {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.3rem;
+      line-height: 1.8;
+      color: #d1d5db;
+      text-align: center;
+      margin-bottom: 3rem;
+      min-height: 100px;
+    }
+
+    .built-sentence {
       display: inline;
+      animation: fadeIn 0.6s ease-out;
     }
 
-    .sentence-part.new {
-      animation: fadeInSentence 0.8s ease-out;
-    }
-
-    @keyframes fadeInSentence {
+    @keyframes fadeIn {
       from {
         opacity: 0;
         filter: blur(4px);
@@ -300,74 +329,17 @@
       }
     }
 
-    .opener-text {
-      color: #34d399;
-      font-weight: 500;
-    }
-
-    .topic-text {
-      color: #fbbf24;
-      font-weight: 500;
-    }
-
-    .linking-highlight {
+    .built-sentence .linking-highlight {
       color: #60a5fa;
       font-weight: 600;
     }
 
-    /* OPTIONS LIST (LEFT SIDE) */
-    .options-list {
-      width: 280px;
-      flex-shrink: 0;
+    /* Build Footer - Minimal navigation */
+    .build-footer {
       display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .option-item {
-      font-family: 'Crimson Text', serif;
-      font-size: 1rem;
-      line-height: 1.5;
-      color: #9ca3af;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      padding: 0.875rem 1rem;
-      border-radius: 0.5rem;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      text-align: left;
-    }
-
-    .option-item:hover {
-      color: #f5f5f7;
-      background: rgba(201, 169, 97, 0.15);
-      border-color: rgba(201, 169, 97, 0.3);
-      transform: translateX(4px);
-    }
-
-    .option-item.selected {
-      background: rgba(201, 169, 97, 0.2);
-      color: #f5f5f7;
-      border-color: rgba(201, 169, 97, 0.4);
-    }
-
-    /* PROMPT TEXT */
-    .prompt-hint {
-      margin-top: 2rem;
-      text-align: center;
-      color: #6b7280;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-weight: 500;
-    }
-
-    .build-instruction {
-      text-align: center;
-      color: #8e8e93;
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.02em;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 3rem;
     }
 
     /* ACTIONS */
@@ -436,116 +408,122 @@
       transform: none;
     }
 
-    /* MODAL */
-    .modal-backdrop {
+    /* MODAL - Using saved architecture */
+    .modal-overlay {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(20px);
-      z-index: 2000;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 2rem;
+      z-index: 9999;
     }
 
-    .modal-backdrop.show {
-      display: flex;
+    .modal-overlay.show { 
+      display: flex; 
     }
 
     .modal-content {
-      background: rgba(28, 28, 30, 0.95);
+      position: relative;
+      background: rgba(20, 20, 22, 0.95);
       backdrop-filter: blur(40px) saturate(150%);
-      border: 1px solid rgba(84, 84, 88, 0.4);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
       border-radius: 1.5rem;
-      padding: 2.5rem 2rem;
+      padding: 2rem;
       max-width: 700px;
       width: 100%;
-      max-height: 80vh;
+      max-height: 85vh;
       overflow-y: auto;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.9),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .modal-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1rem;
-      color: #8e8e93;
-      text-align: center;
-      margin-bottom: 2.5rem;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #C9A961;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
-      font-weight: 600;
-    }
-
-    .modal-options {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+      text-align: center;
     }
 
     .modal-option {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.3rem;
-      line-height: 1.6;
-      color: #9ca3af;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      font-weight: 400;
-      padding: 1.25rem;
+      display: flex;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 0.75rem;
-      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.3s;
     }
 
     .modal-option:hover {
-      color: #f5f5f7;
-      background: rgba(201, 169, 97, 0.1);
-      transform: translateX(8px);
+      background: rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .option-number {
+      font-weight: 700;
+      color: #C9A961;
+      min-width: 2rem;
+    }
+
+    .option-text {
+      flex: 1;
+      color: #e5e7eb;
+      line-height: 1.6;
+    }
+
+    .use-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      color: #000;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .use-btn:hover {
+      background: linear-gradient(135deg, #34d399 0%, #6ee7b7 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
     }
 
     .modal-close {
       position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
-      font-size: 1.75rem;
-      color: #666;
+      top: 1rem;
+      right: 1rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #8e8e93;
+      font-size: 1.25rem;
       cursor: pointer;
-      transition: all 0.3s ease;
-      width: 36px;
-      height: 36px;
+      transition: all 0.3s;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 0.5rem;
-      background: rgba(0, 0, 0, 0.3);
     }
 
     .modal-close:hover {
-      color: #f5f5f7;
-      background: rgba(0, 0, 0, 0.5);
-      transform: rotate(90deg);
-    }
-
-    /* OPENER MODAL */
-    .opener-option {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.2rem;
-      line-height: 1.5;
-      color: #9ca3af;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      font-weight: 400;
-      padding: 1rem;
-      border-radius: 0.75rem;
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .opener-option:hover {
-      color: #34d399;
-      background: rgba(52, 211, 153, 0.1);
-      transform: translateX(8px);
+      background: rgba(0, 0, 0, 0.6);
+      color: #e5e5e7;
+      border-color: rgba(255, 255, 255, 0.15);
     }
 
     /* SCROLLBAR */
@@ -568,24 +546,18 @@
 
     /* MOBILE */
     @media (max-width: 768px) {
-      .build-content {
-        flex-direction: column-reverse;
+      .intro-sentence {
+        font-size: 1.5rem;
+        margin-bottom: 3rem;
       }
 
-      .options-list {
-        width: 100%;
+      .category-btn {
+        font-size: 0.85rem;
+        padding: 0.65rem 1.5rem;
       }
 
-      .paragraph-display {
-        min-height: 300px;
-      }
-
-      .paragraph-text {
-        font-size: 1.3rem;
-      }
-
-      .option-item {
-        font-size: 0.95rem;
+      .built-paragraph {
+        font-size: 1.1rem;
       }
     }
   </style>
@@ -637,46 +609,44 @@
       </div>
     </div>
 
-    <!-- BUILD MODE -->
+    <!-- BUILD MODE - STEVE JOBS MINIMALIST -->
     <div class="game-screen" id="buildMode">
       <div class="build-container">
-        <div class="build-instruction" id="buildInstruction">
-          Choose an opener to begin
+        <!-- Introductory Sentence (Auto-populated) -->
+        <div class="intro-sentence" id="introSentence">
+          <!-- Opener + Topic will be auto-inserted here -->
         </div>
 
-        <div class="build-display">
-          <div class="build-content">
-            <!-- LEFT SIDE: Options List -->
-            <div class="options-list" id="optionsList">
-              <!-- Options will be dynamically inserted here -->
-            </div>
-
-            <!-- RIGHT SIDE: Paragraph Display -->
-            <div class="paragraph-display">
-              <div class="paragraph-text" id="buildParagraph">
-                <span class="sentence-part topic-text">Click an option to start building your paragraph.</span>
-              </div>
-            </div>
-          </div>
+        <!-- Category Buttons (Always visible) -->
+        <div class="category-buttons" id="categoryButtons">
+          <button class="category-btn" onclick="openCategoryModal('explain')">Explain</button>
+          <button class="category-btn" onclick="openCategoryModal('reason')">Reason</button>
+          <button class="category-btn" onclick="openCategoryModal('example')">Example</button>
+          <button class="category-btn" onclick="openCategoryModal('result')">Result</button>
+          <button class="category-btn" onclick="openCategoryModal('compare')">Compare</button>
+          <button class="category-btn" onclick="openCategoryModal('contrast')">Contrast</button>
         </div>
 
-        <div class="game-actions">
+        <!-- Built Paragraph Display -->
+        <div class="built-paragraph" id="builtParagraph">
+          <!-- Selected sentences appear here -->
+        </div>
+
+        <!-- Simple Footer Navigation -->
+        <div class="build-footer">
           <button class="game-btn btn-secondary" id="prevBtnBuild" onclick="previousTopic()">← Previous</button>
-          <button class="game-btn btn-primary" id="openerBtn" onclick="showOpenerModal()">Choose Opener</button>
-          <button class="game-btn btn-secondary" onclick="copyBuildText()">Copy</button>
-          <button class="game-btn btn-secondary" onclick="resetBuild()">Reset</button>
           <button class="game-btn btn-secondary" id="nextBtnBuild" onclick="nextTopic()">Next →</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL -->
-  <div class="modal-backdrop" id="modalBackdrop" onclick="closeModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-close" onclick="closeModal()">×</div>
-      <div class="modal-title" id="modalTitle">Choose an option</div>
-      <div class="modal-options" id="modalOptions"></div>
+  <!-- MODAL (Saved Architecture) -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <h2 class="modal-title" id="modalTitle">Select Option</h2>
+      <div id="modalOptions"></div>
     </div>
   </div>
 
@@ -700,38 +670,30 @@
     let hasCheckedOrder = false;
 
     // BUILD MODE STATE
-    let buildParts = [];
-    let buildOpener = '';
-    let currentBuildStep = 'opener'; // 'opener', 'explain', 'reason', etc.
-    let buildSequence = ['explain', 'reason', 'example', 'result', 'compare', 'contrast'];
-    let currentStepIndex = 0;
+    let buildSentences = [];
+    let currentCategory = '';
 
     // LOAD DATA FROM JSON FILES
     async function loadData() {
       try {
-        // Load master data file
         const response = await fetch(CONFIG.masterDataFile);
         masterData = await response.json();
 
-        // Extract data
         allTopics = masterData.topics || [];
         
-        // Combine all opener categories into one array
+        // Combine all opener categories
         openers = [];
         if (masterData.openers) {
           Object.values(masterData.openers).forEach(category => {
             openers = openers.concat(category);
           });
-          // Remove duplicates
           openers = [...new Set(openers)];
         }
         
         linkingWords = masterData.linking_words || [];
 
-        // Set initial topic
         if (allTopics.length > 0) {
           currentTopicIndex = 0;
-          // Initialize modes after data is loaded
           initOrder();
           initBuild();
           updateTopicDisplay();
@@ -742,12 +704,11 @@
       }
     }
 
-    // GET CURRENT TOPIC DATA
     function getCurrentTopic() {
       return allTopics[currentTopicIndex] || {};
     }
 
-    // NAVIGATION FUNCTIONS
+    // NAVIGATION
     function nextTopic() {
       if (currentTopicIndex < allTopics.length - 1) {
         currentTopicIndex++;
@@ -778,42 +739,31 @@
     function updateTopicDisplay() {
       const topicTitle = document.getElementById('topicTitle');
       const topicCounter = document.getElementById('topicCounter');
-      
-      // Order mode buttons
       const prevBtn = document.getElementById('prevBtn');
       const nextBtn = document.getElementById('nextBtn');
-      
-      // Build mode buttons
       const prevBtnBuild = document.getElementById('prevBtnBuild');
       const nextBtnBuild = document.getElementById('nextBtnBuild');
       
       const topic = getCurrentTopic();
       
-      if (topicTitle) {
-        topicTitle.textContent = topic.title || 'Topic';
-      }
+      if (topicTitle) topicTitle.textContent = topic.title || 'Topic';
+      if (topicCounter) topicCounter.textContent = `${currentTopicIndex + 1} / ${allTopics.length}`;
       
-      if (topicCounter) {
-        topicCounter.textContent = `${currentTopicIndex + 1} / ${allTopics.length}`;
-      }
-      
-      // Enable/disable navigation buttons for ORDER mode
+      // Order mode buttons
       if (prevBtn) {
         prevBtn.disabled = currentTopicIndex === 0;
         prevBtn.classList.toggle('btn-disabled', currentTopicIndex === 0);
       }
-      
       if (nextBtn) {
         nextBtn.disabled = currentTopicIndex >= allTopics.length - 1;
         nextBtn.classList.toggle('btn-disabled', currentTopicIndex >= allTopics.length - 1);
       }
       
-      // Enable/disable navigation buttons for BUILD mode
+      // Build mode buttons
       if (prevBtnBuild) {
         prevBtnBuild.disabled = currentTopicIndex === 0;
         prevBtnBuild.classList.toggle('btn-disabled', currentTopicIndex === 0);
       }
-      
       if (nextBtnBuild) {
         nextBtnBuild.disabled = currentTopicIndex >= allTopics.length - 1;
         nextBtnBuild.classList.toggle('btn-disabled', currentTopicIndex >= allTopics.length - 1);
@@ -846,16 +796,25 @@
       }
     }
 
+    // ========================================
     // ORDER MODE
+    // ========================================
+    const buildSequence = ['explain', 'reason', 'example', 'result', 'compare', 'contrast'];
+
     function initOrder() {
       const sentenceData = getCurrentTopic();
       if (!sentenceData.base) return;
 
+      // Select a random opener
+      const randomOpener = openers[Math.floor(Math.random() * openers.length)];
+      
+      // Build the complete sentence sequence including opener
       const allSentences = [
-        { text: sentenceData.base, order: 0, type: 'topic' }
+        { text: randomOpener, order: 0, type: 'opener' },
+        { text: sentenceData.base, order: 1, type: 'topic' }
       ];
 
-      let order = 1;
+      let order = 2;
       buildSequence.forEach(type => {
         if (sentenceData[type] && sentenceData[type].length > 0) {
           const options = sentenceData[type];
@@ -866,7 +825,6 @@
 
       orderCorrectSequence = [...allSentences];
       
-      // Shuffle
       let shuffled = [...allSentences];
       do {
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -994,162 +952,95 @@
       initOrder();
     }
 
-    // BUILD MODE
+    // ========================================
+    // BUILD MODE - MINIMALIST STEVE JOBS STYLE
+    // ========================================
+    
     function initBuild() {
-      buildParts = [];
-      buildOpener = '';
-      currentBuildStep = 'opener';
-      currentStepIndex = 0;
-      renderBuild();
-    }
-
-    function renderBuild() {
-      const sentenceData = getCurrentTopic();
-      const container = document.getElementById('buildParagraph');
-      const instruction = document.getElementById('buildInstruction');
-      const optionsList = document.getElementById('optionsList');
-      const openerBtn = document.getElementById('openerBtn');
-
-      // Update instruction
-      if (!buildOpener) {
-        instruction.textContent = 'Choose an opener to begin';
-        openerBtn.textContent = 'Choose Opener';
-      } else if (buildParts.length === 0) {
-        instruction.textContent = 'Select an option to continue building';
-        openerBtn.textContent = 'Change Opener';
-      } else {
-        instruction.textContent = `Step ${buildParts.length} of ${buildSequence.length}`;
-        openerBtn.textContent = 'Change Opener';
-      }
-
-      // Render paragraph
-      if (buildParts.length === 0 && !buildOpener) {
-        container.innerHTML = '<span class="sentence-part topic-text">Click an option to start building your paragraph.</span>';
-      } else {
-        let html = '';
-        
-        // Add opener
-        if (buildOpener) {
-          html += `<span class="sentence-part opener-text">${buildOpener} </span>`;
-          
-          // Add base sentence (lowercased)
-          const baseSentence = sentenceData.base.charAt(0).toLowerCase() + sentenceData.base.slice(1);
-          html += `<span class="sentence-part topic-text">${baseSentence} </span>`;
-        }
-
-        // Add built parts
-        buildParts.forEach((part, index) => {
-          const isNew = index === buildParts.length - 1;
-          let text = part.text;
-          
-          // Highlight linking words
-          linkingWords.forEach(word => {
-            const regex = new RegExp(`\\b(${word})\\b`, 'gi');
-            text = text.replace(regex, '<span class="linking-highlight">$1</span>');
-          });
-
-          html += `<span class="sentence-part${isNew ? ' new' : ''}">${text}${index < buildParts.length - 1 ? ' ' : ''}</span>`;
-        });
-
-        container.innerHTML = html;
-      }
-
-      // Render options list
-      renderOptionsList();
-    }
-
-    function renderOptionsList() {
-      const sentenceData = getCurrentTopic();
-      const optionsList = document.getElementById('optionsList');
+      buildSentences = [];
       
-      if (!buildOpener) {
-        optionsList.innerHTML = '<div class="option-item" style="cursor: default; color: #666;">Choose an opener first</div>';
-        return;
+      const topic = getCurrentTopic();
+      const introSentence = document.getElementById('introSentence');
+      const builtParagraph = document.getElementById('builtParagraph');
+      
+      // Auto-select random opener
+      const randomOpener = openers[Math.floor(Math.random() * openers.length)];
+      
+      // Display opener + topic sentence
+      if (topic.base) {
+        const baseSentence = topic.base.charAt(0).toLowerCase() + topic.base.slice(1);
+        introSentence.innerHTML = `<span class="opener-text">${randomOpener}</span> <span class="topic-text">${baseSentence}</span>`;
       }
+      
+      // Clear built paragraph
+      builtParagraph.innerHTML = '';
+    }
 
-      if (currentStepIndex >= buildSequence.length) {
-        optionsList.innerHTML = '<div class="option-item" style="cursor: default; color: #34d399;">Paragraph complete!</div>';
-        return;
-      }
-
-      const currentType = buildSequence[currentStepIndex];
-      const options = sentenceData[currentType] || [];
-
+    function openCategoryModal(category) {
+      currentCategory = category;
+      const topic = getCurrentTopic();
+      const modal = document.getElementById('modalOverlay');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalOptions = document.getElementById('modalOptions');
+      
+      // Set modal title
+      modalTitle.textContent = category.toUpperCase();
+      
+      // Get options for this category
+      const options = topic[category] || [];
+      
+      // Populate modal with options
       let html = '';
       options.forEach((option, index) => {
-        html += `<div class="option-item" onclick="selectBuildOption(${index})">${option}</div>`;
+        html += `
+          <div class="modal-option">
+            <div class="option-number">${index + 1}.</div>
+            <div class="option-text">${option}</div>
+            <button class="use-btn" onclick="selectBuildOption(${index})">
+              <span style="margin-right: 0.25rem;">+</span> USE
+            </button>
+          </div>
+        `;
       });
-
-      optionsList.innerHTML = html;
-    }
-
-    function selectBuildOption(index) {
-      const sentenceData = getCurrentTopic();
-      if (!buildOpener || currentStepIndex >= buildSequence.length) return;
-
-      const currentType = buildSequence[currentStepIndex];
-      const selectedText = sentenceData[currentType][index];
-
-      buildParts.push({ text: selectedText, type: currentType });
-      currentStepIndex++;
-
-      renderBuild();
-    }
-
-    function showOpenerModal() {
-      const modal = document.getElementById('modalBackdrop');
-      const title = document.getElementById('modalTitle');
-      const options = document.getElementById('modalOptions');
-
-      title.textContent = 'Choose an opener';
-
-      let html = '';
-      openers.forEach((opener, index) => {
-        html += `<div class="opener-option" onclick="selectOpener(${index})">${opener}...</div>`;
-      });
-
-      options.innerHTML = html;
+      
+      modalOptions.innerHTML = html;
       modal.classList.add('show');
     }
 
-    function selectOpener(index) {
-      buildOpener = openers[index];
-      closeModal();
-      renderBuild();
-    }
-
-    function copyBuildText() {
-      const sentenceData = getCurrentTopic();
-      let text = '';
+    function selectBuildOption(index) {
+      const topic = getCurrentTopic();
+      const selectedText = topic[currentCategory][index];
       
-      if (buildOpener) {
-        const baseSentence = sentenceData.base.charAt(0).toLowerCase() + sentenceData.base.slice(1);
-        text = `${buildOpener} ${baseSentence} ${buildParts.map(p => p.text).join(' ')}`;
-      }
-
-      if (!text) {
-        alert('No text to copy yet!');
-        return;
-      }
-
-      navigator.clipboard.writeText(text).then(() => {
-        const instruction = document.getElementById('buildInstruction');
-        const original = instruction.textContent;
-        instruction.textContent = 'Copied to clipboard!';
-        instruction.style.color = '#34d399';
-        setTimeout(() => {
-          instruction.textContent = original;
-          instruction.style.color = '#8e8e93';
-        }, 1500);
-      });
+      // Add to build sentences
+      buildSentences.push(selectedText);
+      
+      // Update paragraph display
+      renderBuiltParagraph();
+      
+      // Close modal
+      closeModal();
     }
 
-    function resetBuild() {
-      initBuild();
+    function renderBuiltParagraph() {
+      const builtParagraph = document.getElementById('builtParagraph');
+      
+      let html = '';
+      buildSentences.forEach((sentence, index) => {
+        // Highlight linking words
+        let highlighted = sentence;
+        linkingWords.forEach(word => {
+          const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+          highlighted = highlighted.replace(regex, '<span class="linking-highlight">$1</span>');
+        });
+        
+        html += `<span class="built-sentence">${highlighted} </span>`;
+      });
+      
+      builtParagraph.innerHTML = html;
     }
 
     function closeModal() {
-      document.getElementById('modalBackdrop').classList.remove('show');
+      document.getElementById('modalOverlay').classList.remove('show');
     }
 
     function goBack() {
@@ -1161,7 +1052,14 @@
       if (e.key === 'Escape') closeModal();
     });
 
-    // INIT - Load data then initialize
+    // Click outside modal to close
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    // INIT
     loadData();
   </script>
 
