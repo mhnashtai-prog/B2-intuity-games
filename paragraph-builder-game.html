@@ -243,94 +243,41 @@
 
     /* BUILD MODE */
     .build-container {
-      display: flex;
-      gap: 2rem;
-      align-items: flex-start;
-      max-width: 1100px;
+      max-width: 900px;
       margin: 0 auto;
     }
 
-    /* LEFT PANEL - TOPICS */
-    .topics-panel {
-      width: 200px;
-      flex-shrink: 0;
-      background: rgba(28, 28, 30, 0.6);
-      backdrop-filter: blur(30px);
-      border: 1px solid rgba(84, 84, 88, 0.3);
-      border-radius: 1rem;
-      padding: 1.5rem 1rem;
-    }
-
-    .topics-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: #C9A961;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid rgba(201, 169, 97, 0.2);
-    }
-
-    .topic-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .topic-item {
-      font-size: 0.95rem;
-      color: #8e8e93;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      text-transform: capitalize;
-      font-weight: 500;
-    }
-
-    .topic-item:hover {
-      color: #C9A961;
-      background: rgba(201, 169, 97, 0.1);
-      transform: translateX(4px);
-    }
-
-    .topic-item.used {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-
-    .topic-item.used:hover {
-      color: #8e8e93;
-      background: transparent;
-      transform: none;
-    }
-
-    /* SLIDE DISPLAY */
-    .slide-display {
-      flex: 1;
+    .build-display {
       background: rgba(28, 28, 30, 0.95);
       backdrop-filter: blur(60px) saturate(180%);
       border: 1px solid rgba(84, 84, 88, 0.4);
       border-radius: 1.5rem;
       padding: 3rem 2.5rem;
       min-height: 500px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+      margin-bottom: 1.5rem;
+    }
+
+    .build-content {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* PARAGRAPH DISPLAY (RIGHT SIDE) */
+    .paragraph-display {
+      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: center;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+      min-height: 400px;
     }
 
     .paragraph-text {
       font-family: 'Crimson Text', serif;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       line-height: 1.7;
       color: #f5f5f7;
-      text-align: center;
-      max-width: 700px;
       font-weight: 400;
     }
 
@@ -368,6 +315,42 @@
       font-weight: 600;
     }
 
+    /* OPTIONS LIST (LEFT SIDE) */
+    .options-list {
+      width: 280px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .option-item {
+      font-family: 'Crimson Text', serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #9ca3af;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0.875rem 1rem;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: left;
+    }
+
+    .option-item:hover {
+      color: #f5f5f7;
+      background: rgba(201, 169, 97, 0.15);
+      border-color: rgba(201, 169, 97, 0.3);
+      transform: translateX(4px);
+    }
+
+    .option-item.selected {
+      background: rgba(201, 169, 97, 0.2);
+      color: #f5f5f7;
+      border-color: rgba(201, 169, 97, 0.4);
+    }
+
     /* PROMPT TEXT */
     .prompt-hint {
       margin-top: 2rem;
@@ -377,6 +360,14 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       font-weight: 500;
+    }
+
+    .build-instruction {
+      text-align: center;
+      color: #8e8e93;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.02em;
     }
 
     /* ACTIONS */
@@ -577,28 +568,24 @@
 
     /* MOBILE */
     @media (max-width: 768px) {
-      .build-container {
-        flex-direction: column;
+      .build-content {
+        flex-direction: column-reverse;
       }
 
-      .topics-panel {
+      .options-list {
         width: 100%;
-        order: 2;
       }
 
-      .slide-display {
-        order: 1;
-        padding: 2rem 1.5rem;
-        min-height: 400px;
+      .paragraph-display {
+        min-height: 300px;
       }
 
       .paragraph-text {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
       }
 
-      .modal-option {
-        font-size: 1.1rem;
-        padding: 1rem;
+      .option-item {
+        font-size: 0.95rem;
       }
     }
   </style>
@@ -619,6 +606,10 @@
     <header class="header">
       <h1>INTUITY</h1>
       <p class="subtitle">Paragraph Builder</p>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem;">
+        <span id="topicTitle" style="font-size: 0.9rem; color: #C9A961; font-weight: 600;">Loading...</span>
+        <span id="topicCounter" style="font-size: 0.75rem; color: #8e8e93; font-weight: 500;">0 / 0</span>
+      </div>
     </header>
 
     <!-- MODE TOGGLE -->
@@ -637,9 +628,11 @@
         </div>
 
         <div class="game-actions">
+          <button class="game-btn btn-secondary" id="prevBtn" onclick="previousTopic()">← Previous</button>
           <button class="game-btn btn-primary" id="checkBtn" onclick="checkOrder()">Check</button>
           <button class="game-btn btn-secondary" id="retryBtn" onclick="retryOrder()" style="display:none;">Retry</button>
           <button class="game-btn btn-secondary" onclick="newSentence()">New</button>
+          <button class="game-btn btn-secondary" id="nextBtn" onclick="nextTopic()">Next →</button>
         </div>
       </div>
     </div>
@@ -647,32 +640,33 @@
     <!-- BUILD MODE -->
     <div class="game-screen" id="buildMode">
       <div class="build-container">
-        <!-- LEFT PANEL -->
-        <div class="topics-panel">
-          <div class="topics-title">Add Next</div>
-          <div class="topic-list" id="topicList">
-            <div class="topic-item" data-topic="explain" onclick="selectTopic('explain')">Explain</div>
-            <div class="topic-item" data-topic="reason" onclick="selectTopic('reason')">Reason</div>
-            <div class="topic-item" data-topic="example" onclick="selectTopic('example')">Example</div>
-            <div class="topic-item" data-topic="result" onclick="selectTopic('result')">Result</div>
-            <div class="topic-item" data-topic="compare" onclick="selectTopic('compare')">Compare</div>
-            <div class="topic-item" data-topic="contrast" onclick="selectTopic('contrast')">Contrast</div>
+        <div class="build-instruction" id="buildInstruction">
+          Choose an opener to begin
+        </div>
+
+        <div class="build-display">
+          <div class="build-content">
+            <!-- LEFT SIDE: Options List -->
+            <div class="options-list" id="optionsList">
+              <!-- Options will be dynamically inserted here -->
+            </div>
+
+            <!-- RIGHT SIDE: Paragraph Display -->
+            <div class="paragraph-display">
+              <div class="paragraph-text" id="buildParagraph">
+                <span class="sentence-part topic-text">Click an option to start building your paragraph.</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- SLIDE DISPLAY -->
-        <div class="slide-display">
-          <div class="paragraph-text" id="buildParagraph">
-            <span class="sentence-part topic-text">Technology allows students to access information more quickly.</span>
-          </div>
-          <div class="prompt-hint" id="buildPrompt">Choose an opener to begin</div>
+        <div class="game-actions">
+          <button class="game-btn btn-secondary" id="prevBtnBuild" onclick="previousTopic()">← Previous</button>
+          <button class="game-btn btn-primary" id="openerBtn" onclick="showOpenerModal()">Choose Opener</button>
+          <button class="game-btn btn-secondary" onclick="copyBuildText()">Copy</button>
+          <button class="game-btn btn-secondary" onclick="resetBuild()">Reset</button>
+          <button class="game-btn btn-secondary" id="nextBtnBuild" onclick="nextTopic()">Next →</button>
         </div>
-      </div>
-
-      <div class="game-actions">
-        <button class="game-btn btn-primary" id="openerBtn" onclick="showOpenerModal()">Choose Opener</button>
-        <button class="game-btn btn-secondary" onclick="copyBuildText()">Copy</button>
-        <button class="game-btn btn-secondary" onclick="resetBuild()">Reset</button>
       </div>
     </div>
   </div>
@@ -687,56 +681,17 @@
   </div>
 
   <script>
-    // DATA
-    const sentenceData = {
-      base: "Technology allows students to access information more quickly.",
-      explain: [
-        "This means students can find what they need with just a few clicks.",
-        "This helps learners get answers to questions without waiting for a teacher.",
-        "This gives students more control over how they find and use information."
-      ],
-      reason: [
-        "Online search tools bring results together in one place.",
-        "Websites and digital libraries store large amounts of up-to-date information.",
-        "Many schools use online platforms that give direct access to learning materials."
-      ],
-      example: [
-        "For example, a student can search for science facts online instead of looking through several books.",
-        "A teenager can watch a short video to understand a maths problem more clearly.",
-        "A learner can download a reading text from the school platform in a few seconds."
-      ],
-      result: [
-        "As a result, students spend less time searching and more time learning.",
-        "This leads to homework being completed more efficiently.",
-        "This means learners can explore extra topics that interest them."
-      ],
-      compare: [
-        "Compared to using only printed books, using technology is much faster.",
-        "In contrast to older methods, modern tools provide results in a few seconds.",
-        "Compared to students in the past, today's learners can access information more quickly."
-      ],
-      contrast: [
-        "However, some students feel overwhelmed when there is too much information online.",
-        "On the other hand, not all websites give accurate or reliable facts.",
-        "In contrast, slow internet connections can still delay students' work."
-      ]
+    // DATA CONFIGURATION
+    const CONFIG = {
+      masterDataFile: 'master-data.json'
     };
 
-    const openers = [
-      "It is widely recognised that",
-      "It is generally accepted that",
-      "From my point of view,",
-      "In recent years,",
-      "Nowadays,",
-      "One important point is that"
-    ];
-
-    const linkingWords = [
-      'this means', 'this helps', 'this gives', 'this is because', 
-      'for example', 'for instance', 'as a result', 'therefore', 
-      'however', 'on the other hand', 'compared to', 'in contrast',
-      'online', 'websites', 'many schools'
-    ];
+    // DATA STORAGE
+    let masterData = {};
+    let allTopics = [];
+    let currentTopicIndex = 0;
+    let openers = [];
+    let linkingWords = [];
 
     // STATE
     let currentMode = 'order';
@@ -746,9 +701,124 @@
 
     // BUILD MODE STATE
     let buildParts = [];
-    let buildUsedTopics = {};
     let buildOpener = '';
-    let selectedTopic = '';
+    let currentBuildStep = 'opener'; // 'opener', 'explain', 'reason', etc.
+    let buildSequence = ['explain', 'reason', 'example', 'result', 'compare', 'contrast'];
+    let currentStepIndex = 0;
+
+    // LOAD DATA FROM JSON FILES
+    async function loadData() {
+      try {
+        // Load master data file
+        const response = await fetch(CONFIG.masterDataFile);
+        masterData = await response.json();
+
+        // Extract data
+        allTopics = masterData.topics || [];
+        
+        // Combine all opener categories into one array
+        openers = [];
+        if (masterData.openers) {
+          Object.values(masterData.openers).forEach(category => {
+            openers = openers.concat(category);
+          });
+          // Remove duplicates
+          openers = [...new Set(openers)];
+        }
+        
+        linkingWords = masterData.linking_words || [];
+
+        // Set initial topic
+        if (allTopics.length > 0) {
+          currentTopicIndex = 0;
+          // Initialize modes after data is loaded
+          initOrder();
+          initBuild();
+          updateTopicDisplay();
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+        alert('Error loading master-data.json file. Please ensure the file is available.');
+      }
+    }
+
+    // GET CURRENT TOPIC DATA
+    function getCurrentTopic() {
+      return allTopics[currentTopicIndex] || {};
+    }
+
+    // NAVIGATION FUNCTIONS
+    function nextTopic() {
+      if (currentTopicIndex < allTopics.length - 1) {
+        currentTopicIndex++;
+        resetCurrentMode();
+        updateTopicDisplay();
+      }
+    }
+
+    function previousTopic() {
+      if (currentTopicIndex > 0) {
+        currentTopicIndex--;
+        resetCurrentMode();
+        updateTopicDisplay();
+      }
+    }
+
+    function resetCurrentMode() {
+      if (currentMode === 'order') {
+        hasCheckedOrder = false;
+        document.getElementById('checkBtn').style.display = 'inline-flex';
+        document.getElementById('retryBtn').style.display = 'none';
+        initOrder();
+      } else {
+        initBuild();
+      }
+    }
+
+    function updateTopicDisplay() {
+      const topicTitle = document.getElementById('topicTitle');
+      const topicCounter = document.getElementById('topicCounter');
+      
+      // Order mode buttons
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      
+      // Build mode buttons
+      const prevBtnBuild = document.getElementById('prevBtnBuild');
+      const nextBtnBuild = document.getElementById('nextBtnBuild');
+      
+      const topic = getCurrentTopic();
+      
+      if (topicTitle) {
+        topicTitle.textContent = topic.title || 'Topic';
+      }
+      
+      if (topicCounter) {
+        topicCounter.textContent = `${currentTopicIndex + 1} / ${allTopics.length}`;
+      }
+      
+      // Enable/disable navigation buttons for ORDER mode
+      if (prevBtn) {
+        prevBtn.disabled = currentTopicIndex === 0;
+        prevBtn.classList.toggle('btn-disabled', currentTopicIndex === 0);
+      }
+      
+      if (nextBtn) {
+        nextBtn.disabled = currentTopicIndex >= allTopics.length - 1;
+        nextBtn.classList.toggle('btn-disabled', currentTopicIndex >= allTopics.length - 1);
+      }
+      
+      // Enable/disable navigation buttons for BUILD mode
+      if (prevBtnBuild) {
+        prevBtnBuild.disabled = currentTopicIndex === 0;
+        prevBtnBuild.classList.toggle('btn-disabled', currentTopicIndex === 0);
+      }
+      
+      if (nextBtnBuild) {
+        nextBtnBuild.disabled = currentTopicIndex >= allTopics.length - 1;
+        nextBtnBuild.classList.toggle('btn-disabled', currentTopicIndex >= allTopics.length - 1);
+      }
+    }
 
     // MODE SWITCHING
     document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -778,15 +848,20 @@
 
     // ORDER MODE
     function initOrder() {
+      const sentenceData = getCurrentTopic();
+      if (!sentenceData.base) return;
+
       const allSentences = [
         { text: sentenceData.base, order: 0, type: 'topic' }
       ];
 
       let order = 1;
-      ['explain', 'reason', 'example', 'result', 'compare', 'contrast'].forEach(type => {
-        const options = sentenceData[type];
-        const selected = options[Math.floor(Math.random() * options.length)];
-        allSentences.push({ text: selected, order: order++, type });
+      buildSequence.forEach(type => {
+        if (sentenceData[type] && sentenceData[type].length > 0) {
+          const options = sentenceData[type];
+          const selected = options[Math.floor(Math.random() * options.length)];
+          allSentences.push({ text: selected, order: order++, type });
+        }
       });
 
       orderCorrectSequence = [...allSentences];
@@ -921,61 +996,104 @@
 
     // BUILD MODE
     function initBuild() {
-      buildParts = [{ text: sentenceData.base, type: 'topic' }];
-      buildUsedTopics = {};
+      buildParts = [];
       buildOpener = '';
+      currentBuildStep = 'opener';
+      currentStepIndex = 0;
       renderBuild();
     }
 
     function renderBuild() {
+      const sentenceData = getCurrentTopic();
       const container = document.getElementById('buildParagraph');
-      const prompt = document.getElementById('buildPrompt');
+      const instruction = document.getElementById('buildInstruction');
+      const optionsList = document.getElementById('optionsList');
       const openerBtn = document.getElementById('openerBtn');
 
-      let html = '';
-
-      buildParts.forEach((part, index) => {
-        const isNew = index === buildParts.length - 1 && buildParts.length > 1;
-        const cssClass = part.type === 'opener' ? 'opener-text' : part.type === 'topic' ? 'topic-text' : 'sentence-part';
-        
-        let text = part.text;
-        
-        // Highlight linking words
-        linkingWords.forEach(word => {
-          const regex = new RegExp(`\\b(${word})\\b`, 'gi');
-          text = text.replace(regex, '<span class="linking-highlight">$1</span>');
-        });
-
-        html += `<span class="${cssClass}${isNew ? ' new' : ''}">${text}${index < buildParts.length - 1 ? ' ' : ''}</span>`;
-      });
-
-      container.innerHTML = html;
-
-      // Update UI
+      // Update instruction
       if (!buildOpener) {
-        prompt.textContent = 'Choose an opener to begin';
+        instruction.textContent = 'Choose an opener to begin';
         openerBtn.textContent = 'Choose Opener';
+      } else if (buildParts.length === 0) {
+        instruction.textContent = 'Select an option to continue building';
+        openerBtn.textContent = 'Change Opener';
       } else {
-        const usedCount = Object.keys(buildUsedTopics).length;
-        if (usedCount === 0) {
-          prompt.textContent = 'Select a topic from the left panel';
-        } else if (usedCount < 3) {
-          prompt.textContent = 'Continue building your paragraph';
-        } else {
-          prompt.textContent = 'Your paragraph is taking shape';
-        }
+        instruction.textContent = `Step ${buildParts.length} of ${buildSequence.length}`;
         openerBtn.textContent = 'Change Opener';
       }
 
-      // Update topic list
-      document.querySelectorAll('.topic-item').forEach(item => {
-        const topic = item.dataset.topic;
-        if (buildUsedTopics[topic]) {
-          item.classList.add('used');
-        } else {
-          item.classList.remove('used');
+      // Render paragraph
+      if (buildParts.length === 0 && !buildOpener) {
+        container.innerHTML = '<span class="sentence-part topic-text">Click an option to start building your paragraph.</span>';
+      } else {
+        let html = '';
+        
+        // Add opener
+        if (buildOpener) {
+          html += `<span class="sentence-part opener-text">${buildOpener} </span>`;
+          
+          // Add base sentence (lowercased)
+          const baseSentence = sentenceData.base.charAt(0).toLowerCase() + sentenceData.base.slice(1);
+          html += `<span class="sentence-part topic-text">${baseSentence} </span>`;
         }
+
+        // Add built parts
+        buildParts.forEach((part, index) => {
+          const isNew = index === buildParts.length - 1;
+          let text = part.text;
+          
+          // Highlight linking words
+          linkingWords.forEach(word => {
+            const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+            text = text.replace(regex, '<span class="linking-highlight">$1</span>');
+          });
+
+          html += `<span class="sentence-part${isNew ? ' new' : ''}">${text}${index < buildParts.length - 1 ? ' ' : ''}</span>`;
+        });
+
+        container.innerHTML = html;
+      }
+
+      // Render options list
+      renderOptionsList();
+    }
+
+    function renderOptionsList() {
+      const sentenceData = getCurrentTopic();
+      const optionsList = document.getElementById('optionsList');
+      
+      if (!buildOpener) {
+        optionsList.innerHTML = '<div class="option-item" style="cursor: default; color: #666;">Choose an opener first</div>';
+        return;
+      }
+
+      if (currentStepIndex >= buildSequence.length) {
+        optionsList.innerHTML = '<div class="option-item" style="cursor: default; color: #34d399;">Paragraph complete!</div>';
+        return;
+      }
+
+      const currentType = buildSequence[currentStepIndex];
+      const options = sentenceData[currentType] || [];
+
+      let html = '';
+      options.forEach((option, index) => {
+        html += `<div class="option-item" onclick="selectBuildOption(${index})">${option}</div>`;
       });
+
+      optionsList.innerHTML = html;
+    }
+
+    function selectBuildOption(index) {
+      const sentenceData = getCurrentTopic();
+      if (!buildOpener || currentStepIndex >= buildSequence.length) return;
+
+      const currentType = buildSequence[currentStepIndex];
+      const selectedText = sentenceData[currentType][index];
+
+      buildParts.push({ text: selectedText, type: currentType });
+      currentStepIndex++;
+
+      renderBuild();
     }
 
     function showOpenerModal() {
@@ -996,63 +1114,32 @@
 
     function selectOpener(index) {
       buildOpener = openers[index];
-      
-      // Update build parts
-      buildParts = buildParts.filter(p => p.type !== 'opener');
-      buildParts.unshift({ text: buildOpener, type: 'opener' });
-      
-      // Make topic lowercase
-      buildParts[1].text = sentenceData.base.charAt(0).toLowerCase() + sentenceData.base.slice(1);
-
-      closeModal();
-      renderBuild();
-    }
-
-    function selectTopic(topic) {
-      if (buildUsedTopics[topic] || !buildOpener) return;
-      
-      selectedTopic = topic;
-      showTopicOptions(topic);
-    }
-
-    function showTopicOptions(topic) {
-      const modal = document.getElementById('modalBackdrop');
-      const title = document.getElementById('modalTitle');
-      const options = document.getElementById('modalOptions');
-
-      title.textContent = `Choose your ${topic}`;
-
-      const sentenceOptions = sentenceData[topic];
-
-      let html = '';
-      sentenceOptions.forEach((sentence, index) => {
-        html += `<div class="modal-option" onclick="selectOption('${topic}', ${index})">${sentence}</div>`;
-      });
-
-      options.innerHTML = html;
-      modal.classList.add('show');
-    }
-
-    function selectOption(topic, index) {
-      const sentence = sentenceData[topic][index];
-
-      buildParts.push({ text: sentence, type: topic });
-      buildUsedTopics[topic] = true;
-
       closeModal();
       renderBuild();
     }
 
     function copyBuildText() {
-      const text = buildParts.map(p => p.text).join(' ');
+      const sentenceData = getCurrentTopic();
+      let text = '';
+      
+      if (buildOpener) {
+        const baseSentence = sentenceData.base.charAt(0).toLowerCase() + sentenceData.base.slice(1);
+        text = `${buildOpener} ${baseSentence} ${buildParts.map(p => p.text).join(' ')}`;
+      }
+
+      if (!text) {
+        alert('No text to copy yet!');
+        return;
+      }
+
       navigator.clipboard.writeText(text).then(() => {
-        const prompt = document.getElementById('buildPrompt');
-        const original = prompt.textContent;
-        prompt.textContent = 'Copied to clipboard!';
-        prompt.style.color = '#34d399';
+        const instruction = document.getElementById('buildInstruction');
+        const original = instruction.textContent;
+        instruction.textContent = 'Copied to clipboard!';
+        instruction.style.color = '#34d399';
         setTimeout(() => {
-          prompt.textContent = original;
-          prompt.style.color = '#6b7280';
+          instruction.textContent = original;
+          instruction.style.color = '#8e8e93';
         }, 1500);
       });
     }
@@ -1074,9 +1161,8 @@
       if (e.key === 'Escape') closeModal();
     });
 
-    // INIT
-    initOrder();
-    initBuild();
+    // INIT - Load data then initialize
+    loadData();
   </script>
 
 </body>
