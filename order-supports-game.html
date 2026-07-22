@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order the Supports — INTUITY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Instrument+Sans:wght@400;500&family=Crimson+Text:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0d0d; --card:#161616; --card2:#1c1c1c; --line:#2a2a2a;
+    --gold:#C9A961; --gold-d:#9a7d3f; --ink:#e8e6e0; --dim:#8e8e93; --faint:#4a4a4a;
+    --ok:#2ecc71;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    min-height:100vh;background:var(--bg);color:var(--ink);
+    font-family:'Instrument Sans',sans-serif;
+    padding:calc(20px + env(safe-area-inset-top)) 18px 40px;
+  }
+  .cond{font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em}
+  main{max-width:640px;margin:0 auto}
+
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  header a{color:var(--dim);text-decoration:none;font-size:12px;letter-spacing:.12em}
+  #title{color:var(--gold);font-size:13px;letter-spacing:.3em;font-weight:600}
+  #stageTag{color:var(--dim);font-size:12px;letter-spacing:.12em}
+
+  #prompt{text-align:center;color:var(--dim);font-size:13px;margin:14px 0 20px;line-height:1.5}
+
+  /* the claim — fixed anchor at the top */
+  .claim{
+    background:linear-gradient(135deg,#2a8b81,#1f6b63);
+    border-radius:14px 14px 4px 4px;padding:18px 20px;position:relative;
+  }
+  .claim-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:.2em;
+    color:rgba(255,255,255,.7);margin-bottom:6px}
+  .claim-text{font-family:'Crimson Text',serif;font-size:18px;line-height:1.5;color:#fff}
+
+  #spine{width:2px;background:var(--gold-d);opacity:.5;height:14px;margin:0 auto}
+
+  /* the scrambled supports — draggable */
+  #supports{display:flex;flex-direction:column;gap:10px}
+  .support{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px 14px 44px;position:relative;cursor:grab;
+    font-family:'Crimson Text',serif;font-size:16px;line-height:1.55;color:var(--ink);
+    transition:border-color .18s,background .18s,transform .12s;
+  }
+  .support:active{cursor:grabbing}
+  .support::before{
+    content:'\2261';position:absolute;left:15px;top:50%;transform:translateY(-50%);
+    color:var(--faint);font-size:18px;
+  }
+  .support.dragging{opacity:.4;border-color:var(--gold)}
+  .support.over{border-color:var(--gold);background:var(--card2)}
+  .support.locked{border-color:var(--ok);cursor:default}
+  .support.locked::before{content:'\2713';color:var(--ok)}
+  .support .pos{
+    position:absolute;right:14px;top:50%;transform:translateY(-50%);
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:.1em;
+    color:var(--gold-d);opacity:0;transition:opacity .2s;
+  }
+  .support.locked .pos{opacity:1;color:var(--ok)}
+
+  /* controls */
+  #bar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:22px}
+  button{
+    font-family:'Barlow Condensed',sans-serif;letter-spacing:.14em;font-size:13px;
+    border-radius:999px;padding:11px 22px;cursor:pointer;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);
+  }
+  #checkBtn{background:var(--gold);color:#2c2416;border-color:var(--gold);font-weight:600}
+  #checkBtn:disabled{opacity:.4;cursor:default}
+  .ghost{background:none;color:var(--dim)}
+
+  /* nav across stages/paragraphs */
+  #stages{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0 0 18px}
+  .stage-dot{
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:.08em;
+    border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--dim);
+    cursor:pointer;background:var(--card);
+  }
+  .stage-dot.on{background:var(--gold);color:#2c2416;border-color:var(--gold)}
+  .stage-dot.done{border-color:var(--ok);color:var(--ok)}
+
+  /* the gentle win state */
+  #done{display:none;text-align:center;margin-top:20px;animation:rise .3s ease}
+  #done.show{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  #done .whole{
+    background:var(--card);border:1px solid var(--ok);border-radius:14px;
+    padding:18px 20px;font-family:'Crimson Text',serif;font-size:16px;line-height:1.7;text-align:left;
+  }
+  #done .whole .frame{color:var(--gold)}
+  #done .msg{color:var(--ok);font-family:'Barlow Condensed',sans-serif;letter-spacing:.14em;
+    font-size:13px;margin:14px 0 4px}
+
+  #loading{text-align:center;color:var(--dim);padding:3rem;font-size:.9rem}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <a href="index.html" class="cond">&#8592; GAMES</a>
+    <span id="title" class="cond">ORDER THE SUPPORTS</span>
+    <span id="stageTag" class="cond"></span>
+  </header>
+
+  <div id="prompt">A claim needs support in a logical order.<br>Drag the sentences so the reasoning flows.</div>
+
+  <div id="stages"></div>
+  <div id="loading">Loading&hellip;</div>
+  <div id="game" style="display:none">
+    <div class="claim"><div class="claim-tag">CLAIM</div><div class="claim-text" id="claimText"></div></div>
+    <div id="spine"></div>
+    <div id="supports"></div>
+    <div id="bar">
+      <button class="ghost" id="shuffleBtn" type="button">SHUFFLE</button>
+      <button id="checkBtn" type="button">CHECK THE FLOW</button>
+    </div>
+    <div id="done">
+      <div class="msg">&#10003; THAT FLOWS</div>
+      <div class="whole" id="wholeText"></div>
+      <div id="bar" style="margin-top:16px">
+        <button class="ghost" id="againBtn" type="button">SHUFFLE AGAIN</button>
+        <button id="nextBtn" type="button">NEXT PARAGRAPH &#8594;</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  const params=new URLSearchParams(location.search);
+  const type=params.get('type')||'essays';
+  const prefix=params.get('local')?'':'';   // same-folder data by default
+  const DATA={essays:'data/essays-models.json',reports:'data/reports-models.json',
+    reviews:'data/reviews-models.json',emails:'data/emails-models.json'};
+
+  // the frames we light up in gold when a paragraph is shown whole
+  const FRAMES=['This is because','For example','As a result','Firstly','Secondly','Furthermore',
+    'Moreover','In addition','However','On the other hand','For instance','Because of this',
+    'Consequently','Therefore','Such as','To begin with','What is more','I firmly believe that',
+    'In my view','From my perspective'];
+
+  let sample=null, bodyParas=[], pIdx=0, order=[], solved=new Set();
+
+  fetch(DATA[type]).then(r=>r.json()).then(d=>{
+    sample=(d.samples&&d.samples[0])||null;
+    if(!sample){fail('No content found.');return;}
+    bodyParas=sample.paragraphs
+      .map((p,i)=>({...p,idx:i}))
+      .filter(p=>/body/i.test(p.label))
+      .map(p=>{
+        const sents=splitSents(p.text);
+        return {label:cleanLabel(p.label), claim:sents[0], supports:sents.slice(1)};
+      })
+      .filter(p=>p.supports.length>=2);   // need at least 2 to order
+    if(!bodyParas.length){fail('No orderable paragraphs.');return;}
+    document.getElementById('loading').style.display='none';
+    document.getElementById('game').style.display='block';
+    renderStages(); load(0);
+  }).catch(()=>fail('Could not load the game data.'));
+
+  function fail(m){document.getElementById('loading').textContent=m;}
+  function splitSents(t){return t.trim().split(/(?<=[.!?])\s+/).filter(Boolean);}
+  function cleanLabel(l){return l.replace(/\s*-\s*(advantage|disadvantage|point).*/i,'').trim();}
+
+  function renderStages(){
+    const s=document.getElementById('stages'); s.innerHTML='';
+    bodyParas.forEach((p,i)=>{
+      const d=document.createElement('button');
+      d.className='stage-dot cond'+(i===pIdx?' on':'')+(solved.has(i)?' done':'');
+      d.textContent=p.label.toUpperCase();
+      d.onclick=()=>load(i);
+      s.appendChild(d);
+    });
+  }
+
+  function load(i){
+    pIdx=i;
+    const p=bodyParas[i];
+    document.getElementById('stageTag').textContent=(i+1)+' / '+bodyParas.length;
+    document.getElementById('claimText').textContent=p.claim;
+    order=shuffle(p.supports.map((_,k)=>k));
+    // guard against the shuffle landing already-correct
+    if(order.every((v,k)=>v===k)&&order.length>1) order.reverse();
+    document.getElementById('done').classList.remove('show');
+    document.querySelector('#game #bar').style.display='flex';
+    renderSupports();
+    renderStages();
+  }
+
+  function renderSupports(){
+    const box=document.getElementById('supports'); box.innerHTML='';
+    const p=bodyParas[pIdx];
+    order.forEach((origIdx,slot)=>{
+      const el=document.createElement('div');
+      el.className='support'; el.draggable=true; el.dataset.slot=slot;
+      el.innerHTML=p.supports[origIdx]+'<span class="pos cond"></span>';
+      wireDrag(el);
+      box.appendChild(el);
+    });
+    document.getElementById('checkBtn').disabled=false;
+  }
+
+  // ---- drag to reorder ----
+  let dragEl=null;
+  function wireDrag(el){
+    el.addEventListener('dragstart',e=>{dragEl=el;el.classList.add('dragging');});
+    el.addEventListener('dragend',()=>{el.classList.remove('dragging');document.querySelectorAll('.support').forEach(x=>x.classList.remove('over'));commitOrder();});
+    el.addEventListener('dragover',e=>{e.preventDefault();
+      const box=document.getElementById('supports');
+      const after=afterEl(box,e.clientY);
+      document.querySelectorAll('.support').forEach(x=>x.classList.remove('over'));
+      if(dragEl&&dragEl!==el){ if(after==null)box.appendChild(dragEl); else box.insertBefore(dragEl,after);}
+    });
+    // touch fallback: tap two to swap
+    el.addEventListener('click',()=>{
+      if(el.classList.contains('locked'))return;
+      if(!window._pick){window._pick=el;el.classList.add('over');}
+      else{ if(window._pick!==el)swapNodes(window._pick,el); window._pick.classList.remove('over'); window._pick=null; commitOrder(); }
+    });
+  }
+  function afterEl(box,y){
+    const els=[...box.querySelectorAll('.support:not(.dragging)')];
+    return els.reduce((closest,child)=>{
+      const b=child.getBoundingClientRect(); const off=y-b.top-b.height/2;
+      if(off<0&&off>closest.offset)return{offset:off,element:child};
+      return closest;
+    },{offset:-Infinity,element:null}).element;
+  }
+  function swapNodes(a,b){
+    const box=document.getElementById('supports');
+    const ai=[...box.children].indexOf(a), bi=[...box.children].indexOf(b);
+    if(ai<bi)box.insertBefore(b,a); else box.insertBefore(a,b);
+  }
+  function commitOrder(){
+    order=[...document.querySelectorAll('.support')].map(el=>{
+      // recover origIdx from current text match
+      const p=bodyParas[pIdx];
+      const txt=el.childNodes[0].textContent;
+      return p.supports.indexOf(txt);
+    });
+  }
+
+  function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+  // ---- check: gentle, never punishing ----
+  document.getElementById('checkBtn').onclick=()=>{
+    commitOrder();
+    const correct = order.every((v,k)=>v===k);
+    const els=[...document.querySelectorAll('.support')];
+    if(correct){
+      els.forEach((el,k)=>{el.classList.add('locked');el.querySelector('.pos').textContent='';});
+      solved.add(pIdx); win();
+    } else {
+      // no failure state — just mark the ones already in the right place, invite another try
+      els.forEach((el,k)=>{
+        if(order[k]===k){el.classList.add('locked');}
+        else{el.classList.remove('locked');}
+      });
+      const n=order.filter((v,k)=>v===k).length;
+      const btn=document.getElementById('checkBtn');
+      btn.textContent = n>0 ? n+' IN PLACE \u2014 KEEP GOING' : 'TRY THE FLOW AGAIN';
+      setTimeout(()=>{btn.textContent='CHECK THE FLOW';},1600);
+    }
+  };
+
+  function win(){
+    const p=bodyParas[pIdx];
+    const whole=[p.claim,...p.supports].map(s=>lightFrames(s)).join(' ');
+    document.getElementById('wholeText').innerHTML=whole;
+    document.querySelector('#game #bar').style.display='none';
+    document.getElementById('done').classList.add('show');
+    renderStages();
+  }
+  function lightFrames(s){
+    let out=s;
+    FRAMES.forEach(f=>{
+      const re=new RegExp('\\b'+f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');
+      out=out.replace(re,m=>`<span class="frame">${m}</span>`);
+    });
+    return out;
+  }
+
+  document.getElementById('shuffleBtn').onclick=()=>load(pIdx);
+  document.getElementById('againBtn').onclick=()=>load(pIdx);
+  document.getElementById('nextBtn').onclick=()=>{
+    const next=(pIdx+1)%bodyParas.length; load(next);
+  };
+})();
+</script>
+</body>
+</html>
