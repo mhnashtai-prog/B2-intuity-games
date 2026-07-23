@@ -197,19 +197,76 @@
   /* touch devices: the drag handle is misleading — show a tap affordance instead */
   body.touch .os-item::before{content:'\21C5'}
   body.touch .os-item.picked{box-shadow:0 0 0 2px var(--gold) inset}
+
+  /* ════════ FIT THE VIEWPORT — card body scrolls, page never does ════════ */
+  html,body{height:100%}
+  body{overflow:hidden}
+  main{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;width:100%}
+  #shell{flex:1;min-height:0;width:100%;display:none;flex-direction:column;align-items:center}
+  #shell.on{display:flex}
+  .card{flex:1 1 auto;min-height:0;max-height:100%}
+  .header{flex:none}
+  .body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .body::-webkit-scrollbar{width:5px}
+  .body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.14);border-radius:3px}
+  .actions{flex:none}
+  #games,#fulltext{flex:none}
+
+  /* short screens (most laptops): compress the header, keep the game area */
+  @media (max-height:840px){
+    .header{padding:.95rem 1.5rem .9rem}
+    .title{font-size:clamp(1.5rem,4vw,2.1rem)}
+    .ghost-num{font-size:clamp(4.5rem,13vw,6.5rem);bottom:-.8rem}
+    .step-label{font-size:.55rem;margin-bottom:.25rem}
+    .game-badge{margin-top:.4rem;height:17px;line-height:17px}
+    .body{padding:.85rem 1.4rem .9rem;min-height:0}
+    .actions{padding:.15rem 1.4rem .8rem}
+    #games{margin-top:9px}
+    .gbtn{padding:9px 6px}
+    .gbtn .ico{font-size:17px;margin-bottom:3px}
+    .gbtn .nm{font-size:.58rem}
+    #fulltext{margin-top:8px;padding:7px 16px;font-size:11px}
+    #strip{margin-bottom:.5rem}
+  }
+
+  /* ════════ PUZZLE — the paragraph building up, sentence by sentence ════════ */
+  .pz-built{font-family:'Crimson Text',serif;font-size:16px;line-height:1.7;color:#1a1a1a;
+    background:rgba(0,0,0,.03);border-radius:10px;padding:11px 13px;margin-bottom:2px}
+  .pz-built .frame{color:var(--gold-d);font-weight:600}
+  .pz-built .pending{color:#c2bbab}
+  .pz-dots{display:flex;gap:7px;justify-content:center;align-items:center;padding:8px 0 2px}
+  .pz-dot{width:26px;height:26px;border-radius:50%;border:1px solid #ded8c8;background:#fff;
+    font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#9a9384;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+  .pz-dot:hover{border-color:var(--gold)}
+  .pz-dot.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .pz-dot.done{border-color:var(--ok);color:var(--ok)}
+  .pz-dot.done.on{background:var(--ok);border-color:var(--ok);color:#fff}
+  .pz-solved-note{text-align:center;color:#8a8272;font-size:12.5px;padding:6px 0 2px}
+  #modeToggle{display:inline-flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;padding:2px;gap:2px}
+  .mtb{background:none;border:none;border-radius:999px;padding:6px 13px;cursor:pointer;
+    font-size:10.5px;letter-spacing:.14em;font-weight:700;color:var(--dim);white-space:nowrap}
+  .mtb:hover{color:var(--ink)}
+  .mtb.on{background:var(--gold);color:#2c2416}
+  @media (min-width:1100px){ .mtb{font-size:12.5px;padding:8px 18px} }
+  @media (max-width:560px){ .mtb{font-size:9.5px;padding:6px 10px;letter-spacing:.1em} }
 </style>
 </head>
 <body>
 <main>
   <div id="top">
-    <a href="index.html" class="cond">&#8592; GAMES</a>
-    <span class="brand cond">ESSAY GAMES</span>
-    <span class="cond" id="typeTag" style="color:var(--dim);font-size:12px"></span>
+    <a href="index.html" class="cond">&#8592; TASK TYPES</a>
+    <span class="brand cond" id="brandTag">GAMES</span>
+    <div id="modeToggle">
+      <button class="mtb cond on" id="mbStages" onclick="window._mode(false)">STAGES</button>
+      <button class="mtb cond" id="mbFull" onclick="window._mode(true)">FULL TEXT</button>
+    </div>
   </div>
 
   <div id="strip"></div>
   <div id="loading">Loading&hellip;</div>
-  <div id="shell" style="display:none;width:100%;display:flex;flex-direction:column;align-items:center">
+  <div id="shell">
     <div class="card" id="card">
       <div class="header" id="header">
         <div class="ghost-num" id="ghostNum">01</div>
@@ -222,7 +279,6 @@
     </div>
 
     <div id="games"></div>
-    <button id="fulltext" class="cond">&#9733; FULL TEXT MODE &middot; FOR THE ADVENTUROUS</button>
   </div>
 </main>
 
@@ -250,7 +306,12 @@
     {id:'builder', ico:'\u270D\uFE0F', nm:'Builder'}
   ];
 
-  let stages=[], si=0, game='order', solved=new Set();
+  let stages=[], play=[], fullText=false, si=0, game='order', solved=new Set();
+  function rebuildPlay(){
+    play = fullText
+      ? [{label:'Full Text', sents: stages.reduce((a,s)=>a.concat(s.sents),[])}]
+      : stages;
+  }
   let order=[], curSupports=[], curClaim='';
 
   fetch(DATA[type]).then(r=>r.json()).then(d=>{
@@ -260,28 +321,31 @@
       const sents=p.text.trim().split(/(?<=[.!?])\s+/).filter(Boolean);
       return {label:shortLabel(p.label), full:p.label, sents};
     });
-    document.getElementById('typeTag').textContent=type.toUpperCase();
+    const TYPE_LABEL={essays:'ESSAY',reports:'REPORT',reviews:'REVIEW',emails:'EMAIL',articles:'ARTICLE'};
+    document.getElementById('brandTag').textContent=(TYPE_LABEL[type]||'WRITING')+' GAMES';
     document.getElementById('loading').style.display='none';
-    document.getElementById('shell').style.display='flex';
-    renderStrip(); renderGames(); load(firstPlayable());
+    document.getElementById('shell').classList.add('on');
+    rebuildPlay(); renderStrip(); renderGames(); load(firstPlayable());
   }).catch(()=>fail('Could not load game data.'));
 
   function fail(m){document.getElementById('loading').textContent=m;}
-  function playable(i){ if(!stages[i])return false;
-    const n=stages[i].sents.length;
+  function playable(i){ if(!play[i])return false;
+    const n=play[i].sents.length;
     if(game==='order')return n>=3;
     return n>=2; }
-  function firstPlayable(){ for(let i=0;i<stages.length;i++) if(playable(i)) return i; return 0; }
+  function firstPlayable(){ for(let i=0;i<play.length;i++) if(playable(i)) return i; return 0; }
   function shortLabel(l){
     if(/introduction/i.test(l))return'Introduction';
     if(/conclusion/i.test(l))return'Conclusion';
-    const m=l.match(/body paragraph\s*(\d)/i); if(m)return'Body '+m[1];
+    const b=l.match(/body paragraph\s*(\d)/i); if(b)return'Body '+b[1];
+    const p=l.match(/^(.+?)\s*-\s*paragraph\s*(\d)/i); if(p)return p[1].trim()+' '+p[2];
     return l.split('-')[0].trim();
   }
 
   function renderStrip(){
     const s=document.getElementById('strip'); s.innerHTML='';
-    stages.forEach((st,i)=>{
+    s.style.display = fullText ? 'none' : 'flex';
+    play.forEach((st,i)=>{
       const b=document.createElement('button');
       b.className='pip cond'+(i===si?' current':'')+(solved.has(i+':'+game)?' done':'');
       b.textContent=st.label; b.onclick=()=>load(i);
@@ -301,14 +365,14 @@
 
   function load(i){
     si=i;
-    const st=stages[i];
+    const st=play[i];
     const accent=ACCENTS[i%ACCENTS.length];
     document.documentElement.style.setProperty('--accent',accent);
     const card=document.getElementById('card');
     card.style.setProperty('--accent',accent);
     document.getElementById('header').style.background=accent;
     document.getElementById('ghostNum').textContent=String(i+1).padStart(2,'0');
-    document.getElementById('stepLabel').textContent='STAGE '+(i+1)+' OF '+stages.length;
+    document.getElementById('stepLabel').textContent=(fullText?'WHOLE ESSAY':'STAGE '+(i+1)+' OF '+play.length);
     document.getElementById('stageTitle').textContent=st.label.toUpperCase();
     const gm=GAMES.find(g=>g.id===game);
     document.getElementById('gameBadge').textContent=gm.nm.toUpperCase();
@@ -327,8 +391,12 @@
     curSupports=st.sents.slice(1);
     const body=document.getElementById('cardBody');
     const actions=document.getElementById('cardActions');
+    if(fullText){
+      body.innerHTML='<div class="stub"><b>Order Supports</b> works on one paragraph at a time \u2014 a claim with its support.<br><br>For the whole essay, try <b>Sequence</b> or <b>Puzzle</b>.</div>';
+      actions.innerHTML=''; return;
+    }
     if(curSupports.length<2){
-      const opts=stages.map((x,i)=>({x,i})).filter(o=>playable(o.i));
+      const opts=play.map((x,i)=>({x,i})).filter(o=>playable(o.i));
       body.innerHTML=`<div class="stub">An <b>${st.label.toLowerCase()}</b> is a pair \u2014 a hook and a thesis \u2014 so there is nothing to re-order here.<br><br>Order the flow in a body paragraph:</div>
         <div class="jump" id="jumpRow">${opts.map(o=>`<button class="jbtn cond" onclick="window._go(${o.i})">${o.x.label.toUpperCase()}</button>`).join('')}</div>`;
       actions.innerHTML='';
@@ -398,7 +466,7 @@
        <button class="primary" onclick="window._next()">NEXT STAGE \u2192</button>`;
     renderStrip();
   }
-  window._next=()=>load((si+1)%stages.length);
+  window._next=()=>load((si+1)%play.length);
   window._go=(i)=>load(i);
   function lightFrames(s){let o=s;FRAMES.forEach(f=>{
     const re=new RegExp('\\b'+f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');
@@ -436,19 +504,63 @@
     } else gentle(els,seqOrder,'seqCheck','CHECK THE ORDER');
   };
 
-  /* ═══ PUZZLE — rebuild one short sentence from scrambled words (tap to place) ═══ */
-  let pzWords=[], pzPlaced=[], pzSent='', pzPool=[];
+  /* ═══ PUZZLE — one sentence at a time; the paragraph builds up in the box ═══ */
+  let pzStage=-1, pzSents=[], pzIdx=0, pzDone=new Set(), pzPlaced=[], pzPool=[];
   function renderPuzzle(st){
-    pzSent=st.sents.slice().sort((a,b)=>a.split(/\s+/).length-b.split(/\s+/).length)[0]||'';
-    pzWords=pzSent.split(/\s+/).filter(Boolean);
-    pzPlaced=[]; pzPool=shuffle(pzWords.slice());
-    const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
-    if(pzWords.length<3){ body.innerHTML='<div class="stub">Nothing to puzzle here.</div>'; actions.innerHTML=''; return; }
-    body.innerHTML='<div class="hint">Tap the words in order to rebuild the sentence.</div><div class="pz-line" id="pzLine"></div><div class="pz-pool" id="pzPool"></div>';
+    if(pzStage!==si){                       // new stage → fresh paragraph
+      pzStage=si; pzSents=st.sents.slice(); pzIdx=0; pzDone=new Set();
+      openSentence(0);
+    }
     paintPuzzle();
-    actions.innerHTML='<button onclick="window._reload()">RESET</button>';
+  }
+  function openSentence(i){
+    pzIdx=i;
+    const words=(pzSents[i]||'').split(/\s+/).filter(Boolean);
+    if(pzDone.has(i)){ pzPlaced=words.slice(); pzPool=[]; }
+    else{ pzPlaced=[]; pzPool=shuffle(words.slice()); }
+  }
+  function builtParagraph(){
+    return pzSents.map((s,i)=>{
+      if(pzDone.has(i)) return lightFrames(s);
+      if(i===pzIdx)     return '<span class="pending">…</span>';
+      return '';
+    }).filter(Boolean).join(' ');
   }
   function paintPuzzle(){
+    const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
+    const words=(pzSents[pzIdx]||'').split(/\s+/).filter(Boolean);
+    const allDone = pzDone.size===pzSents.length;
+    const solvedNow = pzDone.has(pzIdx);
+
+    if(allDone){ showWhole(pzSents,'\u2713 THE PARAGRAPH IS BUILT'); return; }
+
+    body.innerHTML =
+      (pzDone.size ? '<div class="pz-built">'+builtParagraph()+'</div>' : '') +
+      '<div class="hint">Sentence '+(pzIdx+1)+' of '+pzSents.length+
+        (solvedNow ? ' — done. Tap a dot for another, or redo this one.' : ' — tap the words in order.')+'</div>' +
+      (solvedNow
+        ? '<div class="pz-built">'+lightFrames(pzSents[pzIdx])+'</div>'
+        : '<div class="pz-line" id="pzLine"></div><div class="pz-pool" id="pzPool"></div>') +
+      '<div class="pz-dots" id="pzDots"></div>';
+
+    // sentence dots — navigate freely, solved ones marked
+    const dots=document.getElementById('pzDots');
+    pzSents.forEach((_,i)=>{
+      const d=document.createElement('button');
+      d.className='pz-dot'+(i===pzIdx?' on':'')+(pzDone.has(i)?' done':'');
+      d.textContent=String(i+1);
+      d.onclick=()=>{ openSentence(i); paintPuzzle(); };
+      dots.appendChild(d);
+    });
+
+    if(!solvedNow) paintWords();
+
+    actions.innerHTML = solvedNow
+      ? '<button onclick="window._pzRedo()">REDO THIS ONE</button>'+
+        (pzIdx<pzSents.length-1?'<button class="primary" onclick="window._pzNext()">NEXT SENTENCE \u2192</button>':'')
+      : '<button onclick="window._pzReset()">RESET</button>';
+  }
+  function paintWords(){
     const line=document.getElementById('pzLine'), pool=document.getElementById('pzPool');
     if(!line||!pool) return;
     line.innerHTML = pzPlaced.length
@@ -456,20 +568,28 @@
       : '<span class="pz-empty">…</span>';
     pool.innerHTML = pzPool.map((w,i)=>'<span class="pz-w" data-p="'+i+'">'+w+'</span>').join('');
     [].slice.call(line.querySelectorAll('.pz-w')).forEach(el=>{
-      el.onclick=()=>{ const i=+el.getAttribute('data-i'); pzPool.push(pzPlaced[i]); pzPlaced.splice(i,1); paintPuzzle(); };
+      el.onclick=()=>{ const i=+el.getAttribute('data-i'); pzPool.push(pzPlaced[i]); pzPlaced.splice(i,1); paintWords(); };
     });
     [].slice.call(pool.querySelectorAll('.pz-w')).forEach(el=>{
-      el.onclick=()=>{ const i=+el.getAttribute('data-p'); pzPlaced.push(pzPool[i]); pzPool.splice(i,1); paintPuzzle(); };
+      el.onclick=()=>{ const i=+el.getAttribute('data-p'); pzPlaced.push(pzPool[i]); pzPool.splice(i,1); check(); };
     });
-    if(pzPlaced.length===pzWords.length){
-      if(pzPlaced.join(' ')===pzWords.join(' ')){
-        solved.add(si+':puzzle');
-        showWhole([pzSent],'\u2713 THAT IS THE SENTENCE');
+    function check(){
+      const words=(pzSents[pzIdx]||'').split(/\s+/).filter(Boolean);
+      if(pzPlaced.length<words.length){ paintWords(); return; }
+      if(pzPlaced.join(' ')===words.join(' ')){
+        pzDone.add(pzIdx); solved.add(si+':puzzle');
+        paintPuzzle();                                  // sentence joins the paragraph
       } else {
-        line.insertAdjacentHTML('beforeend','<div class="pz-nudge">Close — tap a word to send it back.</div>');
+        paintWords();
+        const l=document.getElementById('pzLine');
+        if(l) l.insertAdjacentHTML('beforeend','<div class="pz-nudge">Close — tap a word to send it back.</div>');
       }
     }
   }
+  window._pzNext=()=>{ let n=pzIdx+1; while(n<pzSents.length&&pzDone.has(n))n++;
+    openSentence(n<pzSents.length?n:pzIdx); paintPuzzle(); };
+  window._pzRedo=()=>{ pzDone.delete(pzIdx); openSentence(pzIdx); paintPuzzle(); };
+  window._pzReset=()=>{ openSentence(pzIdx); paintPuzzle(); };
 
   /* ═══ BUILDER — choose the opener that fits this paragraph ═══ */
   function renderBuilder(st){
@@ -490,7 +610,7 @@
         document.getElementById('bdSlot').textContent=o;
         if(o===real){
           b.classList.add('right'); solved.add(si+':builder');
-          setTimeout(()=>showWhole(stages[si].sents,'\u2713 THAT IS THE ONE'),450);
+          setTimeout(()=>showWhole(play[si].sents,'\u2713 THAT IS THE ONE'),450);
         } else {
           b.classList.add('other');
           if(!box.querySelector('.bd-note'))
@@ -520,6 +640,13 @@
     renderStrip();
   }
   window._reload=function(){ load(si); };
+  window._mode=function(on){
+    if(on===fullText) return;
+    fullText=on; solved=new Set(); pzStage=-1; si=0;
+    document.getElementById('mbStages').classList.toggle('on',!on);
+    document.getElementById('mbFull').classList.toggle('on',on);
+    rebuildPlay(); renderStrip(); load(firstPlayable());
+  };
   function wireDrag(el,boxId,after){
     el.addEventListener('dragstart',()=>{ dragEl=el; el.classList.add('dragging'); });
     el.addEventListener('dragend',()=>{ el.classList.remove('dragging'); if(after) after(); });
@@ -543,9 +670,7 @@
     document.getElementById('cardActions').innerHTML='';
   }
 
-  document.getElementById('fulltext').onclick=()=>{
-    alert('Full-text mode (order the whole essay) \u2014 coming in the next build.');
-  };
+
 })();
 </script>
 </body>
