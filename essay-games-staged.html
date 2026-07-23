@@ -72,6 +72,10 @@
   .os-whole .frame{color:var(--gold-d);font-weight:600}
   .os-win{color:var(--ok);font-family:'Barlow Condensed',sans-serif;letter-spacing:.14em;font-size:12px;font-weight:900;text-align:center;padding:6px}
 
+  .jump{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 0 .6rem}
+  .jbtn{background:var(--accent);color:#fff;border:none;border-radius:999px;padding:9px 18px;
+    font-size:12px;letter-spacing:.14em;font-weight:700;cursor:pointer}
+  .jbtn:hover{filter:brightness(1.08)}
   .stub{text-align:center;color:#b0a898;font-family:'Instrument Sans',sans-serif;font-size:14px;padding:2.4rem 1rem;line-height:1.6}
   .stub b{color:#6a6252}
 
@@ -161,10 +165,12 @@
     document.getElementById('typeTag').textContent=type.toUpperCase();
     document.getElementById('loading').style.display='none';
     document.getElementById('shell').style.display='flex';
-    renderStrip(); renderGames(); load(0);
+    renderStrip(); renderGames(); load(firstPlayable());
   }).catch(()=>fail('Could not load game data.'));
 
   function fail(m){document.getElementById('loading').textContent=m;}
+  function playable(i){ return stages[i] && stages[i].sents.length>=3; }
+  function firstPlayable(){ for(let i=0;i<stages.length;i++) if(playable(i)) return i; return 0; }
   function shortLabel(l){
     if(/introduction/i.test(l))return'Introduction';
     if(/conclusion/i.test(l))return'Conclusion';
@@ -221,8 +227,11 @@
     const body=document.getElementById('cardBody');
     const actions=document.getElementById('cardActions');
     if(curSupports.length<2){
-      body.innerHTML=`<div class="stub">This stage has <b>${st.sents.length}</b> sentence(s) \u2014 not enough to order.<br>Try a body paragraph, or another game.</div>`;
-      actions.innerHTML=''; return;
+      const opts=stages.map((x,i)=>({x,i})).filter(o=>playable(o.i));
+      body.innerHTML=`<div class="stub">An <b>${st.label.toLowerCase()}</b> is a pair \u2014 a hook and a thesis \u2014 so there is nothing to re-order here.<br><br>Order the flow in a body paragraph:</div>
+        <div class="jump" id="jumpRow">${opts.map(o=>`<button class="jbtn cond" onclick="window._go(${o.i})">${o.x.label.toUpperCase()}</button>`).join('')}</div>`;
+      actions.innerHTML='';
+      return;
     }
     order=shuffle(curSupports.map((_,k)=>k));
     if(order.every((v,k)=>v===k)) order.reverse();
@@ -288,6 +297,7 @@
     renderStrip();
   }
   window._next=()=>load((si+1)%stages.length);
+  window._go=(i)=>load(i);
   function lightFrames(s){let o=s;FRAMES.forEach(f=>{
     const re=new RegExp('\\b'+f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');
     o=o.replace(re,m=>`<span class="frame">${m}</span>`);});return o;}
