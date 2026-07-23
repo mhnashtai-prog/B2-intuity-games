@@ -61,11 +61,13 @@
   .os-claim .tag{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:.2em;color:var(--gold-d);font-weight:900}
   .os-claim .text{font-family:'Crimson Text',serif;font-size:16px;line-height:1.45;color:#1a1a1a;margin-top:2px}
   .os-supports{display:flex;flex-direction:column;gap:8px}
-  .os-item{background:#fff;border:1px solid #e2ddd0;border-radius:10px;padding:11px 14px 11px 38px;position:relative;
+  .os-item{background:#faf7f1;border:1px solid #e6e0d2;border-left:3px solid var(--accent);
+    border-radius:10px;padding:11px 14px 11px 38px;position:relative;
     cursor:grab;font-family:'Crimson Text',serif;font-size:15px;line-height:1.5;color:#1a1a1a;transition:.15s}
-  .os-item::before{content:'\2261';position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#c9c2b2;font-size:16px}
-  .os-item.dragging{opacity:.4;border-color:var(--gold)}
-  .os-item.picked{border-color:var(--gold);background:#fdfaf2}
+  .os-item:hover{background:#f6f1e7;border-color:#ddd4c0;border-left-color:var(--accent)}
+  .os-item::before{content:'\2261';position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--accent);opacity:.5;font-size:16px}
+  .os-item.dragging{opacity:.45;box-shadow:0 6px 18px rgba(0,0,0,.14)}
+  .os-item.picked{background:#fdf6e6;box-shadow:0 0 0 2px var(--accent) inset}
   .os-item.locked{border-color:var(--ok)}
   .os-item.locked::before{content:'\2713';color:var(--ok)}
   .os-whole{font-family:'Crimson Text',serif;font-size:15px;line-height:1.7;color:#1a1a1a;padding:4px 2px}
@@ -207,6 +209,7 @@
   .card{flex:1 1 auto;min-height:0;max-height:100%}
   .header{flex:none}
   .body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .body > *{flex:0 0 auto}          /* never shrink content — scroll the body instead */
   .body::-webkit-scrollbar{width:5px}
   .body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.14);border-radius:3px}
   .actions{flex:none}
@@ -911,7 +914,20 @@
     {f:'gives an example', tag:'EXAMPLE',  list:['For example','For instance','To illustrate','A good example is']},
     {f:'shows a result',   tag:'RESULT',   list:['As a result','Therefore','Consequently','Thus','This means that','Hence']},
     {f:'closes the text',  tag:'CLOSE',    list:['In conclusion','To sum up','Overall','All in all','All things considered','To conclude','On the whole','Weighing it all up']},
-    {f:'states an opinion',tag:'OPINION',  list:['In my view','I firmly believe that','From my point of view','Personally','I am convinced that','It seems to me that']}
+    {f:'states an opinion',tag:'OPINION',  list:['In my view','I firmly believe that','From my point of view','Personally','I am convinced that','It seems to me that']},
+    /* reports */
+    {f:'states the purpose',tag:'PURPOSE', list:['The main objective','The aim of this report','This report aims','The purpose of this report','This report sets out','The main purpose']},
+    {f:'says where the facts came from', tag:'BASIS', list:['The information presented','The findings are based','This report is based','The data was collected','The information was gathered']},
+    {f:'points to the standout thing', tag:'HIGHLIGHT', list:['By far the','In particular','What makes','Most notably','Particularly']},
+    {f:'recommends action', tag:'RECOMMEND', list:['I would strongly recommend','I would recommend','It would be advisable','My recommendation','I therefore suggest','It is recommended that']},
+    {f:'weighs everything up', tag:'WEIGH', list:['Taking everything into consideration','Taking everything into account','If customer satisfaction','On balance']},
+    /* reviews */
+    {f:'introduces what is being reviewed', tag:'INTRODUCE', list:['Known for','Regarded as','Located in','Choosing a','When it comes to']},
+    {f:'picks out a feature', tag:'FEATURE', list:['The thing that','The other feature','The most appealing','One feature that']},
+    {f:'speaks to the reader', tag:'ADDRESS', list:['Anyone interested in','If you happen','I guarantee that','I would urge anyone']},
+    /* emails */
+    {f:'changes the subject', tag:'SHIFT', list:['Anyway','By the way','Oh, and','Speaking of which','Guess what']},
+    {f:'signs off', tag:'SIGN OFF', list:['Let me know','Give my love','Write back soon','Can\'t wait to','Hope to hear']}
   ];
   function bdMatch(sent){
     let best=null;
