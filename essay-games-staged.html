@@ -356,6 +356,29 @@
   .bd-slot.active{border-bottom-color:var(--accent);background:rgba(201,169,97,.16);color:var(--gold-d)}
   .bd-tag{font-family:'Barlow Condensed',sans-serif;font-size:9.5px;font-weight:900;letter-spacing:.14em;
     color:#fff;background:var(--accent);border-radius:3px;padding:1px 5px;margin:0 4px 0 2px;vertical-align:2px}
+  .bd-topic{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:.2em;
+    color:var(--accent);text-transform:uppercase}
+  .bd-intro{font-family:'Crimson Text',serif;font-size:16px;line-height:1.55}
+  .bd-open{color:var(--gold-d);font-weight:600}
+  .bd-base{color:#1a1a1a}
+  .bd-moves{display:flex;flex-direction:column;gap:6px}
+  .bd-row{display:flex;gap:10px;align-items:flex-start}
+  .bd-move{flex:0 0 88px;border:1px solid #e2ddd0;background:#faf7f1;border-radius:8px;padding:8px 6px;
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:.12em;
+    color:#8a8272;cursor:pointer;min-height:40px}
+  .bd-move:hover{border-color:var(--accent);color:var(--accent)}
+  .bd-move.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .bd-line{flex:1;min-width:0;font-family:'Crimson Text',serif;font-size:15px;line-height:1.45;
+    color:#1a1a1a;padding-top:9px}
+  .bd-hintline{color:#c2bbab;font-style:italic;font-size:13.5px}
+  .bd-choices{display:flex;flex-direction:column;gap:6px;padding:2px 0 6px 98px}
+  .bd-choice{text-align:left;background:#fff;border:1px solid #e2ddd0;border-radius:9px;padding:9px 12px;
+    font-family:'Crimson Text',serif;font-size:14.5px;line-height:1.45;color:#1a1a1a;cursor:pointer}
+  .bd-choice:hover{border-color:var(--gold)}
+  .bd-choice.on{border-color:var(--accent);background:#fdf9f0}
+  .bd-choice.clear{font-family:'Instrument Sans',sans-serif;font-size:12px;color:#a2988a;border-style:dashed}
+  @media(max-width:560px){ .bd-choices{padding-left:0} .bd-move{flex-basis:76px;font-size:10px} }
+  @media(min-width:1100px){ .bd-line,.bd-choice{font-size:18px} .bd-intro{font-size:20px} .bd-move{flex-basis:110px;font-size:13px} }
 </style>
 </head>
 <body>
@@ -464,7 +487,7 @@
 
   function renderStrip(){
     const s=document.getElementById('strip'); s.innerHTML='';
-    s.style.display = fullText ? 'none' : 'flex';
+    s.style.display = (fullText||game==='builder') ? 'none' : 'flex';
     play.forEach((st,i)=>{
       const b=document.createElement('button');
       b.className='pip cond'+(i===si?' current':'')+(solved.has(i+':'+game)?' done':'');
@@ -492,8 +515,8 @@
     card.style.setProperty('--accent',accent);
     document.getElementById('header').style.background=accent;
     document.getElementById('ghostNum').textContent=String(i+1).padStart(2,'0');
-    document.getElementById('stepLabel').textContent=(fullText?'WHOLE ESSAY':'STAGE '+(i+1)+' OF '+play.length);
-    document.getElementById('stageTitle').textContent=st.label.toUpperCase();
+    document.getElementById('stepLabel').textContent=(game==='builder'?'CHOOSE YOUR MOVES':(fullText?'WHOLE ESSAY':'STAGE '+(i+1)+' OF '+play.length));
+    document.getElementById('stageTitle').textContent=(game==='builder'?'BUILD A PARAGRAPH':st.label.toUpperCase());
     const gm=GAMES.find(g=>g.id===game);
     document.getElementById('gameBadge').textContent=gm.nm.toUpperCase();
     // re-trigger slide anim
@@ -502,7 +525,7 @@
     if(game==='sequence')      renderSequence(st);
     else if(game==='story')    renderStoryboard(st);
     else if(game==='puzzle')   renderPuzzle(st);
-    else                       renderBuilder(st);
+    else                       renderBuilder();
   }
 
   // ── ORDER THE SUPPORTS in-card ──
@@ -900,122 +923,115 @@
   window._pzReset=function(){ openSentence(pzIdx); paintPuzzle(); };
   window._pzFinish=function(){ showWhole(pzSents,'✓ THE PARAGRAPH IS COMPLETE'); };
 
-  /* ═══ BUILDER — build the paragraph's joints ═══
-     Every discourse marker is blanked. Choose the connector that fits.
-     A right choice locks in AND names what it does. A wrong choice explains
-     itself: "'Furthermore' adds another idea — but here the sentence gives
-     a reason." You learn the function, not just the word.              ═══ */
-  const BD_FUNC=[
-    {f:'sets the scene',   tag:'SCENE',    list:['Nowadays','These days','In recent times','In recent years','It is common knowledge that','It is widely recognised that','It is often argued that','It is generally assumed that']},
-    {f:'starts the first point', tag:'FIRST', list:['Firstly','First of all','To begin with','In the first place','For one thing']},
-    {f:'adds another idea',tag:'ADD',      list:['Furthermore','Moreover','In addition','What is more','Besides','Secondly','Apart from that']},
-    {f:'turns to the other side', tag:'CONTRAST', list:['However','On the other hand','Nevertheless','In contrast','Nonetheless','Even so']},
-    {f:'gives a reason',   tag:'REASON',   list:['This is because','The main reason is that','Because of this','Since']},
-    {f:'gives an example', tag:'EXAMPLE',  list:['For example','For instance','To illustrate','A good example is']},
-    {f:'shows a result',   tag:'RESULT',   list:['As a result','Therefore','Consequently','Thus','This means that','Hence']},
-    {f:'closes the text',  tag:'CLOSE',    list:['In conclusion','To sum up','Overall','All in all','All things considered','To conclude','On the whole','Weighing it all up']},
-    {f:'states an opinion',tag:'OPINION',  list:['In my view','I firmly believe that','From my point of view','Personally','I am convinced that','It seems to me that']},
-    /* reports */
-    {f:'states the purpose',tag:'PURPOSE', list:['The main objective','The aim of this report','This report aims','The purpose of this report','This report sets out','The main purpose']},
-    {f:'says where the facts came from', tag:'BASIS', list:['The information presented','The findings are based','This report is based','The data was collected','The information was gathered']},
-    {f:'points to the standout thing', tag:'HIGHLIGHT', list:['By far the','In particular','What makes','Most notably','Particularly']},
-    {f:'recommends action', tag:'RECOMMEND', list:['I would strongly recommend','I would recommend','It would be advisable','My recommendation','I therefore suggest','It is recommended that']},
-    {f:'weighs everything up', tag:'WEIGH', list:['Taking everything into consideration','Taking everything into account','If customer satisfaction','On balance']},
-    /* reviews */
-    {f:'introduces what is being reviewed', tag:'INTRODUCE', list:['Known for','Regarded as','Located in','Choosing a','When it comes to']},
-    {f:'picks out a feature', tag:'FEATURE', list:['The thing that','The other feature','The most appealing','One feature that']},
-    {f:'speaks to the reader', tag:'ADDRESS', list:['Anyone interested in','If you happen','I guarantee that','I would urge anyone']},
-    /* emails */
-    {f:'changes the subject', tag:'SHIFT', list:['Anyway','By the way','Oh, and','Speaking of which','Guess what']},
-    {f:'signs off', tag:'SIGN OFF', list:['Let me know','Give my love','Write back soon','Can\'t wait to','Hope to hear']}
+  /* ═══ BUILDER — compose a paragraph from the moves you choose ═══
+     A topic sentence is given. Pick a sentence for whichever moves you want:
+     reason, example, result, compare, contrast. Nothing is compulsory and
+     there is no order to obey — the moves are options, not a recipe.   ═══ */
+  const BD_MOVES=[
+    {k:'reason',  label:'REASON',   hint:'why it is so'},
+    {k:'example', label:'EXAMPLE',  hint:'show it happening'},
+    {k:'result',  label:'RESULT',   hint:'what follows'},
+    {k:'compare', label:'COMPARE',  hint:'set beside something'},
+    {k:'contrast',label:'CONTRAST', hint:'the other side'}
   ];
-  function bdMatch(sent){
-    let best=null;
-    BD_FUNC.forEach(g=>g.list.forEach(fr=>{
-      const re=new RegExp('^'+fr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b[,]?','i');
-      const m=sent.match(re);
-      if(m && (!best || m[0].length>best.hit.length)) best={hit:m[0], frame:fr, func:g.f, tag:g.tag};
-    }));
-    return best;
-  }
-  let bdStage=-1, bdSlots=[], bdSolved={}, bdActive=0, bdNote='';
-  function renderBuilder(st){
-    if(bdStage!==si){
-      bdStage=si; bdSolved={}; bdActive=0; bdNote='';
-      bdSlots=[];
-      st.sents.forEach((s,i)=>{ const m=bdMatch(s); if(m) bdSlots.push({i:i, ...m}); });
-    }
-    paintBuilder(st);
-  }
-  function paintBuilder(st){
+  let bdData=null, bdTopic=0, bdPick={}, bdOpen='', bdExpanded=null, bdShown=false;
+
+  function renderBuilder(){
     const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
-    if(!bdSlots.length){
-      body.innerHTML='<div class="stub">No linking words to build in this section.<br><br>Try another stage, or a different game.</div>';
-      actions.innerHTML=''; return;
+    if(!bdData){
+      body.innerHTML='<div class="stub">Loading topics…</div>'; actions.innerHTML='';
+      fetch('data/master-data.json').then(r=>r.json()).then(d=>{
+        bdData=d; bdTopic=Math.floor(Math.random()*(d.topics||[]).length);
+        bdNewTopic(false); paintBuilder();
+      }).catch(()=>{ body.innerHTML='<div class="stub">Could not load the builder topics.</div>'; });
+      return;
     }
-    const done=Object.keys(bdSolved).length===bdSlots.length;
+    paintBuilder();
+  }
+  function bdNewTopic(advance){
+    if(advance){ let n=bdTopic; while(n===bdTopic&&bdData.topics.length>1) n=Math.floor(Math.random()*bdData.topics.length); bdTopic=n; }
+    bdPick={}; bdExpanded=null; bdShown=false;
+    const pool=[];
+    Object.values(bdData.openers||{}).forEach(a=>pool.push(...a));
+    bdOpen=pool.length?pool[Math.floor(Math.random()*pool.length)]:'';
+  }
+  function bdLight(t){
+    let out=t;
+    (bdData.linking_words||[]).forEach(w=>{
+      const re=new RegExp('\\b('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')\\b','gi');
+      out=out.replace(re,'<span class="frame">$1</span>');
+    });
+    return out;
+  }
+  function bdIntro(){
+    const t=bdData.topics[bdTopic];
+    let base=t.base||'';
+    if(/that\s*$/i.test(bdOpen)) base=base.charAt(0).toLowerCase()+base.slice(1);
+    return '<span class="bd-open">'+bdOpen+'</span> <span class="bd-base">'+base+'</span>';
+  }
+  function paintBuilder(){
+    const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
+    const t=bdData.topics[bdTopic];
+    const chosen=BD_MOVES.filter(m=>bdPick[m.k]!=null);
 
-    const box=st.sents.map((s,i)=>{
-      const idx=bdSlots.findIndex(x=>x.i===i);
-      if(idx===-1) return '<span class="bd-plain">'+s+'</span>';
-      const slot=bdSlots[idx], rest=s.slice(slot.hit.length);
-      if(bdSolved[idx])
-        return '<span class="ps-place">'+slot.hit+'</span><span class="bd-tag">'+slot.tag+'</span>'+rest;
-      if(idx===bdActive)
-        return '<span class="bd-slot active">▁▁▁▁</span>'+rest;
-      return '<span class="bd-slot">▁▁▁▁</span>'+rest;
-    }).join(' ');
-
-    let opts='';
-    if(!done){
-      const slot=bdSlots[bdActive];
-      const others=BD_FUNC.filter(g=>g.tag!==slot.tag);
-      const picks=shuffle(others).slice(0,3).map(g=>({t:shuffle(g.list)[0], func:g.f, right:false}));
-      if(!slot._opts) slot._opts=shuffle(picks.concat([{t:slot.frame, func:slot.func, right:true}]));
-      opts='<div class="bd-opts" id="bdOpts">'+slot._opts.map((o,k)=>
-        '<button class="bd-opt" data-k="'+k+'">'+o.t+'</button>').join('')+
-        (bdNote?'<div class="bd-note">'+bdNote+'</div>':'')+'</div>';
+    if(bdShown){
+      const para=[bdIntro().replace(/<[^>]+>/g,'')]
+        .concat(chosen.map(m=>t[m.k][bdPick[m.k]]));
+      body.innerHTML='<div class="os-win">✓ YOUR PARAGRAPH</div>'+
+        '<div class="os-whole">'+para.map(bdLight).join(' ')+'</div>'+
+        '<div class="hint">'+chosen.length+' move'+(chosen.length===1?'':'s')+' used: '+
+        chosen.map(m=>m.label.toLowerCase()).join(' · ')+'</div>';
+      actions.innerHTML='<button onclick="window._bdBack()">KEEP BUILDING</button>'+
+        '<button class="primary" onclick="window._bdNew()">NEW TOPIC →</button>';
+      return;
     }
 
-    body.innerHTML='<div class="pz-built bd-para">'+box+'</div>'+
-      '<div class="hint">'+(done
-        ? 'Every joint is built. Look at what each word does.'
-        : 'Which linking word fits the highlighted gap?')+'</div>'+opts;
+    body.innerHTML=
+      '<div class="bd-topic">'+t.title+'</div>'+
+      '<div class="pz-built bd-intro">'+bdIntro()+'</div>'+
+      '<div class="hint">Pick a sentence for any move you want. None of them is compulsory.</div>'+
+      '<div class="bd-moves" id="bdMoves"></div>';
 
-    const box2=document.getElementById('bdOpts');
-    if(box2) [].slice.call(box2.querySelectorAll('.bd-opt')).forEach(b=>{
-      b.onclick=()=>{
-        const slot=bdSlots[bdActive], o=slot._opts[+b.getAttribute('data-k')];
-        if(o.right){
-          bdSolved[bdActive]=true; bdNote='';
-          const next=bdSlots.findIndex((_,k)=>!bdSolved[k]);
-          bdActive=next>-1?next:bdActive;
-          paintBuilder(st);
-          toast('That one '+slot.func+'.');
-          if(Object.keys(bdSolved).length===bdSlots.length) setTimeout(()=>bdWin(st),400);
-        } else {
-          b.classList.add('other');
-          bdNote='“'+o.t+'” '+o.func+' — but here the sentence '+slot.func+'.';
-          paintBuilder(st);
+    const wrap=document.getElementById('bdMoves');
+    BD_MOVES.forEach(m=>{
+      const opts=t[m.k]||[];
+      const row=document.createElement('div');
+      row.className='bd-row'+(bdPick[m.k]!=null?' filled':'');
+      const picked=bdPick[m.k]!=null?bdLight(opts[bdPick[m.k]]):'';
+      row.innerHTML=
+        '<button class="bd-move'+(bdPick[m.k]!=null?' on':'')+'" data-m="'+m.k+'">'+m.label+'</button>'+
+        '<div class="bd-line">'+(picked||'<span class="bd-hintline">'+m.hint+'</span>')+'</div>';
+      wrap.appendChild(row);
+      if(bdExpanded===m.k){
+        const box=document.createElement('div'); box.className='bd-choices';
+        opts.forEach((o,i)=>{
+          const b=document.createElement('button');
+          b.className='bd-choice'+(bdPick[m.k]===i?' on':'');
+          b.innerHTML=bdLight(o);
+          b.onclick=()=>{ bdPick[m.k]=i; bdExpanded=null; paintBuilder(); toast('Added — '+m.hint+'.'); };
+          box.appendChild(b);
+        });
+        if(bdPick[m.k]!=null){
+          const clr=document.createElement('button');
+          clr.className='bd-choice clear'; clr.textContent='remove this move';
+          clr.onclick=()=>{ delete bdPick[m.k]; bdExpanded=null; paintBuilder(); };
+          box.appendChild(clr);
         }
-      };
+        wrap.appendChild(box);
+      }
+    });
+    [].slice.call(wrap.querySelectorAll('.bd-move')).forEach(b=>{
+      b.onclick=()=>{ const k=b.getAttribute('data-m'); bdExpanded=(bdExpanded===k?null:k); paintBuilder(); };
     });
 
-    actions.innerHTML = done
-      ? '<button onclick="window._bdReset()">AGAIN</button><button class="primary" onclick="window._next()">NEXT STAGE →</button>'
-      : '<button onclick="window._bdReset()">RESET</button>';
+    actions.innerHTML=
+      '<button onclick="window._bdNew()">NEW TOPIC</button>'+
+      '<button class="primary" '+(chosen.length?'':'disabled')+' onclick="window._bdShow()">SEE MY PARAGRAPH →</button>';
   }
-  function bdWin(st){
-    const perfect=!bdNote;
-    document.getElementById('cardBody').innerHTML=
-      (perfect?'<div class="prize"><div class="prize-badge">100%</div><div class="prize-title">EVERY JOINT RIGHT</div></div>':'')+
-      '<div class="os-win">✓ THE PARAGRAPH IS BUILT</div>'+
-      '<div class="os-whole">'+st.sents.map(lightFrames).join(' ')+'</div>';
-    document.getElementById('cardActions').innerHTML=
-      '<button onclick="window._bdReset()">AGAIN</button><button class="primary" onclick="window._next()">NEXT STAGE →</button>';
-    if(perfect) burst();
-  }
-  window._bdReset=function(){ bdStage=-1; load(si); };
+  window._bdNew=function(){ bdNewTopic(true); paintBuilder(); };
+  window._bdShow=function(){ bdShown=true; paintBuilder(); burst(); };
+  window._bdBack=function(){ bdShown=false; paintBuilder(); };
+  window._bdReset=function(){ bdNewTopic(false); paintBuilder(); };
 
   /* ── shared helpers for the ported games ── */
   function readOrder(boxId, source){
