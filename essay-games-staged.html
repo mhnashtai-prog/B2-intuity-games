@@ -251,6 +251,42 @@
   .mtb.on{background:var(--gold);color:#2c2416}
   @media (min-width:1100px){ .mtb{font-size:12.5px;padding:8px 18px} }
   @media (max-width:560px){ .mtb{font-size:9.5px;padding:6px 10px;letter-spacing:.1em} }
+
+  /* ── paragraph that starts incomplete and fills as sentences are confirmed ── */
+  .ps-done{cursor:pointer;border-bottom:1px solid transparent;transition:.15s}
+  .ps-done:hover{border-bottom-color:var(--gold);background:rgba(201,169,97,.1);border-radius:3px}
+  .ps-now{color:#6a6252;background:rgba(201,169,97,.13);border-radius:4px;padding:0 3px}
+  .ps-todo{color:#cfc8b8;letter-spacing:.06em}
+
+  /* ── tighter vertical rhythm: fit one screen ── */
+  .body{gap:.38rem}
+  .pz-built{line-height:1.5;padding:9px 12px;margin-bottom:0;font-size:15.5px}
+  .hint{padding:1px 0 5px;line-height:1.35}
+  .pz-line{min-height:44px;padding:8px 10px;gap:5px}
+  .pz-pool{padding-top:7px;gap:5px}
+  .pz-w{padding:5px 10px}
+  .pz-dots{padding:6px 0 0;gap:6px}
+  .pz-dot{width:24px;height:24px;font-size:11.5px}
+  .os-item{padding:10px 13px 10px 36px;line-height:1.4}
+  .os-item::before{left:12px}
+  .os-claim{padding:10px 13px}
+  .os-claim .text{line-height:1.4}
+  .os-whole{line-height:1.6;padding:2px}
+  .bd-opts{gap:6px;padding-top:8px}
+  .bd-opt{padding:9px 12px}
+  .bd-sent{padding:10px 12px;line-height:1.5}
+  .actions{padding:.15rem 1.4rem .9rem}
+  .actions button:disabled{opacity:.35;cursor:default}
+  @media (min-width:1100px){
+    .pz-built{font-size:19px;line-height:1.55;padding:12px 16px}
+    .os-item{padding:12px 16px 12px 46px}
+  }
+  #newText{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:999px;
+    color:var(--dim);font-size:10px;letter-spacing:.12em;font-weight:700;padding:6px 11px;cursor:pointer;margin-right:6px}
+  #newText:hover{color:var(--gold);border-color:var(--gold-d)}
+  #top{gap:8px}
+  @media (min-width:1100px){ #newText{font-size:12px;padding:8px 14px} }
+  @media (max-width:560px){ #newText{font-size:9px;padding:5px 8px} }
 </style>
 </head>
 <body>
@@ -258,6 +294,7 @@
   <div id="top">
     <a href="index.html" class="cond">&#8592; TASK TYPES</a>
     <span class="brand cond" id="brandTag">GAMES</span>
+    <button id="newText" class="cond" onclick="window._newText()" title="Another model text">&#8635; <span id="textTag">NEW TEXT</span></button>
     <div id="modeToggle">
       <button class="mtb cond on" id="mbStages" onclick="window._mode(false)">STAGES</button>
       <button class="mtb cond" id="mbFull" onclick="window._mode(true)">FULL TEXT</button>
@@ -307,6 +344,21 @@
   ];
 
   let stages=[], play=[], fullText=false, si=0, game='order', solved=new Set();
+  function buildStages(){
+    const sample=DATASET.samples[sampleIdx];
+    stages=sample.paragraphs.map(p=>({
+      label:shortLabel(p.label), full:p.label,
+      sents:p.text.trim().split(/(?<=[.!?])\s+/).filter(Boolean)
+    }));
+  }
+  window._newText=function(){
+    if(!DATASET||DATASET.samples.length<2) return;
+    let n=sampleIdx; while(n===sampleIdx) n=Math.floor(Math.random()*DATASET.samples.length);
+    sampleIdx=n; solved=new Set(); pzStage=-1; si=0;
+    buildStages(); rebuildPlay(); renderStrip(); load(firstPlayable());
+    const t=document.getElementById('textTag');
+    if(t) t.textContent='TEXT '+(sampleIdx+1)+'/'+DATASET.samples.length;
+  };
   function rebuildPlay(){
     play = fullText
       ? [{label:'Full Text', sents: stages.reduce((a,s)=>a.concat(s.sents),[])}]
@@ -314,15 +366,15 @@
   }
   let order=[], curSupports=[], curClaim='';
 
+  let DATASET=null, sampleIdx=0;
   fetch(DATA[type]).then(r=>r.json()).then(d=>{
-    const sample=(d.samples&&d.samples[0]);
-    if(!sample){fail('No content.');return;}
-    stages=sample.paragraphs.map((p,i)=>{
-      const sents=p.text.trim().split(/(?<=[.!?])\s+/).filter(Boolean);
-      return {label:shortLabel(p.label), full:p.label, sents};
-    });
+    DATASET=d;
+    if(!(d.samples&&d.samples.length)){fail('No content.');return;}
+    sampleIdx=Math.floor(Math.random()*d.samples.length);
+    buildStages();
     const TYPE_LABEL={essays:'ESSAY',reports:'REPORT',reviews:'REVIEW',emails:'EMAIL',articles:'ARTICLE'};
     document.getElementById('brandTag').textContent=(TYPE_LABEL[type]||'WRITING')+' GAMES';
+    document.getElementById('textTag').textContent='TEXT '+(sampleIdx+1)+'/'+d.samples.length;
     document.getElementById('loading').style.display='none';
     document.getElementById('shell').classList.add('on');
     rebuildPlay(); renderStrip(); renderGames(); load(firstPlayable());
@@ -397,7 +449,7 @@
     }
     if(curSupports.length<2){
       const opts=play.map((x,i)=>({x,i})).filter(o=>playable(o.i));
-      body.innerHTML=`<div class="stub">An <b>${st.label.toLowerCase()}</b> is a pair \u2014 a hook and a thesis \u2014 so there is nothing to re-order here.<br><br>Order the flow in a body paragraph:</div>
+      body.innerHTML=`<div class="stub"><b>${st.label}</b> has only ${st.sents.length} sentence${st.sents.length===1?'':'s'} \u2014 too few to re-order.<br><br>Order the flow in a longer section:</div>
         <div class="jump" id="jumpRow">${opts.map(o=>`<button class="jbtn cond" onclick="window._go(${o.i})">${o.x.label.toUpperCase()}</button>`).join('')}</div>`;
       actions.innerHTML='';
       return;
@@ -409,7 +461,7 @@
       <div class="os-supports" id="osSupports"></div>`;
     paintSupports();
     actions.innerHTML=`<button class="ghost" onclick="window._shuffle()">SHUFFLE</button>
-      <button class="primary" id="osCheck" onclick="window._check()">CHECK THE FLOW</button>`;
+      <button class="primary" id="osCheck" onclick="window._check()">CONFIRM THE ORDER</button>`;
   }
   function paintSupports(){
     const box=document.getElementById('osSupports'); box.innerHTML='';
@@ -454,7 +506,7 @@
       const n=order.filter((v,k)=>v===k).length;
       const btn=document.getElementById('osCheck');
       btn.textContent=n>0?n+' IN PLACE \u2014 KEEP GOING':'TRY AGAIN';
-      setTimeout(()=>{if(btn)btn.textContent='CHECK THE FLOW';},1500);
+      setTimeout(()=>{if(btn)btn.textContent='CONFIRM THE ORDER';},1500);
     }
   };
   function win(){
@@ -492,7 +544,7 @@
       wireDrag(el,'seqBox',()=>{ seqOrder=readOrder('seqBox',seqSents); });
       box.appendChild(el);
     });
-    actions.innerHTML='<button onclick="window._reload()">SHUFFLE</button><button class="primary" id="seqCheck" onclick="window._seqCheck()">CHECK THE ORDER</button>';
+    actions.innerHTML='<button onclick="window._reload()">SHUFFLE</button><button class="primary" id="seqCheck" onclick="window._seqCheck()">CONFIRM THE ORDER</button>';
   }
   window._seqCheck=function(){
     seqOrder=readOrder('seqBox',seqSents);
@@ -501,49 +553,64 @@
       els.forEach(el=>el.classList.add('locked'));
       solved.add(si+':sequence');
       showWhole(seqSents,'\u2713 THAT READS WELL');
-    } else gentle(els,seqOrder,'seqCheck','CHECK THE ORDER');
+    } else gentle(els,seqOrder,'seqCheck','CONFIRM THE ORDER');
   };
 
-  /* ═══ PUZZLE — one sentence at a time; the paragraph builds up in the box ═══ */
+  /* ═══ PUZZLE — sort → CONFIRM → the sentence is saved into the paragraph ═══
+     The paragraph starts incomplete (blank slots) and is complete when the
+     exercise is over. Tap any saved sentence to edit it again.            ═══ */
   let pzStage=-1, pzSents=[], pzIdx=0, pzDone=new Set(), pzPlaced=[], pzPool=[];
   function renderPuzzle(st){
-    if(pzStage!==si){                       // new stage → fresh paragraph
-      pzStage=si; pzSents=st.sents.slice(); pzIdx=0; pzDone=new Set();
-      openSentence(0);
-    }
+    if(pzStage!==si){ pzStage=si; pzSents=st.sents.slice(); pzIdx=0; pzDone=new Set(); openSentence(0); }
     paintPuzzle();
+  }
+  const PZ_BREAK=/(?<=,)\s+|\s+(?=(?:and|but|so|because|which|that|when|if|although|while|as|in|on|at|through|among|during|with|for|by|from|before|after|since)\b)/i;
+  function unitsOf(sent){
+    const words=(sent||'').split(/\s+/).filter(Boolean);
+    if(words.length<=14) return words;                 // short enough for word tiles
+    let parts=(sent||'').split(PZ_BREAK).filter(Boolean);
+    const merged=[];                                    // no one-word slivers
+    parts.forEach(p=>{
+      if(merged.length && p.split(/\s+/).length===1 && !/,$/.test(merged[merged.length-1]))
+        merged[merged.length-1]+=' '+p;
+      else merged.push(p);
+    });
+    return merged.length>=3 ? merged : words;
   }
   function openSentence(i){
     pzIdx=i;
-    const words=(pzSents[i]||'').split(/\s+/).filter(Boolean);
-    if(pzDone.has(i)){ pzPlaced=words.slice(); pzPool=[]; }
-    else{ pzPlaced=[]; pzPool=shuffle(words.slice()); }
+    const u=unitsOf(pzSents[i]);
+    if(pzDone.has(i)){ pzPlaced=u.slice(); pzPool=[]; }
+    else{ pzPlaced=[]; pzPool=shuffle(u.slice()); }
   }
-  function builtParagraph(){
-    return pzSents.map((s,i)=>{
-      if(pzDone.has(i)) return lightFrames(s);
-      if(i===pzIdx)     return '<span class="pending">…</span>';
-      return '';
-    }).filter(Boolean).join(' ');
+  function paragraphBox(){
+    const parts=pzSents.map((s,i)=>{
+      if(pzDone.has(i)) return '<span class="ps-done" data-edit="'+i+'" title="Tap to edit">'+lightFrames(s)+'</span>';
+      if(i===pzIdx)     return '<span class="ps-now">'+(pzPlaced.length? pzPlaced.join(' ')+' …' : '▁▁▁▁▁')+'</span>';
+      return '<span class="ps-todo">▁▁▁▁▁</span>';
+    });
+    return '<div class="pz-built">'+parts.join(' ')+'</div>';
   }
   function paintPuzzle(){
     const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
-    const words=(pzSents[pzIdx]||'').split(/\s+/).filter(Boolean);
-    const allDone = pzDone.size===pzSents.length;
-    const solvedNow = pzDone.has(pzIdx);
-
-    if(allDone){ showWhole(pzSents,'\u2713 THE PARAGRAPH IS BUILT'); return; }
+    const words=unitsOf(pzSents[pzIdx]);
+    const saved=pzDone.has(pzIdx), complete=pzDone.size===pzSents.length;
 
     body.innerHTML =
-      (pzDone.size ? '<div class="pz-built">'+builtParagraph()+'</div>' : '') +
-      '<div class="hint">Sentence '+(pzIdx+1)+' of '+pzSents.length+
-        (solvedNow ? ' — done. Tap a dot for another, or redo this one.' : ' — tap the words in order.')+'</div>' +
-      (solvedNow
-        ? '<div class="pz-built">'+lightFrames(pzSents[pzIdx])+'</div>'
-        : '<div class="pz-line" id="pzLine"></div><div class="pz-pool" id="pzPool"></div>') +
+      paragraphBox() +
+      '<div class="hint">'+(complete
+        ? 'The paragraph is complete. Tap any sentence to edit it.'
+        : saved
+          ? 'Sentence '+(pzIdx+1)+' is saved. Tap a dot for the next one.'
+          : 'Sentence '+(pzIdx+1)+' of '+pzSents.length+' — tap the '+(unitsOf(pzSents[pzIdx]).length && unitsOf(pzSents[pzIdx])[0].split(/\s+/).length>1 ? 'parts' : 'words')+' in order, then confirm.')+'</div>' +
+      (saved ? '' : '<div class="pz-line" id="pzLine"></div><div class="pz-pool" id="pzPool"></div>') +
       '<div class="pz-dots" id="pzDots"></div>';
 
-    // sentence dots — navigate freely, solved ones marked
+    // tap a saved sentence in the paragraph to edit it
+    [].slice.call(body.querySelectorAll('.ps-done')).forEach(el=>{
+      el.onclick=()=>{ const i=+el.getAttribute('data-edit'); pzDone.delete(i); openSentence(i); paintPuzzle(); };
+    });
+
     const dots=document.getElementById('pzDots');
     pzSents.forEach((_,i)=>{
       const d=document.createElement('button');
@@ -553,43 +620,54 @@
       dots.appendChild(d);
     });
 
-    if(!solvedNow) paintWords();
+    if(!saved) paintWords();
 
-    actions.innerHTML = solvedNow
-      ? '<button onclick="window._pzRedo()">REDO THIS ONE</button>'+
-        (pzIdx<pzSents.length-1?'<button class="primary" onclick="window._pzNext()">NEXT SENTENCE \u2192</button>':'')
-      : '<button onclick="window._pzReset()">RESET</button>';
+    // one clear next step, always
+    const ready = !saved && pzPlaced.length===words.length;
+    const nextUndone = pzSents.findIndex((_,i)=>!pzDone.has(i) && i!==pzIdx);
+    actions.innerHTML =
+      (saved
+        ? '<button onclick="window._pzEdit()">EDIT THIS SENTENCE</button>'
+        : '<button onclick="window._pzReset()">RESET</button>') +
+      (saved && nextUndone>-1
+        ? '<button class="primary" onclick="window._pzGo('+nextUndone+')">NEXT SENTENCE →</button>'
+        : '') +
+      (!saved
+        ? '<button class="primary" id="pzConfirm" '+(ready?'':'disabled')+' onclick="window._pzConfirm()">CONFIRM SENTENCE</button>'
+        : '') +
+      (complete ? '<button class="primary" onclick="window._pzFinish()">SEE IT WHOLE →</button>' : '');
   }
   function paintWords(){
     const line=document.getElementById('pzLine'), pool=document.getElementById('pzPool');
     if(!line||!pool) return;
     line.innerHTML = pzPlaced.length
       ? pzPlaced.map((w,i)=>'<span class="pz-w placed" data-i="'+i+'">'+w+'</span>').join('')
-      : '<span class="pz-empty">…</span>';
+      : '<span class="pz-empty">tap the words below…</span>';
     pool.innerHTML = pzPool.map((w,i)=>'<span class="pz-w" data-p="'+i+'">'+w+'</span>').join('');
     [].slice.call(line.querySelectorAll('.pz-w')).forEach(el=>{
-      el.onclick=()=>{ const i=+el.getAttribute('data-i'); pzPool.push(pzPlaced[i]); pzPlaced.splice(i,1); paintWords(); };
+      el.onclick=()=>{ const i=+el.getAttribute('data-i'); pzPool.push(pzPlaced[i]); pzPlaced.splice(i,1); paintPuzzle(); };
     });
     [].slice.call(pool.querySelectorAll('.pz-w')).forEach(el=>{
-      el.onclick=()=>{ const i=+el.getAttribute('data-p'); pzPlaced.push(pzPool[i]); pzPool.splice(i,1); check(); };
+      el.onclick=()=>{ const i=+el.getAttribute('data-p'); pzPlaced.push(pzPool[i]); pzPool.splice(i,1); paintPuzzle(); };
     });
-    function check(){
-      const words=(pzSents[pzIdx]||'').split(/\s+/).filter(Boolean);
-      if(pzPlaced.length<words.length){ paintWords(); return; }
-      if(pzPlaced.join(' ')===words.join(' ')){
-        pzDone.add(pzIdx); solved.add(si+':puzzle');
-        paintPuzzle();                                  // sentence joins the paragraph
-      } else {
-        paintWords();
-        const l=document.getElementById('pzLine');
-        if(l) l.insertAdjacentHTML('beforeend','<div class="pz-nudge">Close — tap a word to send it back.</div>');
-      }
-    }
   }
-  window._pzNext=()=>{ let n=pzIdx+1; while(n<pzSents.length&&pzDone.has(n))n++;
-    openSentence(n<pzSents.length?n:pzIdx); paintPuzzle(); };
-  window._pzRedo=()=>{ pzDone.delete(pzIdx); openSentence(pzIdx); paintPuzzle(); };
-  window._pzReset=()=>{ openSentence(pzIdx); paintPuzzle(); };
+  window._pzConfirm=function(){
+    const words=unitsOf(pzSents[pzIdx]);
+    if(pzPlaced.join(' ')===words.join(' ')){
+      pzDone.add(pzIdx); solved.add(si+':puzzle');
+      const next=pzSents.findIndex((_,i)=>!pzDone.has(i));
+      if(next>-1) openSentence(next);
+      paintPuzzle();
+    } else {
+      const l=document.getElementById('pzLine');
+      if(l&&!l.querySelector('.pz-nudge'))
+        l.insertAdjacentHTML('beforeend','<div class="pz-nudge">All the words are there — try another arrangement.</div>');
+    }
+  };
+  window._pzGo=function(i){ openSentence(i); paintPuzzle(); };
+  window._pzEdit=function(){ pzDone.delete(pzIdx); openSentence(pzIdx); paintPuzzle(); };
+  window._pzReset=function(){ openSentence(pzIdx); paintPuzzle(); };
+  window._pzFinish=function(){ showWhole(pzSents,'✓ THE PARAGRAPH IS COMPLETE'); };
 
   /* ═══ BUILDER — choose the opener that fits this paragraph ═══ */
   function renderBuilder(st){
