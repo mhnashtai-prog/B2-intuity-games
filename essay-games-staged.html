@@ -329,6 +329,30 @@
   .sb-tally{display:block;color:#9a7d3f;font-size:11.5px;letter-spacing:.06em;padding-top:3px;
     font-family:'Barlow Condensed',sans-serif;font-weight:700}
   .pz-dot.part{border-color:var(--gold);color:var(--gold-d)}
+  #toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,14px);z-index:200;
+    background:rgba(28,28,30,.97);border:1px solid rgba(201,169,97,.45);color:#e8e6e0;
+    border-radius:999px;padding:9px 18px;font-size:13px;letter-spacing:.02em;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.25s}
+  #toast.on{opacity:1;transform:translate(-50%,0)}
+  .prize{text-align:center;padding:6px 0 2px}
+  .prize-badge{font-family:'Barlow Condensed',sans-serif;font-size:46px;font-weight:900;
+    color:var(--accent);line-height:1}
+  .prize-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;
+    letter-spacing:.24em;color:#1a1a1a;margin-top:2px}
+  .prize-sub{color:#8a8272;font-size:13px;margin-top:5px}
+  .card{position:relative;overflow:hidden}
+  .spark{position:absolute;top:38%;width:7px;height:7px;border-radius:2px;background:var(--accent);
+    animation:fly 1.3s ease-out forwards;pointer-events:none}
+  @keyframes fly{0%{opacity:1;transform:translate(0,0) rotate(0)}
+    100%{opacity:0;transform:translate(var(--dx),-150px) rotate(220deg)}}
+  @media(prefers-reduced-motion:reduce){.spark{display:none}}
+  .bd-para{line-height:1.75}
+  .bd-plain{color:#5a5348}
+  .bd-slot{display:inline-block;color:#cfc8b8;border-bottom:2px solid rgba(201,169,97,.4);
+    letter-spacing:.08em;padding:0 3px}
+  .bd-slot.active{border-bottom-color:var(--accent);background:rgba(201,169,97,.16);color:var(--gold-d)}
+  .bd-tag{font-family:'Barlow Condensed',sans-serif;font-size:9.5px;font-weight:900;letter-spacing:.14em;
+    color:#fff;background:var(--accent);border-radius:3px;padding:1px 5px;margin:0 4px 0 2px;vertical-align:2px}
 </style>
 </head>
 <body>
@@ -602,7 +626,7 @@
      erases work. The paragraph is incremental: what you have done stays
      on screen as context for what comes next.                          ═══ */
   let sbStage=-1, sbSents=[], sbIdx=0, sbDone=new Set(), sbS={}, sbShowing=false, sbTimer=null;
-  const SB_MAX_TRIES=3;
+  const SB_MAX_TRIES=3, SB_MAX_READS=3;
   function sbWords(i){ return (sbSents[i]||'').split(/\s+/).filter(Boolean); }
   function sbKey(w){ return (w||'').toLowerCase().replace(/[^a-z0-9']/g,''); }
   function sbGet(i){
@@ -698,11 +722,15 @@
       : (saved
           ? '<button onclick="window._sbAgain()">DO IT AGAIN</button>'+
             (nextUndone>-1?'<button class="primary" onclick="window._sbGo('+nextUndone+')">NEXT SENTENCE →</button>':'')
-          : '<button onclick="window._sbRead()">'+(S.reads?'SHOW ME AGAIN':'SHOW ME')+'</button>'+
+          : (S.reads<SB_MAX_READS
+              ? '<button onclick="window._sbRead()">'+(S.reads?'SHOW ME AGAIN ('+(SB_MAX_READS-S.reads)+' left)':'SHOW ME')+'</button>'
+              : '<button disabled>NO READS LEFT</button>')+
             (S.reads&&!sbSettled(sbIdx)&&!out ? '<button class="primary" onclick="window._sbCheck()">CHECK</button>' : '')+
             (sbSettled(sbIdx)||out ? '<button class="primary" onclick="window._sbConfirm()">CONFIRM SENTENCE</button>' : ''))
       + (complete ? '<button class="primary" onclick="window._sbFinish()">SEE IT WHOLE →</button>' : '');
   }
+  const SB_CHEER=['Good recall.','Nice one.','That is coming back to you.','Steady.','Well remembered.'];
+  const SB_NUDGE=['Close — look again.','Nearly. One more go.','Almost there.'];
   window._sbCheck=function(){
     const S=sbGet(sbIdx), words=sbWords(sbIdx);
     S.wrongSet=new Set();
@@ -713,11 +741,16 @@
       if(sbKey(typed)===sbKey(w)) S.found.add(k); else S.wrongSet.add(k);
     });
     S.tries++;
+    const before=S.lastFound||0, gained=S.found.size-before; S.lastFound=S.found.size;
     if(S.tries>=SB_MAX_TRIES){ words.forEach((_,k)=>{ if(!S.found.has(k)) S.given.add(k); }); S.wrongSet=new Set(); }
     paintStory();
+    if(S.found.size===words.length) toast('That sentence is yours.');
+    else if(gained>=3) toast(SB_CHEER[Math.floor(Math.random()*SB_CHEER.length)]);
+    else if(S.wrongSet && S.wrongSet.size) toast(SB_NUDGE[Math.floor(Math.random()*SB_NUDGE.length)]);
   };
   window._sbRead=function(){
     const S=sbGet(sbIdx), words=sbWords(sbIdx);
+    if(S.reads>=SB_MAX_READS) return;
     let secs=Math.max(4,Math.round(words.length*0.7));
     sbShowing=true; S.reads++; paintStory();
     const tick=()=>{
@@ -729,13 +762,32 @@
   };
   window._sbConfirm=function(){
     sbDone.add(sbIdx); solved.add(si+':story');
+    const left=sbSents.length-sbDone.size;
+    if(left>0) toast(left===1?'One sentence to go.':'Sentence '+sbDone.size+' of '+sbSents.length+' done.');
     const next=sbSents.findIndex((_,i)=>!sbDone.has(i));
     if(next>-1) sbOpen(next);
     paintStory();
   };
   window._sbGo=function(i){ sbOpen(i); paintStory(); };
   window._sbAgain=function(){ sbDone.delete(sbIdx); sbS[sbIdx]=null; sbOpen(sbIdx); paintStory(); };
-  window._sbFinish=function(){ showWhole(sbSents,'✓ THE PARAGRAPH IS COMPLETE'); };
+  window._sbFinish=function(){
+    let given=0, total=0;
+    sbSents.forEach((_,i)=>{ const S=sbGet(i); total+=sbWords(i).length; given+=S.given.size; });
+    const pct=total?Math.round(((total-given)/total)*100):0;
+    if(pct===100) sbPrize();
+    else showWhole(sbSents,'✓ THE PARAGRAPH IS COMPLETE  ·  '+pct+'% FROM MEMORY');
+  };
+  function sbPrize(){
+    document.getElementById('cardBody').innerHTML=
+      '<div class="prize"><div class="prize-badge">100%</div>'+
+      '<div class="prize-title">PERFECT RECALL</div>'+
+      '<div class="prize-sub">Every word from memory — nothing shown to you.</div>'+
+      '<div class="os-whole" style="margin-top:.7rem">'+sbSents.map(lightFrames).join(' ')+'</div></div>';
+    document.getElementById('cardActions').innerHTML=
+      '<button onclick="window._reload()">AGAIN</button>'+
+      '<button class="primary" onclick="window._next()">NEXT STAGE →</button>';
+    burst();
+  }
 
   /* ═══ PUZZLE — sort → CONFIRM → the sentence is saved into the paragraph ═══
      The paragraph starts incomplete (blank slots) and is complete when the
@@ -845,36 +897,109 @@
   window._pzReset=function(){ openSentence(pzIdx); paintPuzzle(); };
   window._pzFinish=function(){ showWhole(pzSents,'✓ THE PARAGRAPH IS COMPLETE'); };
 
-  /* ═══ BUILDER — choose the opener that fits this paragraph ═══ */
+  /* ═══ BUILDER — build the paragraph's joints ═══
+     Every discourse marker is blanked. Choose the connector that fits.
+     A right choice locks in AND names what it does. A wrong choice explains
+     itself: "'Furthermore' adds another idea — but here the sentence gives
+     a reason." You learn the function, not just the word.              ═══ */
+  const BD_FUNC=[
+    {f:'sets the scene',   tag:'SCENE',    list:['Nowadays','These days','In recent times','In recent years','It is common knowledge that','It is widely recognised that','It is often argued that','It is generally assumed that']},
+    {f:'starts the first point', tag:'FIRST', list:['Firstly','First of all','To begin with','In the first place','For one thing']},
+    {f:'adds another idea',tag:'ADD',      list:['Furthermore','Moreover','In addition','What is more','Besides','Secondly','Apart from that']},
+    {f:'turns to the other side', tag:'CONTRAST', list:['However','On the other hand','Nevertheless','In contrast','Nonetheless','Even so']},
+    {f:'gives a reason',   tag:'REASON',   list:['This is because','The main reason is that','Because of this','Since']},
+    {f:'gives an example', tag:'EXAMPLE',  list:['For example','For instance','To illustrate','A good example is']},
+    {f:'shows a result',   tag:'RESULT',   list:['As a result','Therefore','Consequently','Thus','This means that','Hence']},
+    {f:'closes the text',  tag:'CLOSE',    list:['In conclusion','To sum up','Overall','All in all','All things considered','To conclude','On the whole','Weighing it all up']},
+    {f:'states an opinion',tag:'OPINION',  list:['In my view','I firmly believe that','From my point of view','Personally','I am convinced that','It seems to me that']}
+  ];
+  function bdMatch(sent){
+    let best=null;
+    BD_FUNC.forEach(g=>g.list.forEach(fr=>{
+      const re=new RegExp('^'+fr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b[,]?','i');
+      const m=sent.match(re);
+      if(m && (!best || m[0].length>best.hit.length)) best={hit:m[0], frame:fr, func:g.f, tag:g.tag};
+    }));
+    return best;
+  }
+  let bdStage=-1, bdSlots=[], bdSolved={}, bdActive=0, bdNote='';
   function renderBuilder(st){
-    const first=st.sents[0]||'';
-    const m=first.match(/^([A-Z][^,]{2,28},)\s*/);
-    const real = m ? m[1] : first.split(/\s+/).slice(0,3).join(' ');
-    const rest = m ? first.slice(m[0].length) : first;
-    const distractors=shuffle(FRAMES.filter(f=>f.toLowerCase()!==real.replace(/,$/,'').toLowerCase())).slice(0,3).map(x=>x+',');
-    const opts=shuffle([real].concat(distractors));
+    if(bdStage!==si){
+      bdStage=si; bdSolved={}; bdActive=0; bdNote='';
+      bdSlots=[];
+      st.sents.forEach((s,i)=>{ const m=bdMatch(s); if(m) bdSlots.push({i:i, ...m}); });
+    }
+    paintBuilder(st);
+  }
+  function paintBuilder(st){
     const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
-    body.innerHTML='<div class="hint">Which opener fits this paragraph?</div>'+
-      '<div class="bd-sent"><span class="bd-slot" id="bdSlot">……</span> '+rest+'</div>'+
-      '<div class="bd-opts" id="bdOpts"></div>';
-    const box=document.getElementById('bdOpts');
-    opts.forEach(o=>{
-      const b=document.createElement('button'); b.className='bd-opt'; b.textContent=o;
+    if(!bdSlots.length){
+      body.innerHTML='<div class="stub">No linking words to build in this section.<br><br>Try another stage, or a different game.</div>';
+      actions.innerHTML=''; return;
+    }
+    const done=Object.keys(bdSolved).length===bdSlots.length;
+
+    const box=st.sents.map((s,i)=>{
+      const idx=bdSlots.findIndex(x=>x.i===i);
+      if(idx===-1) return '<span class="bd-plain">'+s+'</span>';
+      const slot=bdSlots[idx], rest=s.slice(slot.hit.length);
+      if(bdSolved[idx])
+        return '<span class="ps-place">'+slot.hit+'</span><span class="bd-tag">'+slot.tag+'</span>'+rest;
+      if(idx===bdActive)
+        return '<span class="bd-slot active">▁▁▁▁</span>'+rest;
+      return '<span class="bd-slot">▁▁▁▁</span>'+rest;
+    }).join(' ');
+
+    let opts='';
+    if(!done){
+      const slot=bdSlots[bdActive];
+      const others=BD_FUNC.filter(g=>g.tag!==slot.tag);
+      const picks=shuffle(others).slice(0,3).map(g=>({t:shuffle(g.list)[0], func:g.f, right:false}));
+      if(!slot._opts) slot._opts=shuffle(picks.concat([{t:slot.frame, func:slot.func, right:true}]));
+      opts='<div class="bd-opts" id="bdOpts">'+slot._opts.map((o,k)=>
+        '<button class="bd-opt" data-k="'+k+'">'+o.t+'</button>').join('')+
+        (bdNote?'<div class="bd-note">'+bdNote+'</div>':'')+'</div>';
+    }
+
+    body.innerHTML='<div class="pz-built bd-para">'+box+'</div>'+
+      '<div class="hint">'+(done
+        ? 'Every joint is built. Look at what each word does.'
+        : 'Which linking word fits the highlighted gap?')+'</div>'+opts;
+
+    const box2=document.getElementById('bdOpts');
+    if(box2) [].slice.call(box2.querySelectorAll('.bd-opt')).forEach(b=>{
       b.onclick=()=>{
-        document.getElementById('bdSlot').textContent=o;
-        if(o===real){
-          b.classList.add('right'); solved.add(si+':builder');
-          setTimeout(()=>showWhole(play[si].sents,'\u2713 THAT IS THE ONE'),450);
+        const slot=bdSlots[bdActive], o=slot._opts[+b.getAttribute('data-k')];
+        if(o.right){
+          bdSolved[bdActive]=true; bdNote='';
+          const next=bdSlots.findIndex((_,k)=>!bdSolved[k]);
+          bdActive=next>-1?next:bdActive;
+          paintBuilder(st);
+          toast('That one '+slot.func+'.');
+          if(Object.keys(bdSolved).length===bdSlots.length) setTimeout(()=>bdWin(st),400);
         } else {
           b.classList.add('other');
-          if(!box.querySelector('.bd-note'))
-            box.insertAdjacentHTML('beforeend','<div class="bd-note">That is good English — but another one fits this paragraph better.</div>');
+          bdNote='“'+o.t+'” '+o.func+' — but here the sentence '+slot.func+'.';
+          paintBuilder(st);
         }
       };
-      box.appendChild(b);
     });
-    actions.innerHTML='<button onclick="window._reload()">ANOTHER SET</button>';
+
+    actions.innerHTML = done
+      ? '<button onclick="window._bdReset()">AGAIN</button><button class="primary" onclick="window._next()">NEXT STAGE →</button>'
+      : '<button onclick="window._bdReset()">RESET</button>';
   }
+  function bdWin(st){
+    const perfect=!bdNote;
+    document.getElementById('cardBody').innerHTML=
+      (perfect?'<div class="prize"><div class="prize-badge">100%</div><div class="prize-title">EVERY JOINT RIGHT</div></div>':'')+
+      '<div class="os-win">✓ THE PARAGRAPH IS BUILT</div>'+
+      '<div class="os-whole">'+st.sents.map(lightFrames).join(' ')+'</div>';
+    document.getElementById('cardActions').innerHTML=
+      '<button onclick="window._bdReset()">AGAIN</button><button class="primary" onclick="window._next()">NEXT STAGE →</button>';
+    if(perfect) burst();
+  }
+  window._bdReset=function(){ bdStage=-1; load(si); };
 
   /* ── shared helpers for the ported games ── */
   function readOrder(boxId, source){
@@ -892,6 +1017,23 @@
     document.getElementById('cardActions').innerHTML=
       '<button onclick="window._reload()">AGAIN</button><button class="primary" onclick="window._next()">NEXT STAGE →</button>';
     renderStrip();
+  }
+  let toastT=null;
+  function toast(msg){
+    let el=document.getElementById('toast');
+    if(!el){ el=document.createElement('div'); el.id='toast'; document.body.appendChild(el); }
+    el.textContent=msg; el.classList.add('on');
+    clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),1900);
+  }
+  function burst(){
+    const host=document.querySelector('.card'); if(!host) return;
+    for(let i=0;i<18;i++){
+      const b=document.createElement('i'); b.className='spark';
+      b.style.left=(15+Math.random()*70)+'%';
+      b.style.animationDelay=(Math.random()*0.35)+'s';
+      b.style.setProperty('--dx',(Math.random()*80-40)+'px');
+      host.appendChild(b); setTimeout(()=>b.remove(),1600);
+    }
   }
   window._reload=function(){ load(si); };
   window._mode=function(on){
