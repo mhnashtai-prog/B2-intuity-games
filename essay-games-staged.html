@@ -76,6 +76,22 @@
   .jbtn{background:var(--accent);color:#fff;border:none;border-radius:999px;padding:9px 18px;
     font-size:12px;letter-spacing:.14em;font-weight:700;cursor:pointer}
   .jbtn:hover{filter:brightness(1.08)}
+  .hint{color:#8a8272;font-size:12.5px;text-align:center;padding:2px 0 8px;line-height:1.45}
+  .pz-line{min-height:52px;background:rgba(0,0,0,.04);border-radius:10px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start}
+  .pz-empty{color:#bdb6a6}
+  .pz-pool{display:flex;flex-wrap:wrap;gap:6px;padding-top:10px}
+  .pz-w{background:#fff;border:1px solid #e2ddd0;border-radius:8px;padding:6px 11px;font-family:'Crimson Text',serif;font-size:15px;color:#1a1a1a;cursor:pointer;user-select:none}
+  .pz-w:hover{border-color:var(--gold)}
+  .pz-w.placed{background:#fdfaf2;border-color:var(--gold)}
+  .pz-nudge{width:100%;color:#a2988a;font-size:12px;padding-top:6px;font-family:'Instrument Sans',sans-serif}
+  .bd-sent{font-family:'Crimson Text',serif;font-size:16px;line-height:1.6;color:#1a1a1a;background:rgba(0,0,0,.03);border-radius:10px;padding:12px 14px}
+  .bd-slot{color:var(--gold-d);font-weight:700;border-bottom:2px dotted var(--gold)}
+  .bd-opts{display:flex;flex-direction:column;gap:7px;padding-top:10px}
+  .bd-opt{background:#fff;border:1px solid #e2ddd0;border-radius:9px;padding:10px 13px;text-align:left;font-family:'Crimson Text',serif;font-size:15px;color:#1a1a1a;cursor:pointer}
+  .bd-opt:hover{border-color:var(--gold)}
+  .bd-opt.right{border-color:var(--ok);background:#f2fbf5}
+  .bd-opt.other{border-color:#e2ddd0;opacity:.55}
+  .bd-note{color:#a2988a;font-size:12px;padding-top:4px;line-height:1.45}
   .stub{text-align:center;color:#b0a898;font-family:'Instrument Sans',sans-serif;font-size:14px;padding:2.4rem 1rem;line-height:1.6}
   .stub b{color:#6a6252}
 
@@ -103,6 +119,84 @@
 
   #loading{color:var(--dim);padding:3rem;font-size:.9rem}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* ════════ WHITEBOARD — large screens, read from across the room ════════ */
+  @media (min-width:1100px){
+    main{max-width:900px}
+    .card{width:min(860px,88vw);border-radius:26px}
+    .header{padding:2rem 2.2rem 1.9rem}
+    .title{font-size:clamp(2.6rem,3.6vw,3.6rem)}
+    .step-label{font-size:.78rem;letter-spacing:.26em}
+    .game-badge{font-size:.72rem;height:24px;line-height:24px;padding:0 .8rem}
+    .ghost-num{font-size:clamp(9rem,13vw,13rem)}
+    .body{padding:1.6rem 2.2rem 1.7rem;min-height:260px;gap:.75rem}
+    .hint{font-size:16px;padding:4px 0 12px}
+    .os-claim{padding:16px 20px}
+    .os-claim .text{font-size:21px}
+    .os-claim .tag{font-size:.7rem}
+    .os-item{font-size:20px;line-height:1.55;padding:16px 20px 16px 52px}
+    .os-item::before{font-size:22px;left:18px}
+    .os-whole{font-size:20px;line-height:1.75}
+    .os-win{font-size:15px}
+    .pz-line{min-height:74px;padding:14px 16px;gap:9px}
+    .pz-w{font-size:20px;padding:9px 15px}
+    .bd-sent{font-size:21px;padding:16px 20px}
+    .bd-opt{font-size:20px;padding:14px 18px}
+    .bd-note,.pz-nudge{font-size:14px}
+    .actions{padding:.4rem 2.2rem 1.6rem;gap:12px}
+    .actions button{font-size:15px;padding:13px 26px}
+    .pip{font-size:.74rem;padding:.42rem 1rem}
+    #games{max-width:860px;gap:12px}
+    .gbtn{padding:18px 8px}
+    .gbtn .ico{font-size:28px}
+    .gbtn .nm{font-size:.76rem}
+    #fulltext{font-size:14px;padding:11px 24px}
+    #top .brand{font-size:15px}
+  }
+  @media (min-width:1600px){
+    main{max-width:1080px}
+    .card{width:min(1040px,82vw)}
+    .title{font-size:clamp(3.2rem,3.8vw,4.4rem)}
+    .os-item,.bd-opt,.pz-w,.os-whole{font-size:23px}
+    .os-claim .text,.bd-sent{font-size:24px}
+    .body{min-height:320px}
+  }
+
+  /* ════════ PHONE — thumb-sized targets, nothing cramped ════════ */
+  @media (max-width:560px){
+    body{padding:calc(10px + env(safe-area-inset-top)) 10px 18px}
+    main{max-width:100%}
+    #top{margin-bottom:8px}
+    #top a,#top .brand,#top #typeTag{font-size:11px}
+    #strip{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;
+      -webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+    #strip::-webkit-scrollbar{display:none}
+    .pip{flex:none;padding:.45rem .8rem;font-size:.62rem}
+    .card{width:100%;border-radius:16px;box-shadow:0 0 0 1px rgba(255,255,255,.06),4px 8px 0 rgba(0,0,0,.45),0 20px 44px rgba(0,0,0,.6)}
+    .header{padding:1.05rem 1.15rem 1rem}
+    .title{font-size:clamp(1.5rem,7.5vw,2.1rem)}
+    .ghost-num{font-size:clamp(4.5rem,22vw,6.5rem);bottom:-.9rem}
+    .body{padding:.9rem 1rem 1rem;min-height:200px}
+    /* every tappable thing clears 48px */
+    .os-item{font-size:15.5px;padding:14px 12px 14px 40px;min-height:52px;display:flex;align-items:center}
+    .os-item::before{left:12px;font-size:17px}
+    .pz-w{font-size:16px;padding:11px 14px;min-height:44px;display:inline-flex;align-items:center}
+    .pz-line{min-height:60px;gap:7px}
+    .bd-opt{font-size:15.5px;padding:13px 14px;min-height:50px}
+    .bd-sent{font-size:15.5px;padding:12px 13px}
+    .actions{padding:.2rem 1rem 1.1rem;gap:8px;flex-wrap:wrap}
+    .actions button{padding:12px 18px;font-size:12.5px;min-height:46px;flex:1 1 auto}
+    /* 2x2 footer beats 4 slivers on a phone */
+    #games{grid-template-columns:repeat(2,1fr);gap:9px}
+    .gbtn{padding:15px 8px;min-height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .gbtn .ico{font-size:22px;margin-bottom:6px}
+    .gbtn .nm{font-size:.66rem}
+    #fulltext{width:100%;padding:13px 18px;min-height:48px}
+    .os-whole{font-size:15.5px}
+  }
+  /* touch devices: the drag handle is misleading — show a tap affordance instead */
+  body.touch .os-item::before{content:'\21C5'}
+  body.touch .os-item.picked{box-shadow:0 0 0 2px var(--gold) inset}
 </style>
 </head>
 <body>
@@ -135,6 +229,10 @@
 <script>
 (function(){
   'use strict';
+  const TOUCH = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
+  if(TOUCH) document.body.classList.add('touch');
+  const MOVE_HINT = TOUCH ? 'Tap one sentence, then another, to swap them.'
+                          : 'Drag the sentences into the order that reads best.';
   const params=new URLSearchParams(location.search);
   const type=params.get('type')||'essays';
   const DATA={essays:'data/essays-models.json',reports:'data/reports-models.json',
@@ -146,10 +244,10 @@
     'In conclusion','To sum up','Nowadays','These days'];
 
   const GAMES=[
-    {id:'order',    ico:'\uD83D\uDD00', nm:'Order Supports', live:true},
-    {id:'sequence', ico:'\uD83D\uDCD1', nm:'Sequence',       url:'B2-ordering-game.html'},
-    {id:'puzzle',   ico:'\uD83E\uDDE9', nm:'Puzzle',         url:'paragraph-puzzle.html'},
-    {id:'builder',  ico:'\u270D\uFE0F', nm:'Builder',        url:'paragraph-builder-game.html'}
+    {id:'order',   ico:'\uD83D\uDD00', nm:'Order Supports'},
+    {id:'sequence',ico:'\uD83D\uDCD1', nm:'Sequence'},
+    {id:'puzzle',  ico:'\uD83E\uDDE9', nm:'Puzzle'},
+    {id:'builder', ico:'\u270D\uFE0F', nm:'Builder'}
   ];
 
   let stages=[], si=0, game='order', solved=new Set();
@@ -169,7 +267,10 @@
   }).catch(()=>fail('Could not load game data.'));
 
   function fail(m){document.getElementById('loading').textContent=m;}
-  function playable(i){ return stages[i] && stages[i].sents.length>=3; }
+  function playable(i){ if(!stages[i])return false;
+    const n=stages[i].sents.length;
+    if(game==='order')return n>=3;
+    return n>=2; }
   function firstPlayable(){ for(let i=0;i<stages.length;i++) if(playable(i)) return i; return 0; }
   function shortLabel(l){
     if(/introduction/i.test(l))return'Introduction';
@@ -193,10 +294,7 @@
       const b=document.createElement('div');
       b.className='gbtn'+(gm.id===game?' on':'');
       b.innerHTML=`<span class="ico">${gm.ico}</span><span class="nm cond">${gm.nm}</span>`;
-      b.onclick=()=>{
-        if(gm.url){ location.href=gm.url+'?type='+encodeURIComponent(type); return; }
-        game=gm.id; renderGames(); load(si);
-      };
+      b.onclick=()=>{game=gm.id; renderGames(); load(si);};
       g.appendChild(b);
     });
   }
@@ -217,7 +315,10 @@
     // re-trigger slide anim
     card.classList.remove('card'); void card.offsetWidth; card.classList.add('card');
     renderStrip();
-    if(gm.live) renderOrder(st); else renderStub(gm);
+    if(game==='order')         renderOrder(st);
+    else if(game==='sequence') renderSequence(st);
+    else if(game==='puzzle')   renderPuzzle(st);
+    else                       renderBuilder(st);
   }
 
   // ── ORDER THE SUPPORTS in-card ──
@@ -235,7 +336,8 @@
     }
     order=shuffle(curSupports.map((_,k)=>k));
     if(order.every((v,k)=>v===k)) order.reverse();
-    body.innerHTML=`<div class="os-claim"><span class="tag cond">CLAIM</span><div class="text">${curClaim}</div></div>
+    body.innerHTML=`<div class="hint">${MOVE_HINT}</div>
+      <div class="os-claim"><span class="tag cond">CLAIM</span><div class="text">${curClaim}</div></div>
       <div class="os-supports" id="osSupports"></div>`;
     paintSupports();
     actions.innerHTML=`<button class="ghost" onclick="window._shuffle()">SHUFFLE</button>
@@ -245,7 +347,7 @@
     const box=document.getElementById('osSupports'); box.innerHTML='';
     order.forEach(origIdx=>{
       const el=document.createElement('div');
-      el.className='os-item'; el.draggable=true;
+      el.className='os-item'; el.draggable=!TOUCH;
       el.textContent=curSupports[origIdx];
       wire(el); box.appendChild(el);
     });
@@ -301,6 +403,139 @@
   function lightFrames(s){let o=s;FRAMES.forEach(f=>{
     const re=new RegExp('\\b'+f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');
     o=o.replace(re,m=>`<span class="frame">${m}</span>`);});return o;}
+
+
+  /* ═══ SEQUENCE — drag every sentence into order (works at any stage, incl. the 2-sentence intro) ═══ */
+  let seqOrder=[], seqSents=[];
+  function renderSequence(st){
+    seqSents=st.sents.slice();
+    const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
+    if(seqSents.length<2){
+      body.innerHTML='<div class="stub">This stage is a single sentence — nothing to sequence.</div>';
+      actions.innerHTML=''; return;
+    }
+    seqOrder=shuffle(seqSents.map((_,k)=>k));
+    if(seqOrder.every((v,k)=>v===k)) seqOrder.reverse();
+    body.innerHTML='<div class="hint">'+MOVE_HINT+'</div><div class="os-supports" id="seqBox"></div>';
+    const box=document.getElementById('seqBox');
+    seqOrder.forEach(i=>{
+      const el=document.createElement('div'); el.className='os-item'; el.draggable=!TOUCH;
+      el.textContent=seqSents[i];
+      wireDrag(el,'seqBox',()=>{ seqOrder=readOrder('seqBox',seqSents); });
+      box.appendChild(el);
+    });
+    actions.innerHTML='<button onclick="window._reload()">SHUFFLE</button><button class="primary" id="seqCheck" onclick="window._seqCheck()">CHECK THE ORDER</button>';
+  }
+  window._seqCheck=function(){
+    seqOrder=readOrder('seqBox',seqSents);
+    const els=[].slice.call(document.querySelectorAll('#seqBox .os-item'));
+    if(seqOrder.every((v,k)=>v===k)){
+      els.forEach(el=>el.classList.add('locked'));
+      solved.add(si+':sequence');
+      showWhole(seqSents,'\u2713 THAT READS WELL');
+    } else gentle(els,seqOrder,'seqCheck','CHECK THE ORDER');
+  };
+
+  /* ═══ PUZZLE — rebuild one short sentence from scrambled words (tap to place) ═══ */
+  let pzWords=[], pzPlaced=[], pzSent='', pzPool=[];
+  function renderPuzzle(st){
+    pzSent=st.sents.slice().sort((a,b)=>a.split(/\s+/).length-b.split(/\s+/).length)[0]||'';
+    pzWords=pzSent.split(/\s+/).filter(Boolean);
+    pzPlaced=[]; pzPool=shuffle(pzWords.slice());
+    const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
+    if(pzWords.length<3){ body.innerHTML='<div class="stub">Nothing to puzzle here.</div>'; actions.innerHTML=''; return; }
+    body.innerHTML='<div class="hint">Tap the words in order to rebuild the sentence.</div><div class="pz-line" id="pzLine"></div><div class="pz-pool" id="pzPool"></div>';
+    paintPuzzle();
+    actions.innerHTML='<button onclick="window._reload()">RESET</button>';
+  }
+  function paintPuzzle(){
+    const line=document.getElementById('pzLine'), pool=document.getElementById('pzPool');
+    if(!line||!pool) return;
+    line.innerHTML = pzPlaced.length
+      ? pzPlaced.map((w,i)=>'<span class="pz-w placed" data-i="'+i+'">'+w+'</span>').join('')
+      : '<span class="pz-empty">…</span>';
+    pool.innerHTML = pzPool.map((w,i)=>'<span class="pz-w" data-p="'+i+'">'+w+'</span>').join('');
+    [].slice.call(line.querySelectorAll('.pz-w')).forEach(el=>{
+      el.onclick=()=>{ const i=+el.getAttribute('data-i'); pzPool.push(pzPlaced[i]); pzPlaced.splice(i,1); paintPuzzle(); };
+    });
+    [].slice.call(pool.querySelectorAll('.pz-w')).forEach(el=>{
+      el.onclick=()=>{ const i=+el.getAttribute('data-p'); pzPlaced.push(pzPool[i]); pzPool.splice(i,1); paintPuzzle(); };
+    });
+    if(pzPlaced.length===pzWords.length){
+      if(pzPlaced.join(' ')===pzWords.join(' ')){
+        solved.add(si+':puzzle');
+        showWhole([pzSent],'\u2713 THAT IS THE SENTENCE');
+      } else {
+        line.insertAdjacentHTML('beforeend','<div class="pz-nudge">Close — tap a word to send it back.</div>');
+      }
+    }
+  }
+
+  /* ═══ BUILDER — choose the opener that fits this paragraph ═══ */
+  function renderBuilder(st){
+    const first=st.sents[0]||'';
+    const m=first.match(/^([A-Z][^,]{2,28},)\s*/);
+    const real = m ? m[1] : first.split(/\s+/).slice(0,3).join(' ');
+    const rest = m ? first.slice(m[0].length) : first;
+    const distractors=shuffle(FRAMES.filter(f=>f.toLowerCase()!==real.replace(/,$/,'').toLowerCase())).slice(0,3).map(x=>x+',');
+    const opts=shuffle([real].concat(distractors));
+    const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
+    body.innerHTML='<div class="hint">Which opener fits this paragraph?</div>'+
+      '<div class="bd-sent"><span class="bd-slot" id="bdSlot">……</span> '+rest+'</div>'+
+      '<div class="bd-opts" id="bdOpts"></div>';
+    const box=document.getElementById('bdOpts');
+    opts.forEach(o=>{
+      const b=document.createElement('button'); b.className='bd-opt'; b.textContent=o;
+      b.onclick=()=>{
+        document.getElementById('bdSlot').textContent=o;
+        if(o===real){
+          b.classList.add('right'); solved.add(si+':builder');
+          setTimeout(()=>showWhole(stages[si].sents,'\u2713 THAT IS THE ONE'),450);
+        } else {
+          b.classList.add('other');
+          if(!box.querySelector('.bd-note'))
+            box.insertAdjacentHTML('beforeend','<div class="bd-note">That is good English — but another one fits this paragraph better.</div>');
+        }
+      };
+      box.appendChild(b);
+    });
+    actions.innerHTML='<button onclick="window._reload()">ANOTHER SET</button>';
+  }
+
+  /* ── shared helpers for the ported games ── */
+  function readOrder(boxId, source){
+    return [].slice.call(document.querySelectorAll('#'+boxId+' .os-item')).map(el=>source.indexOf(el.textContent));
+  }
+  function gentle(els,ord,btnId,label){
+    els.forEach((el,k)=>el.classList.toggle('locked',ord[k]===k));
+    const n=ord.filter((v,k)=>v===k).length, btn=document.getElementById(btnId);
+    if(btn){ btn.textContent = n>0 ? n+' IN PLACE — KEEP GOING' : 'TRY AGAIN';
+      setTimeout(()=>{ if(btn) btn.textContent=label; },1500); }
+  }
+  function showWhole(sents,msg){
+    document.getElementById('cardBody').innerHTML=
+      '<div class="os-win">'+msg+'</div><div class="os-whole">'+sents.map(lightFrames).join(' ')+'</div>';
+    document.getElementById('cardActions').innerHTML=
+      '<button onclick="window._reload()">AGAIN</button><button class="primary" onclick="window._next()">NEXT STAGE →</button>';
+    renderStrip();
+  }
+  window._reload=function(){ load(si); };
+  function wireDrag(el,boxId,after){
+    el.addEventListener('dragstart',()=>{ dragEl=el; el.classList.add('dragging'); });
+    el.addEventListener('dragend',()=>{ el.classList.remove('dragging'); if(after) after(); });
+    el.addEventListener('dragover',e=>{ e.preventDefault();
+      const box=document.getElementById(boxId); const a=afterEl(box,e.clientY);
+      if(dragEl&&dragEl!==el){ a==null ? box.appendChild(dragEl) : box.insertBefore(dragEl,a); } });
+    el.addEventListener('click',()=>{
+      if(el.classList.contains('locked')) return;
+      if(!pick){ pick=el; el.classList.add('picked'); }
+      else{
+        if(pick!==el){ const box=document.getElementById(boxId);
+          const pi=[].slice.call(box.children).indexOf(pick), ei=[].slice.call(box.children).indexOf(el);
+          pi<ei ? box.insertBefore(el,pick) : box.insertBefore(pick,el); }
+        pick.classList.remove('picked'); pick=null; if(after) after();
+      }});
+  }
 
   function renderStub(gm){
     document.getElementById('cardBody').innerHTML=
