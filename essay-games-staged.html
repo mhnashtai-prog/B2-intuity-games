@@ -323,6 +323,11 @@
   .sb-flashing{background:rgba(201,169,97,.12);border-radius:4px;padding:1px 4px}
   .sb-count{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;
     color:var(--gold-d);text-align:center;line-height:1;padding-top:6px}
+  .sb-blank.wrong{color:#c0392b;border-bottom-color:#c0392b;background:rgba(192,57,43,.08);font-weight:600}
+  .sb-given{color:#8a8272;background:rgba(0,0,0,.05);border-bottom:2px solid #cfc8b8;
+    border-radius:3px 3px 0 0;padding:0 3px;font-style:italic}
+  .sb-tally{display:block;color:#9a7d3f;font-size:11.5px;letter-spacing:.06em;padding-top:3px;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700}
 </style>
 </head>
 <body>
@@ -591,10 +596,14 @@
     } else gentle(els,seqOrder,'seqCheck','CONFIRM THE ORDER');
   };
 
-  /* ═══ STORYBOARD — the original dictation, one sentence at a time ═══
-     SHOW ME flashes the sentence, it evaporates, and a blank appears for
-     every word. Type each word into its own blank; confirm; next sentence. ═══ */
-  let sbStage=-1, sbSents=[], sbIdx=0, sbDone=new Set(), sbFound=new Set(), sbReads=0, sbShowing=false, sbTimer=null;
+  /* ═══ STORYBOARD — dictation with marking ═══
+     SHOW ME flashes the sentence · it evaporates · one blank per word ·
+     type anything · CHECK marks wrong words in red · three attempts ·
+     after the third, the answers are shown · CONFIRM saves it.        ═══ */
+  let sbStage=-1, sbSents=[], sbIdx=0, sbDone=new Set(), sbFound=new Set(),
+      sbWrong=new Set(), sbGiven=new Set(), sbTyped={}, sbTries=0, sbReads=0,
+      sbShowing=false, sbTimer=null;
+  const SB_MAX_TRIES=3;
   function sbWords(i){ return (sbSents[i]||'').split(/\s+/).filter(Boolean); }
   function sbKey(w){ return (w||'').toLowerCase().replace(/[^a-z0-9']/g,''); }
   function renderStoryboard(st){
@@ -602,55 +611,61 @@
     paintStory();
   }
   function sbOpen(i){
-    sbIdx=i; sbFound=new Set(); sbReads=0; sbShowing=false;
+    sbIdx=i; sbFound=new Set(); sbWrong=new Set(); sbGiven=new Set();
+    sbTyped={}; sbTries=0; sbReads=0; sbShowing=false;
     if(sbTimer){clearInterval(sbTimer);sbTimer=null;}
     if(sbDone.has(i)) sbWords(i).forEach((_,k)=>sbFound.add(k));
   }
+  function sbSettled(){ const w=sbWords(sbIdx); return sbFound.size+sbGiven.size===w.length; }
   function paintStory(){
     const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
     const words=sbWords(sbIdx), saved=sbDone.has(sbIdx);
     const complete=sbDone.size===sbSents.length;
-    const allFound=words.length>0 && sbFound.size===words.length;
+    const out=sbTries>=SB_MAX_TRIES;
 
-    // ONE box: saved sentences, the current one as blanks (or flashed), the rest pending
     const box=sbSents.map((s,i)=>{
       if(sbDone.has(i))
         return '<span class="ps-done" data-edit="'+i+'" title="Tap to do it again">'+lightFrames(s)+'</span>';
       if(i===sbIdx){
         if(sbShowing) return '<span class="sb-flashing">'+lightFrames(s)+'</span>';
-        return sbWords(i).map((w,k)=> sbFound.has(k)
-          ? '<span class="ps-place">'+w+'</span>'
-          : '<input class="sb-blank" data-k="'+k+'" size="'+Math.max(3,Math.min(sbKey(w).length,14))+'" '+
-            'style="width:'+Math.max(2.6,Math.min(sbKey(w).length*0.62,9))+'em" autocomplete="off" spellcheck="false">'
-        ).join(' ');
+        return sbWords(i).map((w,k)=>{
+          if(sbFound.has(k)) return '<span class="ps-place">'+w+'</span>';
+          if(sbGiven.has(k)) return '<span class="sb-given" title="shown after three attempts">'+w+'</span>';
+          const val=(sbTyped[k]||'').replace(/"/g,'&quot;');
+          return '<input class="sb-blank'+(sbWrong.has(k)?' wrong':'')+'" data-k="'+k+'" value="'+val+'" '+
+                 'style="width:'+Math.max(2.6,Math.min(sbKey(w).length*0.62,9))+'em" '+
+                 'autocomplete="off" spellcheck="false">';
+        }).join(' ');
       }
       return '<span class="ps-todo">▁▁▁▁▁</span>';
     }).join(' ');
+
+    const tally = (!saved && sbReads>0)
+      ? '<span class="sb-tally">'+sbFound.size+' / '+words.length+' correct'+
+        (sbTries?' · attempt '+Math.min(sbTries+1,SB_MAX_TRIES)+' of '+SB_MAX_TRIES:'')+'</span>' : '';
 
     body.innerHTML =
       '<div class="pz-built">'+box+(sbShowing?'<div class="sb-count" id="sbCount"></div>':'')+'</div>' +
       '<div class="hint">'+(complete ? 'The paragraph is complete. Tap any sentence to do it again.'
         : sbShowing ? 'Read it — it disappears in a moment.'
         : saved ? 'Sentence '+(sbIdx+1)+' is saved. Tap a dot for the next one.'
-        : sbReads===0 ? 'Sentence '+(sbIdx+1)+' of '+sbSents.length+' — tap SHOW ME, then fill each blank.'
-        : 'Type each word into its blank.')+'</div>' +
+        : sbReads===0 ? 'Sentence '+(sbIdx+1)+' of '+sbSents.length+' — tap SHOW ME, then fill every blank.'
+        : out ? 'Three attempts used — the missing words are shown.'
+        : 'Type a word in each blank, then check. Red means try again.')+
+        tally+'</div>' +
       '<div class="pz-dots" id="pzDots"></div>';
 
     [].slice.call(body.querySelectorAll('.ps-done')).forEach(el=>{
       el.onclick=()=>{ const i=+el.getAttribute('data-edit'); sbDone.delete(i); sbOpen(i); paintStory(); };
     });
-
-    // each blank checks itself as you type — right word locks in, focus jumps on
+    // free typing — nothing is judged until CHECK
     [].slice.call(body.querySelectorAll('.sb-blank')).forEach(inp=>{
-      inp.oninput=()=>{
-        const k=+inp.getAttribute('data-k');
-        if(sbKey(inp.value)===sbKey(sbWords(sbIdx)[k])){
-          sbFound.add(k); paintStory();
-          const nxt=document.querySelector('.sb-blank'); if(nxt) nxt.focus();
-        }
+      inp.oninput=()=>{ sbTyped[+inp.getAttribute('data-k')]=inp.value; inp.classList.remove('wrong'); };
+      inp.onkeydown=(e)=>{
+        if(e.key==='Enter'){ e.preventDefault();
+          const all=[].slice.call(document.querySelectorAll('.sb-blank'));
+          const j=all.indexOf(inp); if(j>-1&&all[j+1]) all[j+1].focus(); else window._sbCheck(); }
       };
-      inp.onkeydown=(e)=>{ if(e.key==='Enter'){ const n=document.querySelectorAll('.sb-blank');
-        for(let j=0;j<n.length;j++) if(n[j]!==inp){ n[j].focus(); break; } } };
     });
     const first=body.querySelector('.sb-blank'); if(first&&!sbShowing&&sbReads>0) first.focus();
 
@@ -669,10 +684,26 @@
           ? '<button onclick="window._sbAgain()">DO IT AGAIN</button>'+
             (nextUndone>-1?'<button class="primary" onclick="window._sbGo('+nextUndone+')">NEXT SENTENCE →</button>':'')
           : '<button onclick="window._sbRead()">'+(sbReads?'SHOW ME AGAIN':'SHOW ME')+'</button>'+
-            (sbReads&&!allFound?'<button onclick="window._sbHint()">GIVE ME A WORD</button>':'')+
-            (allFound?'<button class="primary" onclick="window._sbConfirm()">CONFIRM SENTENCE</button>':''))
+            (sbReads&&!sbSettled()&&!out ? '<button class="primary" onclick="window._sbCheck()">CHECK</button>' : '')+
+            (sbSettled()||out ? '<button class="primary" onclick="window._sbConfirm()">CONFIRM SENTENCE</button>' : ''))
       + (complete ? '<button class="primary" onclick="window._sbFinish()">SEE IT WHOLE →</button>' : '');
   }
+  window._sbCheck=function(){
+    const words=sbWords(sbIdx);
+    sbWrong=new Set();
+    words.forEach((w,k)=>{
+      if(sbFound.has(k)||sbGiven.has(k)) return;
+      const typed=(sbTyped[k]||'').trim();
+      if(!typed) return;
+      if(sbKey(typed)===sbKey(w)) sbFound.add(k); else sbWrong.add(k);
+    });
+    sbTries++;
+    if(sbTries>=SB_MAX_TRIES){                       // third attempt: show what is missing
+      words.forEach((_,k)=>{ if(!sbFound.has(k)) sbGiven.add(k); });
+      sbWrong=new Set();
+    }
+    paintStory();
+  };
   window._sbRead=function(){
     const words=sbWords(sbIdx);
     let secs=Math.max(4,Math.round(words.length*0.7));
@@ -683,11 +714,6 @@
       secs--;
     };
     tick(); sbTimer=setInterval(tick,1000);
-  };
-  window._sbHint=function(){                       // fills the first empty blank — never a penalty
-    const words=sbWords(sbIdx);
-    for(let k=0;k<words.length;k++) if(!sbFound.has(k)){ sbFound.add(k); break; }
-    paintStory();
   };
   window._sbConfirm=function(){
     sbDone.add(sbIdx); solved.add(si+':story');
