@@ -287,6 +287,29 @@
   #top{gap:8px}
   @media (min-width:1100px){ #newText{font-size:12px;padding:8px 14px} }
   @media (max-width:560px){ #newText{font-size:9px;padding:5px 8px} }
+  /* ── STORYBOARD: flash card + blanks ── */
+  .sb-flash{font-family:'Crimson Text',serif;font-size:17px;line-height:1.6;color:#1a1a1a;
+    background:rgba(201,169,97,.1);border:1px solid rgba(201,169,97,.35);border-radius:10px;
+    padding:14px 16px;text-align:center}
+  .sb-flash .frame{color:var(--gold-d);font-weight:600}
+  .sb-count{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;
+    color:var(--gold-d);margin-top:8px;line-height:1}
+  .sb-blanks{font-family:'Crimson Text',serif;font-size:17px;line-height:2;color:#1a1a1a;
+    background:rgba(0,0,0,.03);border-radius:10px;padding:12px 14px;min-height:64px}
+  .sb-w{display:inline-block;margin:0 2px}
+  .sb-w.got{color:#1a1a1a}
+  .sb-w.gap{color:transparent;border-bottom:2px solid rgba(201,169,97,.55);cursor:pointer;
+    letter-spacing:.06em;user-select:none}
+  .sb-w.gap:hover{border-bottom-color:var(--gold);background:rgba(201,169,97,.12)}
+  .sb-in{display:flex;gap:7px;padding-top:9px}
+  .sb-in input{flex:1;min-width:0;padding:10px 13px;border:1px solid #e2ddd0;border-radius:9px;
+    font-family:'Instrument Sans',sans-serif;font-size:15px;color:#1a1a1a;background:#fff;min-height:44px}
+  .sb-in input:focus{outline:none;border-color:var(--gold)}
+  .sb-in input.miss{border-color:#d9a5a5;background:#fdf5f5}
+  .sb-in button{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:9px;
+    padding:0 16px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.12em;font-size:12px;
+    font-weight:700;cursor:pointer;min-height:44px}
+  @media (min-width:1100px){ .sb-flash,.sb-blanks{font-size:21px} .sb-count{font-size:38px} }
 </style>
 </head>
 <body>
@@ -337,13 +360,13 @@
     'In conclusion','To sum up','Nowadays','These days'];
 
   const GAMES=[
-    {id:'order',   ico:'\uD83D\uDD00', nm:'Order Supports'},
     {id:'sequence',ico:'\uD83D\uDCD1', nm:'Sequence'},
+    {id:'story',   ico:'\uD83C\uDFAF', nm:'Storyboard'},
     {id:'puzzle',  ico:'\uD83E\uDDE9', nm:'Puzzle'},
     {id:'builder', ico:'\u270D\uFE0F', nm:'Builder'}
   ];
 
-  let stages=[], play=[], fullText=false, si=0, game='order', solved=new Set();
+  let stages=[], play=[], fullText=false, si=0, game='sequence', solved=new Set();
   function buildStages(){
     const sample=DATASET.samples[sampleIdx];
     stages=sample.paragraphs.map(p=>({
@@ -383,8 +406,7 @@
   function fail(m){document.getElementById('loading').textContent=m;}
   function playable(i){ if(!play[i])return false;
     const n=play[i].sents.length;
-    if(game==='order')return n>=3;
-    return n>=2; }
+    return n>=1; }
   function firstPlayable(){ for(let i=0;i<play.length;i++) if(playable(i)) return i; return 0; }
   function shortLabel(l){
     if(/introduction/i.test(l))return'Introduction';
@@ -431,8 +453,8 @@
     // re-trigger slide anim
     card.classList.remove('card'); void card.offsetWidth; card.classList.add('card');
     renderStrip();
-    if(game==='order')         renderOrder(st);
-    else if(game==='sequence') renderSequence(st);
+    if(game==='sequence')      renderSequence(st);
+    else if(game==='story')    renderStoryboard(st);
     else if(game==='puzzle')   renderPuzzle(st);
     else                       renderBuilder(st);
   }
@@ -555,6 +577,115 @@
       showWhole(seqSents,'\u2713 THAT READS WELL');
     } else gentle(els,seqOrder,'seqCheck','CONFIRM THE ORDER');
   };
+
+  /* ═══ STORYBOARD — the original dictation, one sentence at a time ═══
+     Read it for a few seconds, then rebuild it from memory into blanks.
+     Winnable because the target is a sentence, never a whole paragraph.
+     No score, no attempt limit, no penalty — read again as often as needed. ═══ */
+  let sbStage=-1, sbSents=[], sbIdx=0, sbDone=new Set(), sbFound=new Set(), sbReads=0, sbShowing=false, sbTimer=null;
+  function sbWords(i){ return (sbSents[i]||'').split(/\s+/).filter(Boolean); }
+  function sbKey(w){ return w.toLowerCase().replace(/[^a-z0-9']/g,''); }
+  function renderStoryboard(st){
+    if(sbStage!==si){ sbStage=si; sbSents=st.sents.slice(); sbIdx=0; sbDone=new Set(); sbOpen(0); }
+    paintStory();
+  }
+  function sbOpen(i){
+    sbIdx=i; sbFound=new Set(); sbReads=0; sbShowing=false;
+    if(sbTimer){clearInterval(sbTimer);sbTimer=null;}
+    if(sbDone.has(i)) sbWords(i).forEach((_,k)=>sbFound.add(k));
+  }
+  function sbParagraph(){
+    return '<div class="pz-built">'+sbSents.map((s,i)=>{
+      if(sbDone.has(i)) return '<span class="ps-done" data-edit="'+i+'" title="Tap to do it again">'+lightFrames(s)+'</span>';
+      if(i===sbIdx)     return '<span class="ps-now">▁▁▁▁▁</span>';
+      return '<span class="ps-todo">▁▁▁▁▁</span>';
+    }).join(' ')+'</div>';
+  }
+  function paintStory(){
+    const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
+    const words=sbWords(sbIdx), saved=sbDone.has(sbIdx);
+    const complete=sbDone.size===sbSents.length;
+    const allFound=words.length>0 && sbFound.size===words.length;
+
+    let mid;
+    if(sbShowing){
+      mid='<div class="sb-flash">'+lightFrames(sbSents[sbIdx])+'<div class="sb-count" id="sbCount"></div></div>';
+    } else {
+      mid='<div class="sb-blanks">'+words.map((w,k)=>
+        sbFound.has(k) ? '<span class="sb-w got">'+w+'</span>'
+                       : '<span class="sb-w gap" data-k="'+k+'">'+'_'.repeat(Math.min(w.replace(/[^A-Za-z0-9\']/g,'').length,12))+'</span>'
+      ).join(' ')+'</div>'+
+      (saved ? '' :
+        '<div class="sb-in"><input id="sbInput" placeholder="type a word you remember…" autocomplete="off" '+
+        'onkeydown="if(event.key===\'Enter\')window._sbTry()"><button onclick="window._sbTry()">ADD</button></div>');
+    }
+
+    body.innerHTML =
+      sbParagraph() +
+      '<div class="hint">'+(complete ? 'The paragraph is complete. Tap any sentence to do it again.'
+        : sbShowing ? 'Read it — it disappears in a moment.'
+        : saved ? 'Sentence '+(sbIdx+1)+' is saved. Tap a dot for the next one.'
+        : 'Sentence '+(sbIdx+1)+' of '+sbSents.length+' — read it, then type the words you remember.')+'</div>' +
+      mid +
+      '<div class="pz-dots" id="pzDots"></div>';
+
+    [].slice.call(body.querySelectorAll('.ps-done')).forEach(el=>{
+      el.onclick=()=>{ const i=+el.getAttribute('data-edit'); sbDone.delete(i); sbOpen(i); paintStory(); };
+    });
+    // tap a blank to uncover that one word — always allowed, never a penalty
+    [].slice.call(body.querySelectorAll('.sb-w.gap')).forEach(el=>{
+      el.onclick=()=>{ sbFound.add(+el.getAttribute('data-k')); paintStory(); };
+    });
+
+    const dots=document.getElementById('pzDots');
+    sbSents.forEach((_,i)=>{
+      const d=document.createElement('button');
+      d.className='pz-dot'+(i===sbIdx?' on':'')+(sbDone.has(i)?' done':'');
+      d.textContent=String(i+1);
+      d.onclick=()=>{ sbOpen(i); paintStory(); };
+      dots.appendChild(d);
+    });
+
+    actions.innerHTML = sbShowing ? ''
+      : (saved
+          ? '<button onclick="window._sbAgain()">DO IT AGAIN</button>'
+          : '<button onclick="window._sbRead()">'+(sbReads?'READ AGAIN':'READ IT')+'</button>'+
+            '<button onclick="window._sbReveal()">SHOW ME</button>'+
+            (allFound?'<button class="primary" onclick="window._sbConfirm()">CONFIRM SENTENCE</button>':''))
+      + (complete ? '<button class="primary" onclick="window._sbFinish()">SEE IT WHOLE →</button>' : '');
+
+    const inp=document.getElementById('sbInput'); if(inp) inp.focus();
+  }
+  window._sbRead=function(){
+    const words=sbWords(sbIdx);
+    let secs=Math.max(4,Math.round(words.length*0.7));   // time scales with the sentence
+    sbShowing=true; sbReads++; paintStory();
+    const tick=()=>{
+      const c=document.getElementById('sbCount');
+      if(c) c.textContent=secs;
+      if(secs<=0){ clearInterval(sbTimer); sbTimer=null; sbShowing=false; paintStory(); return; }
+      secs--;
+    };
+    tick(); sbTimer=setInterval(tick,1000);
+  };
+  window._sbTry=function(){
+    const inp=document.getElementById('sbInput'); if(!inp) return;
+    const guess=sbKey(inp.value); inp.value='';
+    if(!guess) return;
+    const words=sbWords(sbIdx); let hit=false;
+    words.forEach((w,k)=>{ if(sbKey(w)===guess){ sbFound.add(k); hit=true; } });
+    if(!hit){ inp.classList.add('miss'); setTimeout(()=>inp.classList.remove('miss'),600); return; }
+    paintStory();
+  };
+  window._sbReveal=function(){ sbWords(sbIdx).forEach((_,k)=>sbFound.add(k)); paintStory(); };
+  window._sbConfirm=function(){
+    sbDone.add(sbIdx); solved.add(si+':story');
+    const next=sbSents.findIndex((_,i)=>!sbDone.has(i));
+    if(next>-1) sbOpen(next);
+    paintStory();
+  };
+  window._sbAgain=function(){ sbDone.delete(sbIdx); sbOpen(sbIdx); paintStory(); };
+  window._sbFinish=function(){ showWhole(sbSents,'✓ THE PARAGRAPH IS COMPLETE'); };
 
   /* ═══ PUZZLE — sort → CONFIRM → the sentence is saved into the paragraph ═══
      The paragraph starts incomplete (blank slots) and is complete when the
