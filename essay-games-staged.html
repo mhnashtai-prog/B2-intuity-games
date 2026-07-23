@@ -379,6 +379,45 @@
   .bd-choice.clear{font-family:'Instrument Sans',sans-serif;font-size:12px;color:#a2988a;border-style:dashed}
   @media(max-width:560px){ .bd-choices{padding-left:0} .bd-move{flex-basis:76px;font-size:10px} }
   @media(min-width:1100px){ .bd-line,.bd-choice{font-size:18px} .bd-intro{font-size:20px} .bd-move{flex-basis:110px;font-size:13px} }
+  #bdModal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.72);backdrop-filter:blur(6px);padding:18px}
+  #bdModal.on{display:flex}
+  .bdm-card{position:relative;width:min(560px,94vw);max-height:82vh;overflow-y:auto;
+    background:rgba(28,28,30,.98);border:1px solid rgba(84,84,88,.45);border-radius:18px;padding:22px 20px 18px;
+    box-shadow:0 25px 50px rgba(0,0,0,.65);animation:bdmIn .2s ease}
+  @keyframes bdmIn{from{opacity:0;transform:scale(.97) translateY(6px)}to{opacity:1;transform:none}}
+  .bdm-x{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;cursor:pointer;
+    background:rgba(255,255,255,.07);border:1px solid rgba(84,84,88,.4);color:#8e8e93;font-size:13px}
+  .bdm-x:hover{color:#e8e6e0}
+  .bdm-head{margin-bottom:14px}
+  .bdm-move{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:.22em;
+    color:var(--gold);display:block}
+  .bdm-hint{color:#8e8e93;font-size:13px;font-style:italic}
+  .bdm-opts{display:flex;flex-direction:column;gap:9px}
+  .bdm-opt{display:flex;gap:11px;text-align:left;align-items:flex-start;cursor:pointer;
+    background:rgba(255,255,255,.04);border:1px solid rgba(84,84,88,.35);border-radius:11px;padding:13px 14px;
+    font-family:'Crimson Text',serif;font-size:16px;line-height:1.5;color:#e8e6e0}
+  .bdm-opt:hover{background:rgba(255,255,255,.08);border-color:rgba(201,169,97,.5)}
+  .bdm-opt.on{border-color:var(--gold);background:rgba(201,169,97,.14)}
+  .bdm-opt .frame{color:var(--gold)}
+  .bdm-n{flex:0 0 auto;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:var(--gold);font-size:14px;padding-top:2px}
+  .bdm-opt.clear{justify-content:center;font-family:'Instrument Sans',sans-serif;font-size:13px;
+    color:#8e8e93;border-style:dashed}
+  .bd-line{cursor:pointer}
+  @media(min-width:1100px){ .bdm-opt{font-size:19px} .bdm-card{width:min(680px,90vw);padding:26px 24px 22px} }
+  .ft-text{font-family:'Crimson Text',serif;font-size:16px;line-height:1.75;color:#1a1a1a;
+    background:rgba(0,0,0,.03);border-radius:10px;padding:12px 14px}
+  .ft-p{margin:0 0 10px}
+  .ft-p:last-child{margin-bottom:0}
+  .ft-lab{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:900;
+    letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:2px}
+  .ft-s{cursor:pointer;border-radius:3px;padding:0 2px;transition:.14s}
+  .ft-s:hover{background:rgba(201,169,97,.22);box-shadow:0 0 0 1px rgba(201,169,97,.4)}
+  .ft-s.done{background:rgba(46,204,113,.14);border-bottom:2px solid rgba(46,204,113,.55)}
+  .ft-s .frame{color:var(--gold-d);font-weight:600}
+  .ft-count{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.1em;
+    color:#8a8272;align-self:center;padding:0 8px}
+  @media(min-width:1100px){ .ft-text{font-size:19px;line-height:1.8;padding:16px 18px} }
 </style>
 </head>
 <body>
@@ -410,6 +449,14 @@
     <div id="games"></div>
   </div>
 </main>
+
+<div id="bdModal" aria-hidden="true">
+  <div class="bdm-card" role="dialog" aria-modal="true">
+    <button class="bdm-x" onclick="window._bdClose()" aria-label="Close">&#10005;</button>
+    <div class="bdm-head"><span class="bdm-move" id="bdmMove"></span><span class="bdm-hint" id="bdmHint"></span></div>
+    <div class="bdm-opts" id="bdmOpts"></div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -501,7 +548,7 @@
       const b=document.createElement('div');
       b.className='gbtn'+(gm.id===game?' on':'');
       b.innerHTML=`<span class="ico">${gm.ico}</span><span class="nm cond">${gm.nm}</span>`;
-      b.onclick=()=>{game=gm.id; renderGames(); load(si);};
+      b.onclick=()=>{game=gm.id; ftFocus=null; renderGames(); load(si);};
       g.appendChild(b);
     });
   }
@@ -516,16 +563,24 @@
     document.getElementById('header').style.background=accent;
     document.getElementById('ghostNum').textContent=String(i+1).padStart(2,'0');
     document.getElementById('stepLabel').textContent=(game==='builder'?'CHOOSE YOUR MOVES':(fullText?'WHOLE ESSAY':'STAGE '+(i+1)+' OF '+play.length));
-    document.getElementById('stageTitle').textContent=(game==='builder'?'BUILD A PARAGRAPH':st.label.toUpperCase());
+    document.getElementById('stageTitle').textContent=
+      game==='builder' ? 'BUILD A PARAGRAPH'
+      : (fullText ? (ftFocus? ftFocus.label.toUpperCase() : 'THE WHOLE TEXT') : st.label.toUpperCase());
     const gm=GAMES.find(g=>g.id===game);
     document.getElementById('gameBadge').textContent=gm.nm.toUpperCase();
     // re-trigger slide anim
     card.classList.remove('card'); void card.offsetWidth; card.classList.add('card');
     renderStrip();
-    if(game==='sequence')      renderSequence(st);
-    else if(game==='story')    renderStoryboard(st);
-    else if(game==='puzzle')   renderPuzzle(st);
-    else                       renderBuilder();
+    if(game==='builder')            { renderBuilder(); return; }
+    if(fullText && !ftFocus)        { renderFullMap(); return; }
+    const target = (fullText && ftFocus) ? ftFocus : st;
+    if(game==='sequence')      renderSequence(target);
+    else if(game==='story')    renderStoryboard(target);
+    else                       renderPuzzle(target);
+    if(fullText && ftFocus){
+      const a=document.getElementById('cardActions');
+      a.insertAdjacentHTML('afterbegin','<button onclick="window._ftBack()">← BACK TO TEXT</button>');
+    }
   }
 
   // ── ORDER THE SUPPORTS in-card ──
@@ -616,6 +671,62 @@
     o=o.replace(re,m=>`<span class="frame">${m}</span>`);});return o;}
 
 
+  /* ═══ FULL TEXT — the whole sample, and the student chooses ═══
+     Nothing is prescribed. The complete text is on screen; tap any sentence
+     and the game you have selected runs on it. Sequence takes the paragraph
+     that sentence belongs to. Worked sentences are marked. Free will.   ═══ */
+  let ftFocus=null, ftDone={};                 // ftDone['puzzle']=Set('p:s')
+  function ftKey(p,s){ return p+':'+s; }
+  function ftMark(){ return ftDone[game]||(ftDone[game]=new Set()); }
+  function stageKey(){ return fullText ? ('F'+(ftFocus?ftFocus.key:'map')) : si; }
+
+  function renderFullMap(){
+    const body=document.getElementById('cardBody'), actions=document.getElementById('cardActions');
+    const done=ftMark();
+    const gm=GAMES.find(g=>g.id===game);
+    const scope = game==='sequence' ? 'paragraph' : 'sentence';
+
+    body.innerHTML=
+      '<div class="hint">Tap any '+scope+' to work on it with <b>'+gm.nm+'</b>. '+
+      'Nothing is set — choose wherever you like.</div>'+
+      '<div class="ft-text" id="ftText">'+
+      stages.map((st,p)=>
+        '<p class="ft-p" data-p="'+p+'"><span class="ft-lab">'+st.label+'</span>'+
+        st.sents.map((sent,sIdx)=>
+          '<span class="ft-s'+(done.has(ftKey(p,sIdx))?' done':'')+'" data-p="'+p+'" data-s="'+sIdx+'">'+
+          lightFrames(sent)+'</span>').join(' ')+
+        '</p>').join('')+
+      '</div>';
+
+    [].slice.call(body.querySelectorAll('.ft-s')).forEach(el=>{
+      el.onclick=()=>{
+        const p=+el.getAttribute('data-p'), sIdx=+el.getAttribute('data-s');
+        if(game==='sequence'){
+          if(stages[p].sents.length<2){ toast('That paragraph has only one sentence.'); return; }
+          ftFocus={key:'p'+p, p:p, label:stages[p].label, sents:stages[p].sents.slice()};
+        } else {
+          ftFocus={key:ftKey(p,sIdx), p:p, s:sIdx, label:stages[p].label,
+                   sents:[stages[p].sents[sIdx]]};
+        }
+        render();
+      };
+    });
+
+    const total=stages.reduce((a,st)=>a+st.sents.length,0);
+    actions.innerHTML='<span class="ft-count">'+done.size+' of '+total+' done with '+gm.nm.toLowerCase()+'</span>'+
+      (done.size?'<button onclick="window._ftClear()">CLEAR MARKS</button>':'');
+  }
+  window._ftClear=function(){ ftDone[game]=new Set(); render(); };
+  window._ftBack=function(){
+    if(ftFocus){
+      // anything finished in the focused piece is marked on the map
+      const d=ftMark();
+      if(game==='sequence') stages[ftFocus.p].sents.forEach((_,k)=>d.add(ftKey(ftFocus.p,k)));
+      else if(ftFocus.s!=null) d.add(ftKey(ftFocus.p,ftFocus.s));
+    }
+    ftFocus=null; render();
+  };
+
   /* ═══ SEQUENCE — drag every sentence into order (works at any stage, incl. the 2-sentence intro) ═══ */
   let seqOrder=[], seqSents=[];
   function renderSequence(st){
@@ -642,7 +753,7 @@
     const els=[].slice.call(document.querySelectorAll('#seqBox .os-item'));
     if(seqOrder.every((v,k)=>v===k)){
       els.forEach(el=>el.classList.add('locked'));
-      solved.add(si+':sequence');
+      solved.add(stageKey()+':sequence');
       showWhole(seqSents,'\u2713 THAT READS WELL');
     } else gentle(els,seqOrder,'seqCheck','CONFIRM THE ORDER');
   };
@@ -660,7 +771,7 @@
     return sbS[i];
   }
   function renderStoryboard(st){
-    if(sbStage!==si){ sbStage=si; sbSents=st.sents.slice(); sbIdx=0; sbDone=new Set(); sbS={}; sbOpen(0); }
+    if(sbStage!==stageKey()){ sbStage=stageKey(); sbSents=st.sents.slice(); sbIdx=0; sbDone=new Set(); sbS={}; sbOpen(0); }
     paintStory();
   }
   function sbOpen(i){
@@ -787,7 +898,7 @@
     tick(); sbTimer=setInterval(tick,1000);
   };
   window._sbConfirm=function(){
-    sbDone.add(sbIdx); solved.add(si+':story');
+    sbDone.add(sbIdx); solved.add(stageKey()+':story');
     const left=sbSents.length-sbDone.size;
     if(left>0) toast(left===1?'One sentence to go.':'Sentence '+sbDone.size+' of '+sbSents.length+' done.');
     const next=sbSents.findIndex((_,i)=>!sbDone.has(i));
@@ -820,7 +931,7 @@
      exercise is over. Tap any saved sentence to edit it again.            ═══ */
   let pzStage=-1, pzSents=[], pzIdx=0, pzDone=new Set(), pzPlaced=[], pzPool=[];
   function renderPuzzle(st){
-    if(pzStage!==si){ pzStage=si; pzSents=st.sents.slice(); pzIdx=0; pzDone=new Set(); openSentence(0); }
+    if(pzStage!==stageKey()){ pzStage=stageKey(); pzSents=st.sents.slice(); pzIdx=0; pzDone=new Set(); openSentence(0); }
     paintPuzzle();
   }
   const PZ_BREAK=/(?<=,)\s+|\s+(?=(?:and|but|so|because|which|that|when|if|although|while|as|in|on|at|through|among|during|with|for|by|from|before|after|since)\b)/i;
@@ -908,7 +1019,7 @@
   window._pzConfirm=function(){
     const words=unitsOf(pzSents[pzIdx]);
     if(pzPlaced.join(' ')===words.join(' ')){
-      pzDone.add(pzIdx); solved.add(si+':puzzle');
+      pzDone.add(pzIdx); solved.add(stageKey()+':puzzle');
       const next=pzSents.findIndex((_,i)=>!pzDone.has(i));
       if(next>-1) openSentence(next);
       paintPuzzle();
@@ -1002,32 +1113,43 @@
         '<button class="bd-move'+(bdPick[m.k]!=null?' on':'')+'" data-m="'+m.k+'">'+m.label+'</button>'+
         '<div class="bd-line">'+(picked||'<span class="bd-hintline">'+m.hint+'</span>')+'</div>';
       wrap.appendChild(row);
-      if(bdExpanded===m.k){
-        const box=document.createElement('div'); box.className='bd-choices';
-        opts.forEach((o,i)=>{
-          const b=document.createElement('button');
-          b.className='bd-choice'+(bdPick[m.k]===i?' on':'');
-          b.innerHTML=bdLight(o);
-          b.onclick=()=>{ bdPick[m.k]=i; bdExpanded=null; paintBuilder(); toast('Added — '+m.hint+'.'); };
-          box.appendChild(b);
-        });
-        if(bdPick[m.k]!=null){
-          const clr=document.createElement('button');
-          clr.className='bd-choice clear'; clr.textContent='remove this move';
-          clr.onclick=()=>{ delete bdPick[m.k]; bdExpanded=null; paintBuilder(); };
-          box.appendChild(clr);
-        }
-        wrap.appendChild(box);
-      }
     });
     [].slice.call(wrap.querySelectorAll('.bd-move')).forEach(b=>{
-      b.onclick=()=>{ const k=b.getAttribute('data-m'); bdExpanded=(bdExpanded===k?null:k); paintBuilder(); };
+      b.onclick=()=>window._bdPickMove(b.getAttribute('data-m'));
+    });
+    [].slice.call(wrap.querySelectorAll('.bd-line')).forEach((el,idx)=>{
+      el.onclick=()=>window._bdPickMove(BD_MOVES[idx].k);
     });
 
     actions.innerHTML=
       '<button onclick="window._bdNew()">NEW TOPIC</button>'+
       '<button class="primary" '+(chosen.length?'':'disabled')+' onclick="window._bdShow()">SEE MY PARAGRAPH →</button>';
   }
+  window._bdPickMove=function(k){
+    const m=BD_MOVES.find(x=>x.k===k), t=bdData.topics[bdTopic], opts=t[k]||[];
+    document.getElementById('bdmMove').textContent=m.label;
+    document.getElementById('bdmHint').textContent=m.hint;
+    const box=document.getElementById('bdmOpts'); box.innerHTML='';
+    opts.forEach((o,i)=>{
+      const b=document.createElement('button');
+      b.className='bdm-opt'+(bdPick[k]===i?' on':'');
+      b.innerHTML='<span class="bdm-n">'+(i+1)+'</span><span>'+bdLight(o)+'</span>';
+      b.onclick=()=>{ bdPick[k]=i; window._bdClose(); paintBuilder(); toast('Added — '+m.hint+'.'); };
+      box.appendChild(b);
+    });
+    if(bdPick[k]!=null){
+      const clr=document.createElement('button');
+      clr.className='bdm-opt clear'; clr.textContent='Remove this move';
+      clr.onclick=()=>{ delete bdPick[k]; window._bdClose(); paintBuilder(); };
+      box.appendChild(clr);
+    }
+    const mod=document.getElementById('bdModal');
+    mod.classList.add('on'); mod.setAttribute('aria-hidden','false');
+  };
+  window._bdClose=function(){
+    const mod=document.getElementById('bdModal');
+    mod.classList.remove('on'); mod.setAttribute('aria-hidden','true');
+  };
   window._bdNew=function(){ bdNewTopic(true); paintBuilder(); };
   window._bdShow=function(){ bdShown=true; paintBuilder(); burst(); };
   window._bdBack=function(){ bdShown=false; paintBuilder(); };
@@ -1070,7 +1192,7 @@
   window._reload=function(){ load(si); };
   window._mode=function(on){
     if(on===fullText) return;
-    fullText=on; solved=new Set(); pzStage=-1; si=0;
+    fullText=on; solved=new Set(); pzStage=-1; sbStage=-1; ftFocus=null; si=0;
     document.getElementById('mbStages').classList.toggle('on',!on);
     document.getElementById('mbFull').classList.toggle('on',on);
     rebuildPlay(); renderStrip(); load(firstPlayable());
@@ -1099,6 +1221,8 @@
   }
 
 
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') window._bdClose&&window._bdClose(); });
+  document.addEventListener('click',e=>{ if(e.target && e.target.id==='bdModal') window._bdClose(); });
 })();
 </script>
 </body>
